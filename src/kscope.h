@@ -1196,6 +1196,18 @@ namespace ithare {
 #define ITHARE_KSCOPE_INT3(type) ithare::kscope::KscopeIntDbg<type>
 #define ITHARE_KSCOPE_INTLIT3(c) ithare::kscope::KscopeIntDbg<typename std::remove_cv<decltype(c)>::type>(ithare::kscope::KscopeLiteralDbg<typename std::remove_cv<decltype(c)>::type,c>())
 
+#define ITHARE_KSCOPE_STR_DBG_HELPER(s) ithare::kscope::KscopeStrLiteralDbg<(sizeof(s)>0?s[0]:'\0'),(sizeof(s)>1?s[1]:'\0'),(sizeof(s)>2?s[2]:'\0'),(sizeof(s)>3?s[3]:'\0'),\
+							(sizeof(s)>4?s[4]:'\0'),(sizeof(s)>5?s[5]:'\0'),(sizeof(s)>6?s[6]:'\0'),(sizeof(s)>7?s[7]:'\0'),\
+							(sizeof(s)>8?s[8]:'\0'),(sizeof(s)>9?s[9]:'\0'),(sizeof(s)>10?s[10]:'\0'),(sizeof(s)>11?s[11]:'\0'),\
+							(sizeof(s)>12?s[12]:'\0'),(sizeof(s)>13?s[13]:'\0'),(sizeof(s)>14?s[14]:'\0'),(sizeof(s)>15?s[15]:'\0'),\
+							(sizeof(s)>16?s[16]:'\0'),(sizeof(s)>17?s[17]:'\0'),(sizeof(s)>18?s[18]:'\0'),(sizeof(s)>19?s[19]:'\0'),\
+							(sizeof(s)>20?s[20]:'\0'),(sizeof(s)>21?s[21]:'\0'),(sizeof(s)>22?s[22]:'\0'),(sizeof(s)>23?s[23]:'\0'),\
+							(sizeof(s)>24?s[24]:'\0'),(sizeof(s)>25?s[25]:'\0'),(sizeof(s)>26?s[26]:'\0'),(sizeof(s)>27?s[27]:'\0'),\
+							(sizeof(s)>28?s[28]:'\0'),(sizeof(s)>29?s[29]:'\0'),(sizeof(s)>30?s[30]:'\0'),(sizeof(s)>31?s[31]:'\0'),\
+							(sizeof(s)>32?s[32]:'\0')/*one extra to generate an error if we're over*/>
+
+#define ITHARE_KSCOPE_STRLIT3(s) ITHARE_KSCOPE_STR_DBG_HELPER(s)()
+
 #define ITHARE_KSCOPE_CALL0(fname) fname<0>
 #define ITHARE_KSCOPE_CALL1(fname) fname<0>
 #define ITHARE_KSCOPE_CALL2(fname) fname<0>
