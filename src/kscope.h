@@ -837,10 +837,22 @@ namespace ithare {
 //TODO: ITHARE_KSCOPE_FSTRLIT
 
 //Macros to be used OUTSIDE of 'kaleidoscoped' libraries 
+#define ITHARE_KSCOPE_INT0(type) ithare::kscope::KscopeInt<type,ITHARE_KSCOPE_INIT_PRNG(ITHARE_KSCOPE_LOCATION,0,__COUNTER__),ithare::kscope::kscope_exp_cycles(0),0>
+#define ITHARE_KSCOPE_INT1(type) ithare::kscope::KscopeInt<type,ITHARE_KSCOPE_INIT_PRNG(ITHARE_KSCOPE_LOCATION,0,__COUNTER__),ithare::kscope::kscope_exp_cycles(1),0>
+#define ITHARE_KSCOPE_INT2(type) ithare::kscope::KscopeInt<type,ITHARE_KSCOPE_INIT_PRNG(ITHARE_KSCOPE_LOCATION,0,__COUNTER__),ithare::kscope::kscope_exp_cycles(2),0>
 #define ITHARE_KSCOPE_INT3(type) ithare::kscope::KscopeInt<type,ITHARE_KSCOPE_INIT_PRNG(ITHARE_KSCOPE_LOCATION,0,__COUNTER__),ithare::kscope::kscope_exp_cycles(3),0>
+#define ITHARE_KSCOPE_INT4(type) ithare::kscope::KscopeInt<type,ITHARE_KSCOPE_INIT_PRNG(ITHARE_KSCOPE_LOCATION,0,__COUNTER__),ithare::kscope::kscope_exp_cycles(4),0>
+#define ITHARE_KSCOPE_INT5(type) ithare::kscope::KscopeInt<type,ITHARE_KSCOPE_INIT_PRNG(ITHARE_KSCOPE_LOCATION,0,__COUNTER__),ithare::kscope::kscope_exp_cycles(5),0>
+#define ITHARE_KSCOPE_INT6(type) ithare::kscope::KscopeInt<type,ITHARE_KSCOPE_INIT_PRNG(ITHARE_KSCOPE_LOCATION,0,__COUNTER__),ithare::kscope::kscope_exp_cycles(6),0>
 
 //INTLIT: constructing KscopeInt to be compatible with ITHARE_KSCOPE_DECLAREFUNC* functions
+#define ITHARE_KSCOPE_INTLIT0(c) ithare::kscope::KscopeInt<typename std::remove_cv<decltype(c)>::type,ITHARE_KSCOPE_INIT_PRNG(ITHARE_KSCOPE_LOCATION,0,__COUNTER__),0,0>(ithare::kscope::KscopeLiteral<typename std::remove_cv<decltype(c)>::type,c,ITHARE_KSCOPE_INIT_PRNG(ITHARE_KSCOPE_LOCATION,0,__COUNTER__),ithare::kscope::kscope_exp_cycles(0),0>())
+#define ITHARE_KSCOPE_INTLIT1(c) ithare::kscope::KscopeInt<typename std::remove_cv<decltype(c)>::type,ITHARE_KSCOPE_INIT_PRNG(ITHARE_KSCOPE_LOCATION,0,__COUNTER__),0,0>(ithare::kscope::KscopeLiteral<typename std::remove_cv<decltype(c)>::type,c,ITHARE_KSCOPE_INIT_PRNG(ITHARE_KSCOPE_LOCATION,0,__COUNTER__),ithare::kscope::kscope_exp_cycles(1),0>())
+#define ITHARE_KSCOPE_INTLIT2(c) ithare::kscope::KscopeInt<typename std::remove_cv<decltype(c)>::type,ITHARE_KSCOPE_INIT_PRNG(ITHARE_KSCOPE_LOCATION,0,__COUNTER__),0,0>(ithare::kscope::KscopeLiteral<typename std::remove_cv<decltype(c)>::type,c,ITHARE_KSCOPE_INIT_PRNG(ITHARE_KSCOPE_LOCATION,0,__COUNTER__),ithare::kscope::kscope_exp_cycles(2),0>())
 #define ITHARE_KSCOPE_INTLIT3(c) ithare::kscope::KscopeInt<typename std::remove_cv<decltype(c)>::type,ITHARE_KSCOPE_INIT_PRNG(ITHARE_KSCOPE_LOCATION,0,__COUNTER__),0,0>(ithare::kscope::KscopeLiteral<typename std::remove_cv<decltype(c)>::type,c,ITHARE_KSCOPE_INIT_PRNG(ITHARE_KSCOPE_LOCATION,0,__COUNTER__),ithare::kscope::kscope_exp_cycles(3),0>())
+#define ITHARE_KSCOPE_INTLIT4(c) ithare::kscope::KscopeInt<typename std::remove_cv<decltype(c)>::type,ITHARE_KSCOPE_INIT_PRNG(ITHARE_KSCOPE_LOCATION,0,__COUNTER__),0,0>(ithare::kscope::KscopeLiteral<typename std::remove_cv<decltype(c)>::type,c,ITHARE_KSCOPE_INIT_PRNG(ITHARE_KSCOPE_LOCATION,0,__COUNTER__),ithare::kscope::kscope_exp_cycles(4),0>())
+#define ITHARE_KSCOPE_INTLIT5(c) ithare::kscope::KscopeInt<typename std::remove_cv<decltype(c)>::type,ITHARE_KSCOPE_INIT_PRNG(ITHARE_KSCOPE_LOCATION,0,__COUNTER__),0,0>(ithare::kscope::KscopeLiteral<typename std::remove_cv<decltype(c)>::type,c,ITHARE_KSCOPE_INIT_PRNG(ITHARE_KSCOPE_LOCATION,0,__COUNTER__),ithare::kscope::kscope_exp_cycles(5),0>())
+#define ITHARE_KSCOPE_INTLIT6(c) ithare::kscope::KscopeInt<typename std::remove_cv<decltype(c)>::type,ITHARE_KSCOPE_INIT_PRNG(ITHARE_KSCOPE_LOCATION,0,__COUNTER__),0,0>(ithare::kscope::KscopeLiteral<typename std::remove_cv<decltype(c)>::type,c,ITHARE_KSCOPE_INIT_PRNG(ITHARE_KSCOPE_LOCATION,0,__COUNTER__),ithare::kscope::kscope_exp_cycles(6),0>())
 
 //STRLIT:
 #define ITHARE_KSCOPE_STR_HELPER(seed,cycles,s) ithare::kscope::KscopeStrLiteral<seed,cycles,(sizeof(s)>0?s[0]:'\0'),(sizeof(s)>1?s[1]:'\0'),(sizeof(s)>2?s[2]:'\0'),(sizeof(s)>3?s[3]:'\0'),\
@@ -853,7 +865,13 @@ namespace ithare {
 							(sizeof(s)>28?s[28]:'\0'),(sizeof(s)>29?s[29]:'\0'),(sizeof(s)>30?s[30]:'\0'),(sizeof(s)>31?s[31]:'\0'),\
 							(sizeof(s)>32?s[32]:'\0')/*one extra to generate an error if we're over*/>
 
+#define ITHARE_KSCOPE_STRLIT0(s) ITHARE_KSCOPE_STR_HELPER(ITHARE_KSCOPE_INIT_PRNG(ITHARE_KSCOPE_LOCATION,0,__COUNTER__),ithare::kscope::kscope_exp_cycles(0),s)()
+#define ITHARE_KSCOPE_STRLIT1(s) ITHARE_KSCOPE_STR_HELPER(ITHARE_KSCOPE_INIT_PRNG(ITHARE_KSCOPE_LOCATION,0,__COUNTER__),ithare::kscope::kscope_exp_cycles(1),s)()
+#define ITHARE_KSCOPE_STRLIT2(s) ITHARE_KSCOPE_STR_HELPER(ITHARE_KSCOPE_INIT_PRNG(ITHARE_KSCOPE_LOCATION,0,__COUNTER__),ithare::kscope::kscope_exp_cycles(2),s)()
 #define ITHARE_KSCOPE_STRLIT3(s) ITHARE_KSCOPE_STR_HELPER(ITHARE_KSCOPE_INIT_PRNG(ITHARE_KSCOPE_LOCATION,0,__COUNTER__),ithare::kscope::kscope_exp_cycles(3),s)()
+#define ITHARE_KSCOPE_STRLIT4(s) ITHARE_KSCOPE_STR_HELPER(ITHARE_KSCOPE_INIT_PRNG(ITHARE_KSCOPE_LOCATION,0,__COUNTER__),ithare::kscope::kscope_exp_cycles(4),s)()
+#define ITHARE_KSCOPE_STRLIT5(s) ITHARE_KSCOPE_STR_HELPER(ITHARE_KSCOPE_INIT_PRNG(ITHARE_KSCOPE_LOCATION,0,__COUNTER__),ithare::kscope::kscope_exp_cycles(5),s)()
+#define ITHARE_KSCOPE_STRLIT6(s) ITHARE_KSCOPE_STR_HELPER(ITHARE_KSCOPE_INIT_PRNG(ITHARE_KSCOPE_LOCATION,0,__COUNTER__),ithare::kscope::kscope_exp_cycles(6),s)()
 
 #define ITHARE_KSCOPE_CALL0(fname) fname<ITHARE_KSCOPE_INIT_PRNG(ITHARE_KSCOPE_LOCATION,0,__COUNTER__),0,0>
 #define ITHARE_KSCOPE_CALL1(fname) fname<ITHARE_KSCOPE_INIT_PRNG(ITHARE_KSCOPE_LOCATION,0,__COUNTER__),1,0>
@@ -1193,8 +1211,22 @@ namespace ithare {
 #define ITHARE_KSCOPE_FINTLITP2(c) KscopeLiteralDbg<typename std::remove_cv<decltype(c)>::type,c>()
 #define ITHARE_KSCOPE_FINTLITP3(c) KscopeLiteralDbg<typename std::remove_cv<decltype(c)>::type,c>()
 
+//Macros to be used OUTSIDE of 'kaleidoscoped' libraries 
+#define ITHARE_KSCOPE_INT0(type) ithare::kscope::KscopeIntDbg<type>
+#define ITHARE_KSCOPE_INT1(type) ithare::kscope::KscopeIntDbg<type>
+#define ITHARE_KSCOPE_INT2(type) ithare::kscope::KscopeIntDbg<type>
 #define ITHARE_KSCOPE_INT3(type) ithare::kscope::KscopeIntDbg<type>
+#define ITHARE_KSCOPE_INT4(type) ithare::kscope::KscopeIntDbg<type>
+#define ITHARE_KSCOPE_INT5(type) ithare::kscope::KscopeIntDbg<type>
+#define ITHARE_KSCOPE_INT6(type) ithare::kscope::KscopeIntDbg<type>
+
+#define ITHARE_KSCOPE_INTLIT0(c) ithare::kscope::KscopeIntDbg<typename std::remove_cv<decltype(c)>::type>(ithare::kscope::KscopeLiteralDbg<typename std::remove_cv<decltype(c)>::type,c>())
+#define ITHARE_KSCOPE_INTLIT1(c) ithare::kscope::KscopeIntDbg<typename std::remove_cv<decltype(c)>::type>(ithare::kscope::KscopeLiteralDbg<typename std::remove_cv<decltype(c)>::type,c>())
+#define ITHARE_KSCOPE_INTLIT2(c) ithare::kscope::KscopeIntDbg<typename std::remove_cv<decltype(c)>::type>(ithare::kscope::KscopeLiteralDbg<typename std::remove_cv<decltype(c)>::type,c>())
 #define ITHARE_KSCOPE_INTLIT3(c) ithare::kscope::KscopeIntDbg<typename std::remove_cv<decltype(c)>::type>(ithare::kscope::KscopeLiteralDbg<typename std::remove_cv<decltype(c)>::type,c>())
+#define ITHARE_KSCOPE_INTLIT4(c) ithare::kscope::KscopeIntDbg<typename std::remove_cv<decltype(c)>::type>(ithare::kscope::KscopeLiteralDbg<typename std::remove_cv<decltype(c)>::type,c>())
+#define ITHARE_KSCOPE_INTLIT5(c) ithare::kscope::KscopeIntDbg<typename std::remove_cv<decltype(c)>::type>(ithare::kscope::KscopeLiteralDbg<typename std::remove_cv<decltype(c)>::type,c>())
+#define ITHARE_KSCOPE_INTLIT6(c) ithare::kscope::KscopeIntDbg<typename std::remove_cv<decltype(c)>::type>(ithare::kscope::KscopeLiteralDbg<typename std::remove_cv<decltype(c)>::type,c>())
 
 #define ITHARE_KSCOPE_STR_DBG_HELPER(s) ithare::kscope::KscopeStrLiteralDbg<(sizeof(s)>0?s[0]:'\0'),(sizeof(s)>1?s[1]:'\0'),(sizeof(s)>2?s[2]:'\0'),(sizeof(s)>3?s[3]:'\0'),\
 							(sizeof(s)>4?s[4]:'\0'),(sizeof(s)>5?s[5]:'\0'),(sizeof(s)>6?s[6]:'\0'),(sizeof(s)>7?s[7]:'\0'),\
@@ -1206,7 +1238,13 @@ namespace ithare {
 							(sizeof(s)>28?s[28]:'\0'),(sizeof(s)>29?s[29]:'\0'),(sizeof(s)>30?s[30]:'\0'),(sizeof(s)>31?s[31]:'\0'),\
 							(sizeof(s)>32?s[32]:'\0')/*one extra to generate an error if we're over*/>
 
+#define ITHARE_KSCOPE_STRLIT0(s) ITHARE_KSCOPE_STR_DBG_HELPER(s)()
+#define ITHARE_KSCOPE_STRLIT1(s) ITHARE_KSCOPE_STR_DBG_HELPER(s)()
+#define ITHARE_KSCOPE_STRLIT2(s) ITHARE_KSCOPE_STR_DBG_HELPER(s)()
 #define ITHARE_KSCOPE_STRLIT3(s) ITHARE_KSCOPE_STR_DBG_HELPER(s)()
+#define ITHARE_KSCOPE_STRLIT4(s) ITHARE_KSCOPE_STR_DBG_HELPER(s)()
+#define ITHARE_KSCOPE_STRLIT5(s) ITHARE_KSCOPE_STR_DBG_HELPER(s)()
+#define ITHARE_KSCOPE_STRLIT6(s) ITHARE_KSCOPE_STR_DBG_HELPER(s)()
 
 #define ITHARE_KSCOPE_CALL0(fname) fname<0>
 #define ITHARE_KSCOPE_CALL1(fname) fname<0>
