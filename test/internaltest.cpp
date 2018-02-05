@@ -13,7 +13,7 @@
 
 #define ITHARE_KSCOPE_CONSISTENT_XPLATFORM_IMPLICIT_SEEDS
 #define ITHARE_KSCOPE_ENABLE_AUTO_DBGPRINT 2
-//} internal debugging: should go BEFORE #include obf.h
+//} internal debugging: should go BEFORE #include kscope.h
 
 #include "../src/kscope.h"
 #include <chrono>//for benchmarking

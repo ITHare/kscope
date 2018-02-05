@@ -187,6 +187,11 @@ namespace ithare {
 		struct literal {
 			using type = KscopeLiteralCtx<T2, C, KscopeZeroLiteralContext<T2>, seed, literal_cycles>;
 		};
+		template<class T2,ITHARE_KSCOPE_SEEDTPARAM seed2,KSCOPECONSTFLAGS flags2>
+		constexpr static T2 random_const() {
+			return kscope_random_const<T2,seed2,flags2>();
+		}
+
 
 		template<ITHARE_KSCOPE_SEEDTPARAM seed2>
 		ITHARE_KSCOPE_FORCEINLINE static constexpr T final_injection(T x) {
@@ -644,14 +649,14 @@ namespace ithare {
 											sz4>6?100:0 /*Injection6*/,
 											sz4>7?100:0 /*Injection7*/ };
 		static constexpr auto splitCycles = kscope_random_split<ITHARE_KSCOPE_NEW_PRNG(seed, 2)>(cycles, split);
-		static constexpr KSCOPECYCLES split0 = splitCycles[0];
-		static constexpr KSCOPECYCLES split1 = splitCycles[1];
-		static constexpr KSCOPECYCLES split2 = splitCycles[2];
-		static constexpr KSCOPECYCLES split3 = splitCycles[3];
-		static constexpr KSCOPECYCLES split4 = splitCycles[4];
-		static constexpr KSCOPECYCLES split5 = splitCycles[5];
-		static constexpr KSCOPECYCLES split6 = splitCycles[6];
-		static constexpr KSCOPECYCLES split7 = splitCycles[7];
+		static constexpr KSCOPECYCLES split0 = splitCycles.arr[0];
+		static constexpr KSCOPECYCLES split1 = splitCycles.arr[1];
+		static constexpr KSCOPECYCLES split2 = splitCycles.arr[2];
+		static constexpr KSCOPECYCLES split3 = splitCycles.arr[3];
+		static constexpr KSCOPECYCLES split4 = splitCycles.arr[4];
+		static constexpr KSCOPECYCLES split5 = splitCycles.arr[5];
+		static constexpr KSCOPECYCLES split6 = splitCycles.arr[6];
+		static constexpr KSCOPECYCLES split7 = splitCycles.arr[7];
 
 		struct InjectionRequirements {
 			static constexpr size_t exclude_version = size_t(-1);
@@ -704,46 +709,46 @@ namespace ithare {
 			else
 				return last4(str, offset,FILLER);
 		}
-		ITHARE_KSCOPE_FORCEINLINE static constexpr std::array<uint32_t, sz4> str_kscope() {
-			std::array<uint32_t, sz4> ret = {};
-			ret[0] = Injection0::template injection<ITHARE_KSCOPE_NEW_PRNG(seed,3)>(get4(str,0));
+		ITHARE_KSCOPE_FORCEINLINE static constexpr KscopeArrayWrapper<uint32_t, sz4> str_kscoped() {
+			KscopeArrayWrapper<uint32_t, sz4> ret = {{}};
+			ret.arr[0] = Injection0::template injection<ITHARE_KSCOPE_NEW_PRNG(seed,3)>(get4(str,0));
 			if constexpr(sz4 > 1)
-				ret[1] = Injection1::template injection<ITHARE_KSCOPE_NEW_PRNG(seed,4)>(get4(str, 4));
+				ret.arr[1] = Injection1::template injection<ITHARE_KSCOPE_NEW_PRNG(seed,4)>(get4(str, 4));
 			if constexpr(sz4 > 2)
-				ret[2] = Injection2::template injection<ITHARE_KSCOPE_NEW_PRNG(seed,5)>(get4(str, 8));
+				ret.arr[2] = Injection2::template injection<ITHARE_KSCOPE_NEW_PRNG(seed,5)>(get4(str, 8));
 			if constexpr(sz4 > 3)
-				ret[3] = Injection3::template injection<ITHARE_KSCOPE_NEW_PRNG(seed,6)>(get4(str, 12));
+				ret.arr[3] = Injection3::template injection<ITHARE_KSCOPE_NEW_PRNG(seed,6)>(get4(str, 12));
 			if constexpr(sz4 > 4)
-				ret[4] = Injection4::template injection<ITHARE_KSCOPE_NEW_PRNG(seed,7)>(get4(str, 16));
+				ret.arr[4] = Injection4::template injection<ITHARE_KSCOPE_NEW_PRNG(seed,7)>(get4(str, 16));
 			if constexpr(sz4 > 5)
-				ret[5] = Injection5::template injection<ITHARE_KSCOPE_NEW_PRNG(seed,8)>(get4(str, 20));
+				ret.arr[5] = Injection5::template injection<ITHARE_KSCOPE_NEW_PRNG(seed,8)>(get4(str, 20));
 			if constexpr(sz4 > 6)
-				ret[6] = Injection6::template injection<ITHARE_KSCOPE_NEW_PRNG(seed,9)>(get4(str, 24));
+				ret.arr[6] = Injection6::template injection<ITHARE_KSCOPE_NEW_PRNG(seed,9)>(get4(str, 24));
 			if constexpr(sz4 > 7)
-				ret[7] = Injection7::template injection<ITHARE_KSCOPE_NEW_PRNG(seed,10)>(get4(str, 28));
+				ret.arr[7] = Injection7::template injection<ITHARE_KSCOPE_NEW_PRNG(seed,10)>(get4(str, 28));
 			return ret;
 		}
 
-		static constexpr std::array<uint32_t, sz4> strC = str_kscope();
+		static constexpr KscopeArrayWrapper<uint32_t, sz4> strC = str_kscoped();
 
-		static std::array<uint32_t, sz4> c;//TODO: volatile
+		static KscopeArrayWrapper<uint32_t, sz4> c;//TODO: volatile
 		ITHARE_KSCOPE_FORCEINLINE std::string value() const {
 			char buf[sz4 * 4];
-			*(uint32_t*)(buf + 0) = Injection0::template surjection<ITHARE_KSCOPE_NEW_PRNG(seed,11)>(c[0]);
+			*(uint32_t*)(buf + 0) = Injection0::template surjection<ITHARE_KSCOPE_NEW_PRNG(seed,11)>(c.arr[0]);
 			if constexpr(sz4 > 1)
-				*(uint32_t*)(buf + 4) = Injection1::template surjection<ITHARE_KSCOPE_NEW_PRNG(seed,12)>(c[1]);
+				*(uint32_t*)(buf + 4) = Injection1::template surjection<ITHARE_KSCOPE_NEW_PRNG(seed,12)>(c.arr[1]);
 			if constexpr(sz4 > 2)
-				*(uint32_t*)(buf + 8) = Injection2::template surjection<ITHARE_KSCOPE_NEW_PRNG(seed,13)>(c[2]);
+				*(uint32_t*)(buf + 8) = Injection2::template surjection<ITHARE_KSCOPE_NEW_PRNG(seed,13)>(c.arr[2]);
 			if constexpr(sz4 > 3)
-				*(uint32_t*)(buf + 12) = Injection3::template surjection<ITHARE_KSCOPE_NEW_PRNG(seed,14)>(c[3]);
+				*(uint32_t*)(buf + 12) = Injection3::template surjection<ITHARE_KSCOPE_NEW_PRNG(seed,14)>(c.arr[3]);
 			if constexpr(sz4 > 4)
-				*(uint32_t*)(buf + 16) = Injection4::template surjection<ITHARE_KSCOPE_NEW_PRNG(seed,15)>(c[4]);
+				*(uint32_t*)(buf + 16) = Injection4::template surjection<ITHARE_KSCOPE_NEW_PRNG(seed,15)>(c.arr[4]);
 			if constexpr(sz4 > 5)
-				*(uint32_t*)(buf + 20) = Injection5::template surjection<ITHARE_KSCOPE_NEW_PRNG(seed,16)>(c[5]);
+				*(uint32_t*)(buf + 20) = Injection5::template surjection<ITHARE_KSCOPE_NEW_PRNG(seed,16)>(c.arr[5]);
 			if constexpr(sz4 > 6)
-				*(uint32_t*)(buf + 24) = Injection6::template surjection<ITHARE_KSCOPE_NEW_PRNG(seed,17)>(c[6]);
+				*(uint32_t*)(buf + 24) = Injection6::template surjection<ITHARE_KSCOPE_NEW_PRNG(seed,17)>(c.arr[6]);
 			if constexpr(sz4 > 7)
-				*(uint32_t*)(buf + 28) = Injection7::template surjection<ITHARE_KSCOPE_NEW_PRNG(seed,18)>(c[7]);
+				*(uint32_t*)(buf + 28) = Injection7::template surjection<ITHARE_KSCOPE_NEW_PRNG(seed,18)>(c.arr[7]);
 			return std::string(buf,sz);
 		}
 		ITHARE_KSCOPE_FORCEINLINE operator std::string() const {
@@ -773,7 +778,7 @@ namespace ithare {
 	};
 
 	template<ITHARE_KSCOPE_SEEDTPARAM seed, KSCOPECYCLES cycles, char... C>
-	std::array<uint32_t, KscopeStrLiteral<seed,cycles,C...>::sz4> KscopeStrLiteral<seed,cycles,C...>::c = strC;
+	KscopeArrayWrapper<uint32_t, KscopeStrLiteral<seed,cycles,C...>::sz4> KscopeStrLiteral<seed,cycles,C...>::c = strC;
 
 #ifdef ITHARE_KSCOPE_DBG_ENABLE_DBGPRINT
 	inline void kscope_dbg_print() {
@@ -783,16 +788,7 @@ namespace ithare {
 	}//namespace kscope
 }//namespace ithare
 
-//macros; DON'T belong to any namespace :-(
-#define ITHARE_KSCOPE_STR_HELPER(seed,cycles,s) ithare::kscope::KscopeStrLiteral<seed,cycles,(sizeof(s)>0?s[0]:'\0'),(sizeof(s)>1?s[1]:'\0'),(sizeof(s)>2?s[2]:'\0'),(sizeof(s)>3?s[3]:'\0'),\
-							(sizeof(s)>4?s[4]:'\0'),(sizeof(s)>5?s[5]:'\0'),(sizeof(s)>6?s[6]:'\0'),(sizeof(s)>7?s[7]:'\0'),\
-							(sizeof(s)>8?s[8]:'\0'),(sizeof(s)>9?s[9]:'\0'),(sizeof(s)>10?s[10]:'\0'),(sizeof(s)>11?s[11]:'\0'),\
-							(sizeof(s)>12?s[12]:'\0'),(sizeof(s)>13?s[13]:'\0'),(sizeof(s)>14?s[14]:'\0'),(sizeof(s)>15?s[15]:'\0'),\
-							(sizeof(s)>16?s[16]:'\0'),(sizeof(s)>17?s[17]:'\0'),(sizeof(s)>18?s[18]:'\0'),(sizeof(s)>19?s[19]:'\0'),\
-							(sizeof(s)>20?s[20]:'\0'),(sizeof(s)>21?s[21]:'\0'),(sizeof(s)>22?s[22]:'\0'),(sizeof(s)>23?s[23]:'\0'),\
-							(sizeof(s)>24?s[24]:'\0'),(sizeof(s)>25?s[25]:'\0'),(sizeof(s)>26?s[26]:'\0'),(sizeof(s)>27?s[27]:'\0'),\
-							(sizeof(s)>28?s[28]:'\0'),(sizeof(s)>29?s[29]:'\0'),(sizeof(s)>30?s[30]:'\0'),(sizeof(s)>31?s[31]:'\0'),\
-							(sizeof(s)>32?s[32]:'\0')/*one extra to generate an error if we're over*/>
+//Macros; DON'T belong to any namespace :-(
 
 //Macros for use WITHIN 'kaleidoscoped' libraries:
 #define ITHARE_KSCOPE_DECLARECLASS template<ITHARE_KSCOPE_SEEDTPARAM kscopeclsseed = ITHARE_KSCOPE_DUMMYSEED, KSCOPELEVEL kscopeclslevel=-1,KSCOPEFLAGS kscopeclsflags=0> 
@@ -846,6 +842,19 @@ namespace ithare {
 //INTLIT: constructing KscopeInt to be compatible with ITHARE_KSCOPE_DECLAREFUNC* functions
 #define ITHARE_KSCOPE_INTLIT3(c) ithare::kscope::KscopeInt<typename std::remove_cv<decltype(c)>::type,ITHARE_KSCOPE_INIT_PRNG(ITHARE_KSCOPE_LOCATION,0,__COUNTER__),0,0>(ithare::kscope::KscopeLiteral<typename std::remove_cv<decltype(c)>::type,c,ITHARE_KSCOPE_INIT_PRNG(ITHARE_KSCOPE_LOCATION,0,__COUNTER__),ithare::kscope::kscope_exp_cycles(3),0>())
 
+//STRLIT:
+#define ITHARE_KSCOPE_STR_HELPER(seed,cycles,s) ithare::kscope::KscopeStrLiteral<seed,cycles,(sizeof(s)>0?s[0]:'\0'),(sizeof(s)>1?s[1]:'\0'),(sizeof(s)>2?s[2]:'\0'),(sizeof(s)>3?s[3]:'\0'),\
+							(sizeof(s)>4?s[4]:'\0'),(sizeof(s)>5?s[5]:'\0'),(sizeof(s)>6?s[6]:'\0'),(sizeof(s)>7?s[7]:'\0'),\
+							(sizeof(s)>8?s[8]:'\0'),(sizeof(s)>9?s[9]:'\0'),(sizeof(s)>10?s[10]:'\0'),(sizeof(s)>11?s[11]:'\0'),\
+							(sizeof(s)>12?s[12]:'\0'),(sizeof(s)>13?s[13]:'\0'),(sizeof(s)>14?s[14]:'\0'),(sizeof(s)>15?s[15]:'\0'),\
+							(sizeof(s)>16?s[16]:'\0'),(sizeof(s)>17?s[17]:'\0'),(sizeof(s)>18?s[18]:'\0'),(sizeof(s)>19?s[19]:'\0'),\
+							(sizeof(s)>20?s[20]:'\0'),(sizeof(s)>21?s[21]:'\0'),(sizeof(s)>22?s[22]:'\0'),(sizeof(s)>23?s[23]:'\0'),\
+							(sizeof(s)>24?s[24]:'\0'),(sizeof(s)>25?s[25]:'\0'),(sizeof(s)>26?s[26]:'\0'),(sizeof(s)>27?s[27]:'\0'),\
+							(sizeof(s)>28?s[28]:'\0'),(sizeof(s)>29?s[29]:'\0'),(sizeof(s)>30?s[30]:'\0'),(sizeof(s)>31?s[31]:'\0'),\
+							(sizeof(s)>32?s[32]:'\0')/*one extra to generate an error if we're over*/>
+
+#define ITHARE_KSCOPE_STRLIT3(s) ITHARE_KSCOPE_STR_HELPER(ITHARE_KSCOPE_INIT_PRNG(ITHARE_KSCOPE_LOCATION,0,__COUNTER__),ithare::kscope::kscope_exp_cycles(3),s)()
+
 #define ITHARE_KSCOPE_CALL0(fname) fname<ITHARE_KSCOPE_INIT_PRNG(ITHARE_KSCOPE_LOCATION,0,__COUNTER__),0,0>
 #define ITHARE_KSCOPE_CALL1(fname) fname<ITHARE_KSCOPE_INIT_PRNG(ITHARE_KSCOPE_LOCATION,0,__COUNTER__),1,0>
 #define ITHARE_KSCOPE_CALL2(fname) fname<ITHARE_KSCOPE_INIT_PRNG(ITHARE_KSCOPE_LOCATION,0,__COUNTER__),2,0>
@@ -854,8 +863,6 @@ namespace ithare {
 #define ITHARE_KSCOPE_CALL5(fname) fname<ITHARE_KSCOPE_INIT_PRNG(ITHARE_KSCOPE_LOCATION,0,__COUNTER__),5,0>
 #define ITHARE_KSCOPE_CALL6(fname) fname<ITHARE_KSCOPE_INIT_PRNG(ITHARE_KSCOPE_LOCATION,0,__COUNTER__),6,0>
 #define ITHARE_KSCOPE_CALL_AS_CONSTEXPR(fname) fname<ITHARE_KSCOPE_INIT_PRNG(ITHARE_KSCOPE_LOCATION,0,__COUNTER__),-1,ithare::kscope::kscope_flag_is_constexpr>
-
-//TODO: ITHARE_KSCOPE_STRLIT
 
 #else//ITHARE_KSCOPE_SEED
 namespace ithare {

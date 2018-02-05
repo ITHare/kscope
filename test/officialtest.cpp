@@ -59,8 +59,10 @@ ITHARE_KSCOPE_DECLAREFUNC_INT
 ITHARE_KSCOPE_FINTP3(int64_t) factorial(ITHARE_KSCOPE_DECLAREPARAM_INT(int64_t) x_) {
 	//DBGPRINT(x_)
 	ITHARE_KSCOPE_FINTP3(int64_t) x = ITHARE_KSCOPE_USEPARAM_INT(x_);
-	if (x < 0)
-		throw MyException("Negative argument to factorial!");
+	if (x < 0) {
+		auto lit = ITHARE_KSCOPE_STRLIT3("Negative argument to factorial!"); ITHARE_KSCOPE_DBGPRINT(lit);
+		throw MyException(lit);
+	}
 	ITHARE_KSCOPE_FINTM1(int64_t) ret = 1;
 	//DBGPRINT(ret)
 	for (ITHARE_KSCOPE_FINTM1(int64_t) i = 1; i <= x; ++i) {
@@ -124,6 +126,12 @@ const lest::test spec[] = {
 		EXPECT( ITKSCOPE factorial(19) == UINT64_C(121645100408832000));
 		EXPECT( ITKSCOPE factorial(20) == UINT64_C(2432902008176640000));
 		EXPECT( ITKSCOPE factorial(21) == UINT64_C(14197454024290336768));//with wrap-around(!)
+		try {
+			auto none = ITKSCOPE factorial(-1);
+		}
+		catch(MyException& x) {
+			std::cout << x.what() << std::endl;
+		}
 	},
 };
 
