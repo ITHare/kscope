@@ -233,7 +233,7 @@ namespace ithare {
 			uint64_t rhi = (uint64_t(v.arr[3]) << 32) | uint64_t(v.arr[2]);
 			return std::pair<uint64_t, uint64_t>(rlo, rhi);
 		}
-		constexpr uint32_t kscope_random(uint64_t lo, uint64_t hi, int32_t modifier, uint32_t maxn) {
+		constexpr size_t kscope_random(uint64_t lo, uint64_t hi, int32_t modifier, size_t maxn) {
 			//for maxn < 1M, bias is limited to <0.1% - more than enough for our purposes
 			assert(maxn > 0);
 			assert(maxn < 1'048'576);//limiting bits to 20 and bias to <0.1%
