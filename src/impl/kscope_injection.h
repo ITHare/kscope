@@ -172,19 +172,23 @@ namespace ithare {
 		
 		template<class T,ITHARE_KSCOPE_SEEDTPARAM seed,KSCOPECONSTFLAGS flags>
 		constexpr static T kscope_random_const() {
-			while(true) {
+			using TT = typename KscopeTraits<T>::construct_from_type;
+			for (uint32_t modifier = 1;;modifier+=2) {
 				uint64_t ret = 0;
 				if constexpr(KscopeTraits<T>::nbits <= 32)
-					ret = ITHARE_KSCOPE_RANDOM_UINT32(seed,1);
+					ret = ITHARE_KSCOPE_RANDOM_UINT32(seed,modifier);
 				else
-					ret = (uint64_t(ITHARE_KSCOPE_RANDOM_UINT32(seed,1)) << 32) | ITHARE_KSCOPE_RANDOM_UINT32(seed,2);
-				if( flags & kscope_const_odd_only )
+					ret = (uint64_t(ITHARE_KSCOPE_RANDOM_UINT32(seed,modifier)) << 32) | ITHARE_KSCOPE_RANDOM_UINT32(seed,modifier+1);
+				if constexpr( (flags & kscope_const_odd_only) !=0 )
 					ret |= 1;
-				if( (flags & kscope_const_zero_ok) == 0 && ret == 0 )
-					continue;
+
+				bool ok = true;
+				if ((flags & kscope_const_zero_ok) == 0 && ret == 0)
+					ok = false;//cannot 'continue' here as MSVC goes crazy...
 				if( (flags & kscope_const_one_ok) == 0 && ret == 1 )
-					continue;
-				return T(ret);
+					ok = false;
+				if (ok)
+					return T(TT(ret));
 			}
 		}
 

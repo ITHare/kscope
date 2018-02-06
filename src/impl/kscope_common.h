@@ -502,6 +502,7 @@ namespace ithare {
 			static std::string type_name() { return "uint64_t"; }
 			using signed_type = int64_t;
 			using literal_type = uint64_t;
+			using construct_from_type = uint64_t;
 
 			static constexpr bool has_half_type = true;
 			using HalfT = uint32_t;
@@ -516,6 +517,7 @@ namespace ithare {
 			static std::string type_name() { return "uint32_t"; }
 			using signed_type = int32_t;
 			using literal_type = uint32_t;
+			using construct_from_type = uint32_t;
 
 			static constexpr bool has_half_type = true;
 			using HalfT = uint16_t;
@@ -530,6 +532,7 @@ namespace ithare {
 			static std::string type_name() { return "uint16_t"; }
 			using signed_type = int16_t;
 			using literal_type = uint16_t;
+			using construct_from_type = uint16_t;
 
 			static constexpr bool has_half_type = true;
 			using HalfT = uint8_t;
@@ -544,6 +547,7 @@ namespace ithare {
 			static std::string type_name() { return "uint8_t"; }
 			using signed_type = int8_t;
 			using literal_type = uint8_t;
+			using construct_from_type = uint8_t;
 
 			static constexpr bool has_half_type = false;
 			using UintT = typename kscope_larger_type<uint8_t, unsigned>::type;
@@ -665,6 +669,7 @@ namespace ithare {
 			}
 			using signed_type = KscopeBitSint<N>;
 			using literal_type = typename TT::T;
+			using construct_from_type = typename TT::T;
 
 			static constexpr bool has_half_type = false;
 			using UintT = typename kscope_larger_type<typename TT::T, unsigned>::type;
