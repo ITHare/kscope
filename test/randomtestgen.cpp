@@ -115,6 +115,7 @@ class KscopeTestEnvironment {
 class KscopeTestEnvironment {
 	public:
 	using Flags = uint32_t;//to be defined in derived classes
+	std::string srcDirPrefix = "";
 	
 	virtual std::string rootTestFolder() { return  srcDirPrefix + "..\\"; }
 
