@@ -45,7 +45,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //#include <array> - prefer KScopeArrayWrapper instead
 //#include <algorithm>
 #include <assert.h>
-#include <type_traits>
+//#include <type_traits>
 #include <atomic>
 #include <string>//for dbg_print() only
 #include <iostream>//for dbg_print() only
