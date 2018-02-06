@@ -1264,7 +1264,10 @@ void kscope_auto_dbg_print(const T&,const char* what, const char* file, int line
 	static bool printed = false;
 	if(!printed) {
 		std::cout << "\n----- " << what << "(@" << kscope_normalize_fname(file) << " @" << line << ") -----" << std::endl;
-		T::dbg_print(1);
+		if constexpr(std::is_integral<T>::value)//accidental call of auto_dbg_print() on int etc.
+			std::cout << "int(sizeof=" << sizeof(T) << ")" << std::endl;
+		else
+			T::dbg_print(1);
 		printed = true;
 	}
 }
