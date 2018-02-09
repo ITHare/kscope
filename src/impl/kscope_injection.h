@@ -179,9 +179,11 @@ namespace ithare {
 					ret = ITHARE_KSCOPE_RANDOM_UINT32(seed,modifier);
 				else
 					ret = (uint64_t(ITHARE_KSCOPE_RANDOM_UINT32(seed,modifier)) << 32) | ITHARE_KSCOPE_RANDOM_UINT32(seed,modifier+1);
-				if constexpr( (flags & kscope_const_odd_only) !=0 )
+				if constexpr( ( flags & kscope_const_odd_only ) != 0 )
 					ret |= 1;
 
+#ifdef ITHARE_KSCOPE_WORKAROUND_FOR_MSVC_BUG_195483
+				//https://developercommunity.visualstudio.com/content/problem/195483/continue-in-constexpr-function-causes-constexpr-fu.html
 				bool ok = true;
 				if ((flags & kscope_const_zero_ok) == 0 && ret == 0)
 					ok = false;//cannot 'continue' here as MSVC goes crazy...
@@ -189,6 +191,13 @@ namespace ithare {
 					ok = false;
 				if (ok)
 					return T(TT(ret));
+#else
+				if ((flags & kscope_const_zero_ok) == 0 && ret == 0)
+					continue;
+				if ((flags & kscope_const_one_ok) == 0 && ret == 1)
+					continue;
+				return T(TT(ret));
+#endif
 			}
 		}
 
