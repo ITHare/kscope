@@ -311,7 +311,12 @@ namespace ithare {
 #define	ITHARE_KSCOPE_INIT_PRNG(file,line,counter) ithare::kscope::KscopeSeed<ithare::kscope::kscope_init_prng(file,line,counter).first,ithare::kscope::kscope_init_prng(file,line,counter).second,0>
 #define ITHARE_KSCOPE_NEW_PRNG(prng,modifier) ithare::kscope::KscopeSeed<ithare::kscope::kscope_new_prng(prng::lo,prng::hi,modifier).first,ithare::kscope::kscope_new_prng(prng::lo,prng::hi,modifier).second,prng::depth+1>
 #define ITHARE_KSCOPE_COMBINED_PRNG(prng,prng2) ithare::kscope::KscopeSeed<ithare::kscope::kscope_combined_prng(prng::lo,prng::hi,prng2::lo,prng2::hi).first,ithare::kscope::kscope_combined_prng(prng::lo,prng::hi,prng2::lo,prng2::hi).second,std::max(prng::depth,prng2::depth)+1>
+#if defined(ITHARE_KSCOPE_WORKAROUND_FOR_MSVC_BUG_196900) || defined(ITHARE_KSCOPE_CONSISTENT_XPLATFORM_IMPLICIT_SEEDS) 
+		//https://developercommunity.visualstudio.com/content/problem/196900/c1001-in-file-msc1cpp-line-1507.html
+#define ITHARE_KSCOPE_INIT_COMBINED_PRNG(prng2,file,line,counter) ITHARE_KSCOPE_INIT_PRNG(file,line,counter)
+#else
 #define ITHARE_KSCOPE_INIT_COMBINED_PRNG(prng2,file,line,counter) ITHARE_KSCOPE_COMBINED_PRNG(ITHARE_KSCOPE_INIT_PRNG(file,line,counter),prng2)
+#endif
 #define ITHARE_KSCOPE_RANDOM(prng,modifier,maxn) ithare::kscope::kscope_random(prng::lo,prng::hi,modifier,maxn)
 #define ITHARE_KSCOPE_RANDOM_UINT32(prng,modifier) ithare::kscope::kscope_random_uint32(prng::lo,prng::hi,modifier)
 #define ITHARE_KSCOPE_DUMMY_PRNG KscopeSeed<0,0,0>
