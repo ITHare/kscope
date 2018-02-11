@@ -4,3 +4,17 @@
 /test/nix/randomtestgen
 /test/nix/failedrandomtest.sh
 /test/nix/generatedrandomtest.sh
+
+/.vs
+/test/win/officialtest/.vs
+/test/win/officialtest/Debug
+/test/win/officialtest/x64/Debug
+/test/win/runtest32
+/test/win/vc140.idb
+/test/win/vc140.pdb
+/test/win/randomtestgen.exe
+/test/win/randomtestgen.obj
+/test/win/reported-bugs
+/test/win/failedrandomtest.bat
+/test/win/generatedrandomtest.bat
+/test/win/local_kscope.txt
