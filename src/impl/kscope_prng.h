@@ -162,11 +162,11 @@ namespace ithare {
 #define ITHARE_KSCOPE_NEW_PRNG(prng,modifier) ithare::kscope::kscope_new_prng(prng,modifier)
 #define ITHARE_KSCOPE_COMBINED_PRNG(prng,prng2) ithare::kscope::kscope_combined_prng(prng,prng2)
 #if defined(ITHARE_KSCOPE_WORKAROUND_FOR_MSVC_BUG_196885) || defined(ITHARE_KSCOPE_WORKAROUND_FOR_GCC_BUG_47488) || defined(ITHARE_KSCOPE_CONSISTENT_XPLATFORM_IMPLICIT_SEEDS) 
-		//https://developercommunity.visualstudio.com/content/problem/196885/c1001-in-fddvctoolscompilercxxfeslp1cwalkcpp-line.html
-		//https://gcc.gnu.org/bugzilla/show_bug.cgi?id=47488
+		//https://developercommunity.visualstudio.com/content/problem/196885/c1001-in-fddvctoolscompilercxxfeslp1cwalkcpp-line.html //MSVC doesn't like 'too complicated' stuff (what it does accept, was found experimentally)
+		//https://gcc.gnu.org/bugzilla/show_bug.cgi?id=47488 ; GCC doesn't like using __FILE__ literal in this context...
 		//  as soon as BOTH these bugs are fixed, the whole #if branch is to be removed
 #ifdef ITHARE_KSCOPE_CONSISTENT_XPLATFORM_IMPLICIT_SEEDS
-#define ITHARE_KSCOPE_INIT_COMBINED_PRNG(prng2,file,line,counter) (ithare::kscope::kscope_ranhash(line)^prng2)
+#define ITHARE_KSCOPE_INIT_COMBINED_PRNG(prng2,file,line,counter) (ithare::kscope::kscope_ranhash(line)^prng2) //not TOO bad, and happens to satisfy both MSVC and GCC
 #else
 #define ITHARE_KSCOPE_INIT_COMBINED_PRNG(prng2,file,line,counter) (ithare::kscope::kscope_ranhash(line)^ithare::kscope::kscope_murmurhash2(counter,prng2))
 #endif
@@ -296,7 +296,7 @@ namespace ithare {
 			uint64_t rhi = (uint64_t(v.arr[3]) << 32) | uint64_t(v.arr[2]);
 			return std::pair<uint64_t, uint64_t>(rlo, rhi);
 		}
-		constexpr std::pair<uint64_t, uint64_t> kscope_init_prng_workaround(int line, int counter) {
+		constexpr std::pair<uint64_t, uint64_t> kscope_init_prng_gcc_workaround(int line, int counter) {
 			uint64_t v0 = line;
 #ifdef ITHARE_KSCOPE_CONSISTENT_XPLATFORM_IMPLICIT_SEEDS
 #else//!CONSISTENT
@@ -327,25 +327,28 @@ namespace ithare {
 #define	ITHARE_KSCOPE_INIT_PRNG(file,line,counter) ithare::kscope::KscopeSeed<ithare::kscope::kscope_init_prng(file,line,counter).first,ithare::kscope::kscope_init_prng(file,line,counter).second,0>
 #define ITHARE_KSCOPE_NEW_PRNG(prng,modifier) ithare::kscope::KscopeSeed<ithare::kscope::kscope_new_prng(prng::lo,prng::hi,modifier).first,ithare::kscope::kscope_new_prng(prng::lo,prng::hi,modifier).second,prng::depth+1>
 #define ITHARE_KSCOPE_COMBINED_PRNG(prng,prng2) ithare::kscope::KscopeSeed<ithare::kscope::kscope_combined_prng(prng::lo,prng::hi,prng2::lo,prng2::hi).first,ithare::kscope::kscope_combined_prng(prng::lo,prng::hi,prng2::lo,prng2::hi).second,std::max(prng::depth,prng2::depth)+1>
-#if defined(ITHARE_KSCOPE_WORKAROUND_FOR_MSVC_BUG_196900) || defined(ITHARE_KSCOPE_WORKAROUND_FOR_GCC_BUG_47488) || defined(ITHARE_KSCOPE_CONSISTENT_XPLATFORM_IMPLICIT_SEEDS) 
-		//https://developercommunity.visualstudio.com/content/problem/196900/c1001-in-file-msc1cpp-line-1507.html
-		//https://gcc.gnu.org/bugzilla/show_bug.cgi?id=47488
-		//  as soon as BOTH bugs are fixed, the whole #if branch is to be removed
-		//  partial fixes are probably possible with only one of the compiler fixes (in particular, restoring dependency on prng2 seems to be possible if only MSVC bug is fixed)
+#if defined(ITHARE_KSCOPE_WORKAROUND_FOR_MSVC_BUG_196900) || defined(ITHARE_KSCOPE_CONSISTENT_XPLATFORM_IMPLICIT_SEEDS) 
+		//https://developercommunity.visualstudio.com/content/problem/196885/c1001-in-fddvctoolscompilercxxfeslp1cwalkcpp-line.html //MSVC doesn't like 'too complicated' stuff (what it does accept, was found experimentally)
+		//as soon as the bug is fixed, the whole #if branch can be removed
 
-#define ITHARE_KSCOPE_INIT_COMBINED_PRNG(prng2,file,line,counter) ithare::kscope::KscopeSeed<ithare::kscope::kscope_init_prng_workaround(line,counter).first,ithare::kscope::kscope_init_prng_workaround(line,counter).second,0>
+#define ITHARE_KSCOPE_INIT_COMBINED_PRNG(prng2,file,line,counter) ithare::kscope::KscopeSeed<ithare::kscope::kscope_init_prng_gcc_workaround(line,counter).first,ithare::kscope::kscope_init_prng_gcc_workaround(line,counter).second,0> //HAVE to use gcc_workaround to cover CONSISTENT_XPLATFORM case
 
 #ifdef _MSC_VER
 #pragma message("SERIOUS DEGRADATION: NO DEPENDENCY ON prng2 in ITHARE_KSCOPE_INIT_COMBINED_PRNG(). Fix depends on https://developercommunity.visualstudio.com/content/problem/196900/c1001-in-file-msc1cpp-line-1507.html. Meanwhile, you may want to avoid using ITHARE_KSCOPE_CRYPTO_PRNG under MSVC.")
 #else
-#ifdef __clang__
-#pragma message "SERIOUS DEGRADATION: NO DEPENDENCY ON prng2 in ITHARE_KSCOPE_INIT_COMBINED_PRNG(). Problem is due to bugs in MSVC/GCC, and will go away if NOT using ITHARE_KSCOPE_CONSISTENT_XPLATFORM_IMPLICIT_SEEDS, or ITHARE_KSCOPE_CRYPTO_PRNG"
-#else
-#pragma message "SERIOUS DEGRADATION: NO DEPENDENCY ON prng2 in ITHARE_KSCOPE_INIT_COMBINED_PRNG(). Fix depends on either GCC bug fix, or MSVC bug fix (sic!). Meanwhile, you may want to avoid using ITHARE_KSCOPE_CRYPTO_PRNG under GCC."
-#endif
+#pragma message "SERIOUS DEGRADATION: NO DEPENDENCY ON prng2 in ITHARE_KSCOPE_INIT_COMBINED_PRNG(). Problem is due to a bug in MSVC, and will go away if NOT using ITHARE_KSCOPE_CONSISTENT_XPLATFORM_IMPLICIT_SEEDS, or ITHARE_KSCOPE_CRYPTO_PRNG"
 #endif
 
-#else
+#elif defined(ITHARE_KSCOPE_WORKAROUND_FOR_GCC_BUG_47488)
+		//https://gcc.gnu.org/bugzilla/show_bug.cgi?id=47488 ; GCC doesn't like using __FILE__ literal in this context...
+		//  as soon as the bug is fixed, the whole #elif branch is to be removed
+
+#define ITHARE_KSCOPE_INIT_COMBINED_PRNG(prng2,file,line,counter) ITHARE_KSCOPE_INIT_COMBINED_PRNG(prng2,ithare::kscope::KscopeSeed<ithare::kscope::kscope_init_prng_gcc_workaround(line,counter).first,ithare::kscope::kscope_init_prng_gcc_workaround(line,counter).second,0>)
+
+#pragma message "MINOR DEGRADATION: __FILE__ is not used in ITHARE_KSCOPE_INIT_COMBINED_PRNG(). Problem is due to a bugs in GCC, but is hopefully not TOO bad"
+
+#else//!CONSISTENT_XPLATFORM && !MSVC_BUG && !GCC_BUG 
+
 #define ITHARE_KSCOPE_INIT_COMBINED_PRNG(prng2,file,line,counter) ITHARE_KSCOPE_COMBINED_PRNG(ITHARE_KSCOPE_INIT_PRNG(file,line,counter),prng2)
 #endif
 #define ITHARE_KSCOPE_RANDOM(prng,modifier,maxn) ithare::kscope::kscope_random(prng::lo,prng::hi,modifier,maxn)
