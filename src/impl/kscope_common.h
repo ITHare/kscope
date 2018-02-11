@@ -457,7 +457,7 @@ namespace ithare {
 #define ITHARE_KSCOPE_CAT(X,Y) ITHARE_KSCOPE_CAT2(X,Y)
 #define ITHARE_KSCOPE_CAT2(X,Y) X##Y
 
-//direct use of __LINE__ doesn't count as constexpr in MSVC - don't ask why...
+//direct use of __LINE__ doesn't count as constexpr in MSVC - see https://developercommunity.visualstudio.com/content/problem/195665/-line-cannot-be-used-as-an-argument-for-constexpr.html
 //  AND we DO want to align other compilers with MSVC at least for ITHARE_KSCOPE_CONSISTENT_XPLATFORM_IMPLICIT_SEEDS
 
 //along the lines of https://stackoverflow.com/questions/19343205/c-concatenating-file-and-line-macros:
