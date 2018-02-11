@@ -78,6 +78,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define ITHARE_KSCOPE_NOINLINE __declspec(noinline)
 #define ITHARE_KSCOPE_CONSTEXPR_ASSERT_UNREACHABLE assert(false)
 
+#define ITHARE_KSCOPE_WORKAROUND_FOR_MSVC_BUG_195483
+
 #elif defined(__clang__)//As Clang also #defines __GNUC__, we MUST always check __clang__ first
 
 #ifdef __apple_build_version__
