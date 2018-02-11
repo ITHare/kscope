@@ -153,6 +153,9 @@ namespace ithare {
 		constexpr uint64_t kscope_combined_prng(uint64_t seed, uint64_t seed2) {
 			return kscope_murmurhash2(seed, seed2);
 		}
+		constexpr uint64_t kscope_init_combined_prng(uint64_t seed2, const char* file, int line, int counter) {
+			return kscope_combined_prng(kscope_init_prng(file, line, counter), seed2);
+		}
 
 #define ITHARE_KSCOPE_SEEDTPARAM uint64_t
 #define ITHARE_KSCOPE_DUMMYSEED 0
@@ -161,6 +164,13 @@ namespace ithare {
 #define	ITHARE_KSCOPE_INIT_PRNG(file,line,counter) ithare::kscope::kscope_init_prng(file,line,counter) 
 #define ITHARE_KSCOPE_NEW_PRNG(prng,modifier) ithare::kscope::kscope_new_prng(prng,modifier)
 #define ITHARE_KSCOPE_COMBINED_PRNG(prng,prng2) ithare::kscope::kscope_combined_prng(prng,prng2)
+#if defined(ITHARE_KSCOPE_WORKAROUND_FOR_MSVC_BUG_196885) || defined(ITHARE_KSCOPE_CONSISTENT_XPLATFORM_IMPLICIT_SEEDS) 
+		//https://developercommunity.visualstudio.com/content/problem/196885/c1001-in-fddvctoolscompilercxxfeslp1cwalkcpp-line.html
+		// for MSVC, ANY use of prng2 (even as simple as line^prng2) causes C1001 described in bug 196885 above :-(
+#define ITHARE_KSCOPE_INIT_COMBINED_PRNG(prng2,file,line,counter) ithare::kscope::kscope_init_prng(file,line,counter)
+#else
+#define ITHARE_KSCOPE_INIT_COMBINED_PRNG(prng2,file,line,counter) ithare::kscope::kscope_init_combined_prng(prng2,file,line,counter)
+#endif
 #define ITHARE_KSCOPE_RANDOM(prng,modifier,maxn) ithare::kscope::kscope_random(prng,modifier,maxn)
 #define ITHARE_KSCOPE_RANDOM_UINT32(prng,modifier) ithare::kscope::kscope_random_uint32(prng,modifier)
 #define ITHARE_KSCOPE_DUMMY_PRNG 0
@@ -301,6 +311,7 @@ namespace ithare {
 #define	ITHARE_KSCOPE_INIT_PRNG(file,line,counter) ithare::kscope::KscopeSeed<ithare::kscope::kscope_init_prng(file,line,counter).first,ithare::kscope::kscope_init_prng(file,line,counter).second,0>
 #define ITHARE_KSCOPE_NEW_PRNG(prng,modifier) ithare::kscope::KscopeSeed<ithare::kscope::kscope_new_prng(prng::lo,prng::hi,modifier).first,ithare::kscope::kscope_new_prng(prng::lo,prng::hi,modifier).second,prng::depth+1>
 #define ITHARE_KSCOPE_COMBINED_PRNG(prng,prng2) ithare::kscope::KscopeSeed<ithare::kscope::kscope_combined_prng(prng::lo,prng::hi,prng2::lo,prng2::hi).first,ithare::kscope::kscope_combined_prng(prng::lo,prng::hi,prng2::lo,prng2::hi).second,std::max(prng::depth,prng2::depth)+1>
+#define ITHARE_KSCOPE_INIT_COMBINED_PRNG(prng2,file,line,counter) ITHARE_KSCOPE_COMBINED_PRNG(ITHARE_KSCOPE_INIT_PRNG(file,line,counter),prng2)
 #define ITHARE_KSCOPE_RANDOM(prng,modifier,maxn) ithare::kscope::kscope_random(prng::lo,prng::hi,modifier,maxn)
 #define ITHARE_KSCOPE_RANDOM_UINT32(prng,modifier) ithare::kscope::kscope_random_uint32(prng::lo,prng::hi,modifier)
 #define ITHARE_KSCOPE_DUMMY_PRNG KscopeSeed<0,0,0>

@@ -78,7 +78,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define ITHARE_KSCOPE_NOINLINE __declspec(noinline)
 #define ITHARE_KSCOPE_CONSTEXPR_ASSERT_UNREACHABLE assert(false)
 
-#define ITHARE_KSCOPE_WORKAROUND_FOR_MSVC_BUG_195483
+#define ITHARE_KSCOPE_WORKAROUND_FOR_MSVC_BUG_195483 //workaround for https://developercommunity.visualstudio.com/content/problem/195483/continue-in-constexpr-function-causes-constexpr-fu.html
+#define ITHARE_KSCOPE_WORKAROUND_FOR_MSVC_BUG_196885 //workaround for https://developercommunity.visualstudio.com/content/problem/196885/c1001-in-fddvctoolscompilercxxfeslp1cwalkcpp-line.html
 
 #elif defined(__clang__)//As Clang also #defines __GNUC__, we MUST always check __clang__ first
 

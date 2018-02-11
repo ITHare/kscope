@@ -814,13 +814,13 @@ namespace ithare {
 #define ITHARE_KSCOPE_FCALLP2(fname) fname<ITHARE_KSCOPE_COMBINED_PRNG(kscopeseed,ITHARE_KSCOPE_INIT_PRNG(ITHARE_KSCOPE_LOCATION,0,__COUNTER__)),ithare::kscope::kscope_addlevel(kscopelevel,2),kscopeflags>
 #define ITHARE_KSCOPE_FCALLP3(fname) fname<ITHARE_KSCOPE_COMBINED_PRNG(kscopeseed,ITHARE_KSCOPE_INIT_PRNG(ITHARE_KSCOPE_LOCATION,0,__COUNTER__)),ithare::kscope::kscope_addlevel(kscopelevel,3),kscopeflags>
 
-#define ITHARE_KSCOPE_FINTM3(type) ithare::kscope::KscopeInt<type,ITHARE_KSCOPE_COMBINED_PRNG(kscopeseed,ITHARE_KSCOPE_INIT_PRNG(ITHARE_KSCOPE_LOCATION,0,__COUNTER__)),ithare::kscope::kscope_exp_cycles(ithare::kscope::kscope_addlevel(kscopelevel,-3)),kscopeflags>
-#define ITHARE_KSCOPE_FINTM2(type) ithare::kscope::KscopeInt<type,ITHARE_KSCOPE_COMBINED_PRNG(kscopeseed,ITHARE_KSCOPE_INIT_PRNG(ITHARE_KSCOPE_LOCATION,0,__COUNTER__)),ithare::kscope::kscope_exp_cycles(ithare::kscope::kscope_addlevel(kscopelevel,-2)),kscopeflags>
-#define ITHARE_KSCOPE_FINTM1(type) ithare::kscope::KscopeInt<type,ITHARE_KSCOPE_COMBINED_PRNG(kscopeseed,ITHARE_KSCOPE_INIT_PRNG(ITHARE_KSCOPE_LOCATION,0,__COUNTER__)),ithare::kscope::kscope_exp_cycles(ithare::kscope::kscope_addlevel(kscopelevel,-1)),kscopeflags>
-#define ITHARE_KSCOPE_FINT(type) ithare::kscope::KscopeInt<type,ITHARE_KSCOPE_COMBINED_PRNG(kscopeseed,ITHARE_KSCOPE_INIT_PRNG(ITHARE_KSCOPE_LOCATION,0,__COUNTER__)),ithare::kscope::kscope_exp_cycles(kscopelevel),kscopeflags>
-#define ITHARE_KSCOPE_FINTP1(type) ithare::kscope::KscopeInt<type,ITHARE_KSCOPE_COMBINED_PRNG(kscopeseed,ITHARE_KSCOPE_INIT_PRNG(ITHARE_KSCOPE_LOCATION,0,__COUNTER__)),ithare::kscope::kscope_exp_cycles(ithare::kscope::kscope_addlevel(kscopelevel,1)),kscopeflags>
-#define ITHARE_KSCOPE_FINTP2(type) ithare::kscope::KscopeInt<type,ITHARE_KSCOPE_COMBINED_PRNG(kscopeseed,ITHARE_KSCOPE_INIT_PRNG(ITHARE_KSCOPE_LOCATION,0,__COUNTER__)),ithare::kscope::kscope_exp_cycles(ithare::kscope::kscope_addlevel(kscopelevel,1)),kscopeflags>
-#define ITHARE_KSCOPE_FINTP3(type) ithare::kscope::KscopeInt<type,ITHARE_KSCOPE_COMBINED_PRNG(kscopeseed,ITHARE_KSCOPE_INIT_PRNG(ITHARE_KSCOPE_LOCATION,0,__COUNTER__)),ithare::kscope::kscope_exp_cycles(ithare::kscope::kscope_addlevel(kscopelevel,1)),kscopeflags>
+#define ITHARE_KSCOPE_FINTM3(type) ithare::kscope::KscopeInt<type,ITHARE_KSCOPE_INIT_COMBINED_PRNG(kscopeseed,ITHARE_KSCOPE_LOCATION,0,__COUNTER__),ithare::kscope::kscope_exp_cycles(ithare::kscope::kscope_addlevel(kscopelevel,-3)),kscopeflags>
+#define ITHARE_KSCOPE_FINTM2(type) ithare::kscope::KscopeInt<type,ITHARE_KSCOPE_INIT_COMBINED_PRNG(kscopeseed,ITHARE_KSCOPE_LOCATION,0,__COUNTER__),ithare::kscope::kscope_exp_cycles(ithare::kscope::kscope_addlevel(kscopelevel,-2)),kscopeflags>
+#define ITHARE_KSCOPE_FINTM1(type) ithare::kscope::KscopeInt<type,ITHARE_KSCOPE_INIT_COMBINED_PRNG(kscopeseed,ITHARE_KSCOPE_LOCATION,0,__COUNTER__),ithare::kscope::kscope_exp_cycles(ithare::kscope::kscope_addlevel(kscopelevel,-1)),kscopeflags>
+#define ITHARE_KSCOPE_FINT(type) ithare::kscope::KscopeInt<type,ITHARE_KSCOPE_INIT_COMBINED_PRNG(kscopeseed,ITHARE_KSCOPE_LOCATION,0,__COUNTER__),ithare::kscope::kscope_exp_cycles(kscopelevel),kscopeflags>
+#define ITHARE_KSCOPE_FINTP1(type) ithare::kscope::KscopeInt<type,ITHARE_KSCOPE_INIT_COMBINED_PRNG(kscopeseed,ITHARE_KSCOPE_LOCATION,0,__COUNTER__),ithare::kscope::kscope_exp_cycles(ithare::kscope::kscope_addlevel(kscopelevel,1)),kscopeflags>
+#define ITHARE_KSCOPE_FINTP2(type) ithare::kscope::KscopeInt<type,ITHARE_KSCOPE_INIT_COMBINED_PRNG(kscopeseed,ITHARE_KSCOPE_LOCATION,0,__COUNTER__),ithare::kscope::kscope_exp_cycles(ithare::kscope::kscope_addlevel(kscopelevel,1)),kscopeflags>
+#define ITHARE_KSCOPE_FINTP3(type) ithare::kscope::KscopeInt<type,ITHARE_KSCOPE_INIT_COMBINED_PRNG(kscopeseed,ITHARE_KSCOPE_LOCATION,0,__COUNTER__),ithare::kscope::kscope_exp_cycles(ithare::kscope::kscope_addlevel(kscopelevel,1)),kscopeflags>
 
 #define ITHARE_KSCOPE_CINT(type) ithare::kscope::KscopeInt<type,ITHARE_KSCOPE_COMBINED_PRNG(kscopeclsseed,ITHARE_KSCOPE_INIT_PRNG(ITHARE_KSCOPE_LOCATION,0,__COUNTER__)),ithare::kscope::kscope_exp_cycles(kscopeclslevel),kscopeclsflags>
 //TODO!: M3..P3
