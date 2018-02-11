@@ -792,7 +792,7 @@ namespace ithare {
 
 //Macros for use WITHIN 'kaleidoscoped' libraries:
 #define ITHARE_KSCOPE_DECLARECLASS template<ITHARE_KSCOPE_SEEDTPARAM kscopeclsseed = ITHARE_KSCOPE_DUMMYSEED, KSCOPELEVEL kscopeclslevel=-1,KSCOPEFLAGS kscopeclsflags=0> 
-#define ITHARE_KSCOPE_KSCOPECLASS(name) name<ITHARE_KSCOPE_INIT_PRNG(ITHARE_KSCOPE_LOCATION,0,__COUNTER__),0,0> 
+#define ITHARE_KSCOPE_KSCOPECLASS(name) name<ITHARE_KSCOPE_INIT_PRNG(__FILE__,ITHARE_KSCOPE_LINE,__COUNTER__),0,0> 
 //TODO: LIBKSCOPELIBCLASS M3..P3
 
 #define ITHARE_KSCOPE_DECLAREFUNC template<ITHARE_KSCOPE_SEEDTPARAM kscopeseed = ITHARE_KSCOPE_DUMMYSEED, KSCOPELEVEL kscopelevel=-1,KSCOPEFLAGS kscopeflags=0> constexpr ITHARE_KSCOPE_FORCEINLINE
@@ -806,53 +806,53 @@ namespace ithare {
 
 #define ITHARE_KSCOPE_USEPARAM_INT(name) name.value()
 
-#define ITHARE_KSCOPE_FCALLM3(fname) fname<ITHARE_KSCOPE_COMBINED_PRNG(kscopeseed,ITHARE_KSCOPE_INIT_PRNG(ITHARE_KSCOPE_LOCATION,0,__COUNTER__)),ithare::kscope::kscope_addlevel(kscopelevel,-3),kscopeflags>
-#define ITHARE_KSCOPE_FCALLM2(fname) fname<ITHARE_KSCOPE_COMBINED_PRNG(kscopeseed,ITHARE_KSCOPE_INIT_PRNG(ITHARE_KSCOPE_LOCATION,0,__COUNTER__)),ithare::kscope::kscope_addlevel(kscopelevel,-2),kscopeflags>
-#define ITHARE_KSCOPE_FCALLM1(fname) fname<ITHARE_KSCOPE_COMBINED_PRNG(kscopeseed,ITHARE_KSCOPE_INIT_PRNG(ITHARE_KSCOPE_LOCATION,0,__COUNTER__)),ithare::kscope::kscope_addlevel(kscopelevel,-1),kscopeflags>
-#define ITHARE_KSCOPE_FCALL(fname)   fname<ITHARE_KSCOPE_COMBINED_PRNG(kscopeseed,ITHARE_KSCOPE_INIT_PRNG(ITHARE_KSCOPE_LOCATION,0,__COUNTER__)),kscopelevel,kscopeflags>
-#define ITHARE_KSCOPE_FCALLP1(fname) fname<ITHARE_KSCOPE_COMBINED_PRNG(kscopeseed,ITHARE_KSCOPE_INIT_PRNG(ITHARE_KSCOPE_LOCATION,0,__COUNTER__)),ithare::kscope::kscope_addlevel(kscopelevel,1),kscopeflags>
-#define ITHARE_KSCOPE_FCALLP2(fname) fname<ITHARE_KSCOPE_COMBINED_PRNG(kscopeseed,ITHARE_KSCOPE_INIT_PRNG(ITHARE_KSCOPE_LOCATION,0,__COUNTER__)),ithare::kscope::kscope_addlevel(kscopelevel,2),kscopeflags>
-#define ITHARE_KSCOPE_FCALLP3(fname) fname<ITHARE_KSCOPE_COMBINED_PRNG(kscopeseed,ITHARE_KSCOPE_INIT_PRNG(ITHARE_KSCOPE_LOCATION,0,__COUNTER__)),ithare::kscope::kscope_addlevel(kscopelevel,3),kscopeflags>
+#define ITHARE_KSCOPE_FCALLM3(fname) fname<ITHARE_KSCOPE_COMBINED_PRNG(kscopeseed,ITHARE_KSCOPE_INIT_PRNG(__FILE__,ITHARE_KSCOPE_LINE,__COUNTER__)),ithare::kscope::kscope_addlevel(kscopelevel,-3),kscopeflags>
+#define ITHARE_KSCOPE_FCALLM2(fname) fname<ITHARE_KSCOPE_COMBINED_PRNG(kscopeseed,ITHARE_KSCOPE_INIT_PRNG(__FILE__,ITHARE_KSCOPE_LINE,__COUNTER__)),ithare::kscope::kscope_addlevel(kscopelevel,-2),kscopeflags>
+#define ITHARE_KSCOPE_FCALLM1(fname) fname<ITHARE_KSCOPE_COMBINED_PRNG(kscopeseed,ITHARE_KSCOPE_INIT_PRNG(__FILE__,ITHARE_KSCOPE_LINE,__COUNTER__)),ithare::kscope::kscope_addlevel(kscopelevel,-1),kscopeflags>
+#define ITHARE_KSCOPE_FCALL(fname)   fname<ITHARE_KSCOPE_COMBINED_PRNG(kscopeseed,ITHARE_KSCOPE_INIT_PRNG(__FILE__,ITHARE_KSCOPE_LINE,__COUNTER__)),kscopelevel,kscopeflags>
+#define ITHARE_KSCOPE_FCALLP1(fname) fname<ITHARE_KSCOPE_COMBINED_PRNG(kscopeseed,ITHARE_KSCOPE_INIT_PRNG(__FILE__,ITHARE_KSCOPE_LINE,__COUNTER__)),ithare::kscope::kscope_addlevel(kscopelevel,1),kscopeflags>
+#define ITHARE_KSCOPE_FCALLP2(fname) fname<ITHARE_KSCOPE_COMBINED_PRNG(kscopeseed,ITHARE_KSCOPE_INIT_PRNG(__FILE__,ITHARE_KSCOPE_LINE,__COUNTER__)),ithare::kscope::kscope_addlevel(kscopelevel,2),kscopeflags>
+#define ITHARE_KSCOPE_FCALLP3(fname) fname<ITHARE_KSCOPE_COMBINED_PRNG(kscopeseed,ITHARE_KSCOPE_INIT_PRNG(__FILE__,ITHARE_KSCOPE_LINE,__COUNTER__)),ithare::kscope::kscope_addlevel(kscopelevel,3),kscopeflags>
 
-#define ITHARE_KSCOPE_FINTM3(type) ithare::kscope::KscopeInt<type,ITHARE_KSCOPE_INIT_COMBINED_PRNG(kscopeseed,ITHARE_KSCOPE_LOCATION,0,__COUNTER__),ithare::kscope::kscope_exp_cycles(ithare::kscope::kscope_addlevel(kscopelevel,-3)),kscopeflags>
-#define ITHARE_KSCOPE_FINTM2(type) ithare::kscope::KscopeInt<type,ITHARE_KSCOPE_INIT_COMBINED_PRNG(kscopeseed,ITHARE_KSCOPE_LOCATION,0,__COUNTER__),ithare::kscope::kscope_exp_cycles(ithare::kscope::kscope_addlevel(kscopelevel,-2)),kscopeflags>
-#define ITHARE_KSCOPE_FINTM1(type) ithare::kscope::KscopeInt<type,ITHARE_KSCOPE_INIT_COMBINED_PRNG(kscopeseed,ITHARE_KSCOPE_LOCATION,0,__COUNTER__),ithare::kscope::kscope_exp_cycles(ithare::kscope::kscope_addlevel(kscopelevel,-1)),kscopeflags>
-#define ITHARE_KSCOPE_FINT(type) ithare::kscope::KscopeInt<type,ITHARE_KSCOPE_INIT_COMBINED_PRNG(kscopeseed,ITHARE_KSCOPE_LOCATION,0,__COUNTER__),ithare::kscope::kscope_exp_cycles(kscopelevel),kscopeflags>
-#define ITHARE_KSCOPE_FINTP1(type) ithare::kscope::KscopeInt<type,ITHARE_KSCOPE_INIT_COMBINED_PRNG(kscopeseed,ITHARE_KSCOPE_LOCATION,0,__COUNTER__),ithare::kscope::kscope_exp_cycles(ithare::kscope::kscope_addlevel(kscopelevel,1)),kscopeflags>
-#define ITHARE_KSCOPE_FINTP2(type) ithare::kscope::KscopeInt<type,ITHARE_KSCOPE_INIT_COMBINED_PRNG(kscopeseed,ITHARE_KSCOPE_LOCATION,0,__COUNTER__),ithare::kscope::kscope_exp_cycles(ithare::kscope::kscope_addlevel(kscopelevel,1)),kscopeflags>
-#define ITHARE_KSCOPE_FINTP3(type) ithare::kscope::KscopeInt<type,ITHARE_KSCOPE_INIT_COMBINED_PRNG(kscopeseed,ITHARE_KSCOPE_LOCATION,0,__COUNTER__),ithare::kscope::kscope_exp_cycles(ithare::kscope::kscope_addlevel(kscopelevel,1)),kscopeflags>
+#define ITHARE_KSCOPE_FINTM3(type) ithare::kscope::KscopeInt<type,ITHARE_KSCOPE_INIT_COMBINED_PRNG(kscopeseed,__FILE__,ITHARE_KSCOPE_LINE,__COUNTER__),ithare::kscope::kscope_exp_cycles(ithare::kscope::kscope_addlevel(kscopelevel,-3)),kscopeflags>
+#define ITHARE_KSCOPE_FINTM2(type) ithare::kscope::KscopeInt<type,ITHARE_KSCOPE_INIT_COMBINED_PRNG(kscopeseed,__FILE__,ITHARE_KSCOPE_LINE,__COUNTER__),ithare::kscope::kscope_exp_cycles(ithare::kscope::kscope_addlevel(kscopelevel,-2)),kscopeflags>
+#define ITHARE_KSCOPE_FINTM1(type) ithare::kscope::KscopeInt<type,ITHARE_KSCOPE_INIT_COMBINED_PRNG(kscopeseed,__FILE__,ITHARE_KSCOPE_LINE,__COUNTER__),ithare::kscope::kscope_exp_cycles(ithare::kscope::kscope_addlevel(kscopelevel,-1)),kscopeflags>
+#define ITHARE_KSCOPE_FINT(type) ithare::kscope::KscopeInt<type,ITHARE_KSCOPE_INIT_COMBINED_PRNG(kscopeseed,__FILE__,ITHARE_KSCOPE_LINE,__COUNTER__),ithare::kscope::kscope_exp_cycles(kscopelevel),kscopeflags>
+#define ITHARE_KSCOPE_FINTP1(type) ithare::kscope::KscopeInt<type,ITHARE_KSCOPE_INIT_COMBINED_PRNG(kscopeseed,__FILE__,ITHARE_KSCOPE_LINE,__COUNTER__),ithare::kscope::kscope_exp_cycles(ithare::kscope::kscope_addlevel(kscopelevel,1)),kscopeflags>
+#define ITHARE_KSCOPE_FINTP2(type) ithare::kscope::KscopeInt<type,ITHARE_KSCOPE_INIT_COMBINED_PRNG(kscopeseed,__FILE__,ITHARE_KSCOPE_LINE,__COUNTER__),ithare::kscope::kscope_exp_cycles(ithare::kscope::kscope_addlevel(kscopelevel,1)),kscopeflags>
+#define ITHARE_KSCOPE_FINTP3(type) ithare::kscope::KscopeInt<type,ITHARE_KSCOPE_INIT_COMBINED_PRNG(kscopeseed,__FILE__,ITHARE_KSCOPE_LINE,__COUNTER__),ithare::kscope::kscope_exp_cycles(ithare::kscope::kscope_addlevel(kscopelevel,1)),kscopeflags>
 
-#define ITHARE_KSCOPE_CINT(type) ithare::kscope::KscopeInt<type,ITHARE_KSCOPE_COMBINED_PRNG(kscopeclsseed,ITHARE_KSCOPE_INIT_PRNG(ITHARE_KSCOPE_LOCATION,0,__COUNTER__)),ithare::kscope::kscope_exp_cycles(kscopeclslevel),kscopeclsflags>
+#define ITHARE_KSCOPE_CINT(type) ithare::kscope::KscopeInt<type,ITHARE_KSCOPE_COMBINED_PRNG(kscopeclsseed,ITHARE_KSCOPE_INIT_PRNG(__FILE__,ITHARE_KSCOPE_LINE,__COUNTER__)),ithare::kscope::kscope_exp_cycles(kscopeclslevel),kscopeclsflags>
 //TODO!: M3..P3
 //TODO!: FCINT
 
-#define ITHARE_KSCOPE_FINTLITM3(c) KscopeLiteral<typename std::remove_cv<decltype(c)>::type,c,ITHARE_KSCOPE_COMBINED_PRNG(kscopeseed,ITHARE_KSCOPE_INIT_PRNG(ITHARE_KSCOPE_LOCATION,0,__COUNTER__)),ithare::kscope::kscope_exp_cycles(ithare::kscope::kscope_addlevel(kscopelevel,-3)),kscopeflags>()
-#define ITHARE_KSCOPE_FINTLITM2(c) KscopeLiteral<typename std::remove_cv<decltype(c)>::type,c,ITHARE_KSCOPE_COMBINED_PRNG(kscopeseed,ITHARE_KSCOPE_INIT_PRNG(ITHARE_KSCOPE_LOCATION,0,__COUNTER__)),ithare::kscope::kscope_exp_cycles(ithare::kscope::kscope_addlevel(kscopelevel,-2)),kscopeflags>()
-#define ITHARE_KSCOPE_FINTLITM1(c) KscopeLiteral<typename std::remove_cv<decltype(c)>::type,c,ITHARE_KSCOPE_COMBINED_PRNG(kscopeseed,ITHARE_KSCOPE_INIT_PRNG(ITHARE_KSCOPE_LOCATION,0,__COUNTER__)),ithare::kscope::kscope_exp_cycles(ithare::kscope::kscope_addlevel(kscopelevel,-1)),kscopeflags>()
-#define ITHARE_KSCOPE_FINTLIT(c) KscopeLiteral<typename std::remove_cv<decltype(c)>::type,c,ITHARE_KSCOPE_COMBINED_PRNG(kscopeseed,ITHARE_KSCOPE_INIT_PRNG(ITHARE_KSCOPE_LOCATION,0,__COUNTER__)),ithare::kscope::kscope_exp_cycles(kscopelevel),kscopeflags>()
-#define ITHARE_KSCOPE_FINTLITP1(c) KscopeLiteral<typename std::remove_cv<decltype(c)>::type,c,ITHARE_KSCOPE_COMBINED_PRNG(kscopeseed,ITHARE_KSCOPE_INIT_PRNG(ITHARE_KSCOPE_LOCATION,0,__COUNTER__)),ithare::kscope::kscope_exp_cycles(ithare::kscope::kscope_addlevel(kscopelevel,1)),kscopeflags>()
-#define ITHARE_KSCOPE_FINTLITP2(c) KscopeLiteral<typename std::remove_cv<decltype(c)>::type,c,ITHARE_KSCOPE_COMBINED_PRNG(kscopeseed,ITHARE_KSCOPE_INIT_PRNG(ITHARE_KSCOPE_LOCATION,0,__COUNTER__)),ithare::kscope::kscope_exp_cycles(ithare::kscope::kscope_addlevel(kscopelevel,2)),kscopeflags>()
-#define ITHARE_KSCOPE_FINTLITP3(c) KscopeLiteral<typename std::remove_cv<decltype(c)>::type,c,ITHARE_KSCOPE_COMBINED_PRNG(kscopeseed,ITHARE_KSCOPE_INIT_PRNG(ITHARE_KSCOPE_LOCATION,0,__COUNTER__)),ithare::kscope::kscope_exp_cycles(ithare::kscope::kscope_addlevel(kscopelevel,3)),kscopeflags>()
+#define ITHARE_KSCOPE_FINTLITM3(c) KscopeLiteral<typename std::remove_cv<decltype(c)>::type,c,ITHARE_KSCOPE_COMBINED_PRNG(kscopeseed,ITHARE_KSCOPE_INIT_PRNG(__FILE__,ITHARE_KSCOPE_LINE,__COUNTER__)),ithare::kscope::kscope_exp_cycles(ithare::kscope::kscope_addlevel(kscopelevel,-3)),kscopeflags>()
+#define ITHARE_KSCOPE_FINTLITM2(c) KscopeLiteral<typename std::remove_cv<decltype(c)>::type,c,ITHARE_KSCOPE_COMBINED_PRNG(kscopeseed,ITHARE_KSCOPE_INIT_PRNG(__FILE__,ITHARE_KSCOPE_LINE,__COUNTER__)),ithare::kscope::kscope_exp_cycles(ithare::kscope::kscope_addlevel(kscopelevel,-2)),kscopeflags>()
+#define ITHARE_KSCOPE_FINTLITM1(c) KscopeLiteral<typename std::remove_cv<decltype(c)>::type,c,ITHARE_KSCOPE_COMBINED_PRNG(kscopeseed,ITHARE_KSCOPE_INIT_PRNG(__FILE__,ITHARE_KSCOPE_LINE,__COUNTER__)),ithare::kscope::kscope_exp_cycles(ithare::kscope::kscope_addlevel(kscopelevel,-1)),kscopeflags>()
+#define ITHARE_KSCOPE_FINTLIT(c) KscopeLiteral<typename std::remove_cv<decltype(c)>::type,c,ITHARE_KSCOPE_COMBINED_PRNG(kscopeseed,ITHARE_KSCOPE_INIT_PRNG(__FILE__,ITHARE_KSCOPE_LINE,__COUNTER__)),ithare::kscope::kscope_exp_cycles(kscopelevel),kscopeflags>()
+#define ITHARE_KSCOPE_FINTLITP1(c) KscopeLiteral<typename std::remove_cv<decltype(c)>::type,c,ITHARE_KSCOPE_COMBINED_PRNG(kscopeseed,ITHARE_KSCOPE_INIT_PRNG(__FILE__,ITHARE_KSCOPE_LINE,__COUNTER__)),ithare::kscope::kscope_exp_cycles(ithare::kscope::kscope_addlevel(kscopelevel,1)),kscopeflags>()
+#define ITHARE_KSCOPE_FINTLITP2(c) KscopeLiteral<typename std::remove_cv<decltype(c)>::type,c,ITHARE_KSCOPE_COMBINED_PRNG(kscopeseed,ITHARE_KSCOPE_INIT_PRNG(__FILE__,ITHARE_KSCOPE_LINE,__COUNTER__)),ithare::kscope::kscope_exp_cycles(ithare::kscope::kscope_addlevel(kscopelevel,2)),kscopeflags>()
+#define ITHARE_KSCOPE_FINTLITP3(c) KscopeLiteral<typename std::remove_cv<decltype(c)>::type,c,ITHARE_KSCOPE_COMBINED_PRNG(kscopeseed,ITHARE_KSCOPE_INIT_PRNG(__FILE__,ITHARE_KSCOPE_LINE,__COUNTER__)),ithare::kscope::kscope_exp_cycles(ithare::kscope::kscope_addlevel(kscopelevel,3)),kscopeflags>()
 
 //TODO: ITHARE_KSCOPE_FSTRLIT
 
 //Macros to be used OUTSIDE of 'kaleidoscoped' libraries 
-#define ITHARE_KSCOPE_INT0(type) ithare::kscope::KscopeInt<type,ITHARE_KSCOPE_INIT_PRNG(ITHARE_KSCOPE_LOCATION,0,__COUNTER__),ithare::kscope::kscope_exp_cycles(0),0>
-#define ITHARE_KSCOPE_INT1(type) ithare::kscope::KscopeInt<type,ITHARE_KSCOPE_INIT_PRNG(ITHARE_KSCOPE_LOCATION,0,__COUNTER__),ithare::kscope::kscope_exp_cycles(1),0>
-#define ITHARE_KSCOPE_INT2(type) ithare::kscope::KscopeInt<type,ITHARE_KSCOPE_INIT_PRNG(ITHARE_KSCOPE_LOCATION,0,__COUNTER__),ithare::kscope::kscope_exp_cycles(2),0>
-#define ITHARE_KSCOPE_INT3(type) ithare::kscope::KscopeInt<type,ITHARE_KSCOPE_INIT_PRNG(ITHARE_KSCOPE_LOCATION,0,__COUNTER__),ithare::kscope::kscope_exp_cycles(3),0>
-#define ITHARE_KSCOPE_INT4(type) ithare::kscope::KscopeInt<type,ITHARE_KSCOPE_INIT_PRNG(ITHARE_KSCOPE_LOCATION,0,__COUNTER__),ithare::kscope::kscope_exp_cycles(4),0>
-#define ITHARE_KSCOPE_INT5(type) ithare::kscope::KscopeInt<type,ITHARE_KSCOPE_INIT_PRNG(ITHARE_KSCOPE_LOCATION,0,__COUNTER__),ithare::kscope::kscope_exp_cycles(5),0>
-#define ITHARE_KSCOPE_INT6(type) ithare::kscope::KscopeInt<type,ITHARE_KSCOPE_INIT_PRNG(ITHARE_KSCOPE_LOCATION,0,__COUNTER__),ithare::kscope::kscope_exp_cycles(6),0>
+#define ITHARE_KSCOPE_INT0(type) ithare::kscope::KscopeInt<type,ITHARE_KSCOPE_INIT_PRNG(__FILE__,ITHARE_KSCOPE_LINE,__COUNTER__),ithare::kscope::kscope_exp_cycles(0),0>
+#define ITHARE_KSCOPE_INT1(type) ithare::kscope::KscopeInt<type,ITHARE_KSCOPE_INIT_PRNG(__FILE__,ITHARE_KSCOPE_LINE,__COUNTER__),ithare::kscope::kscope_exp_cycles(1),0>
+#define ITHARE_KSCOPE_INT2(type) ithare::kscope::KscopeInt<type,ITHARE_KSCOPE_INIT_PRNG(__FILE__,ITHARE_KSCOPE_LINE,__COUNTER__),ithare::kscope::kscope_exp_cycles(2),0>
+#define ITHARE_KSCOPE_INT3(type) ithare::kscope::KscopeInt<type,ITHARE_KSCOPE_INIT_PRNG(__FILE__,ITHARE_KSCOPE_LINE,__COUNTER__),ithare::kscope::kscope_exp_cycles(3),0>
+#define ITHARE_KSCOPE_INT4(type) ithare::kscope::KscopeInt<type,ITHARE_KSCOPE_INIT_PRNG(__FILE__,ITHARE_KSCOPE_LINE,__COUNTER__),ithare::kscope::kscope_exp_cycles(4),0>
+#define ITHARE_KSCOPE_INT5(type) ithare::kscope::KscopeInt<type,ITHARE_KSCOPE_INIT_PRNG(__FILE__,ITHARE_KSCOPE_LINE,__COUNTER__),ithare::kscope::kscope_exp_cycles(5),0>
+#define ITHARE_KSCOPE_INT6(type) ithare::kscope::KscopeInt<type,ITHARE_KSCOPE_INIT_PRNG(__FILE__,ITHARE_KSCOPE_LINE,__COUNTER__),ithare::kscope::kscope_exp_cycles(6),0>
 
 //INTLIT: constructing KscopeInt to be compatible with ITHARE_KSCOPE_DECLAREFUNC* functions
-#define ITHARE_KSCOPE_INTLIT0(c) ithare::kscope::KscopeInt<typename std::remove_cv<decltype(c)>::type,ITHARE_KSCOPE_INIT_PRNG(ITHARE_KSCOPE_LOCATION,0,__COUNTER__),0,0>(ithare::kscope::KscopeLiteral<typename std::remove_cv<decltype(c)>::type,c,ITHARE_KSCOPE_INIT_PRNG(ITHARE_KSCOPE_LOCATION,0,__COUNTER__),ithare::kscope::kscope_exp_cycles(0),0>())
-#define ITHARE_KSCOPE_INTLIT1(c) ithare::kscope::KscopeInt<typename std::remove_cv<decltype(c)>::type,ITHARE_KSCOPE_INIT_PRNG(ITHARE_KSCOPE_LOCATION,0,__COUNTER__),0,0>(ithare::kscope::KscopeLiteral<typename std::remove_cv<decltype(c)>::type,c,ITHARE_KSCOPE_INIT_PRNG(ITHARE_KSCOPE_LOCATION,0,__COUNTER__),ithare::kscope::kscope_exp_cycles(1),0>())
-#define ITHARE_KSCOPE_INTLIT2(c) ithare::kscope::KscopeInt<typename std::remove_cv<decltype(c)>::type,ITHARE_KSCOPE_INIT_PRNG(ITHARE_KSCOPE_LOCATION,0,__COUNTER__),0,0>(ithare::kscope::KscopeLiteral<typename std::remove_cv<decltype(c)>::type,c,ITHARE_KSCOPE_INIT_PRNG(ITHARE_KSCOPE_LOCATION,0,__COUNTER__),ithare::kscope::kscope_exp_cycles(2),0>())
-#define ITHARE_KSCOPE_INTLIT3(c) ithare::kscope::KscopeInt<typename std::remove_cv<decltype(c)>::type,ITHARE_KSCOPE_INIT_PRNG(ITHARE_KSCOPE_LOCATION,0,__COUNTER__),0,0>(ithare::kscope::KscopeLiteral<typename std::remove_cv<decltype(c)>::type,c,ITHARE_KSCOPE_INIT_PRNG(ITHARE_KSCOPE_LOCATION,0,__COUNTER__),ithare::kscope::kscope_exp_cycles(3),0>())
-#define ITHARE_KSCOPE_INTLIT4(c) ithare::kscope::KscopeInt<typename std::remove_cv<decltype(c)>::type,ITHARE_KSCOPE_INIT_PRNG(ITHARE_KSCOPE_LOCATION,0,__COUNTER__),0,0>(ithare::kscope::KscopeLiteral<typename std::remove_cv<decltype(c)>::type,c,ITHARE_KSCOPE_INIT_PRNG(ITHARE_KSCOPE_LOCATION,0,__COUNTER__),ithare::kscope::kscope_exp_cycles(4),0>())
-#define ITHARE_KSCOPE_INTLIT5(c) ithare::kscope::KscopeInt<typename std::remove_cv<decltype(c)>::type,ITHARE_KSCOPE_INIT_PRNG(ITHARE_KSCOPE_LOCATION,0,__COUNTER__),0,0>(ithare::kscope::KscopeLiteral<typename std::remove_cv<decltype(c)>::type,c,ITHARE_KSCOPE_INIT_PRNG(ITHARE_KSCOPE_LOCATION,0,__COUNTER__),ithare::kscope::kscope_exp_cycles(5),0>())
-#define ITHARE_KSCOPE_INTLIT6(c) ithare::kscope::KscopeInt<typename std::remove_cv<decltype(c)>::type,ITHARE_KSCOPE_INIT_PRNG(ITHARE_KSCOPE_LOCATION,0,__COUNTER__),0,0>(ithare::kscope::KscopeLiteral<typename std::remove_cv<decltype(c)>::type,c,ITHARE_KSCOPE_INIT_PRNG(ITHARE_KSCOPE_LOCATION,0,__COUNTER__),ithare::kscope::kscope_exp_cycles(6),0>())
+#define ITHARE_KSCOPE_INTLIT0(c) ithare::kscope::KscopeInt<typename std::remove_cv<decltype(c)>::type,ITHARE_KSCOPE_INIT_PRNG(__FILE__,ITHARE_KSCOPE_LINE,__COUNTER__),0,0>(ithare::kscope::KscopeLiteral<typename std::remove_cv<decltype(c)>::type,c,ITHARE_KSCOPE_INIT_PRNG(__FILE__,ITHARE_KSCOPE_LINE,__COUNTER__),ithare::kscope::kscope_exp_cycles(0),0>())
+#define ITHARE_KSCOPE_INTLIT1(c) ithare::kscope::KscopeInt<typename std::remove_cv<decltype(c)>::type,ITHARE_KSCOPE_INIT_PRNG(__FILE__,ITHARE_KSCOPE_LINE,__COUNTER__),0,0>(ithare::kscope::KscopeLiteral<typename std::remove_cv<decltype(c)>::type,c,ITHARE_KSCOPE_INIT_PRNG(__FILE__,ITHARE_KSCOPE_LINE,__COUNTER__),ithare::kscope::kscope_exp_cycles(1),0>())
+#define ITHARE_KSCOPE_INTLIT2(c) ithare::kscope::KscopeInt<typename std::remove_cv<decltype(c)>::type,ITHARE_KSCOPE_INIT_PRNG(__FILE__,ITHARE_KSCOPE_LINE,__COUNTER__),0,0>(ithare::kscope::KscopeLiteral<typename std::remove_cv<decltype(c)>::type,c,ITHARE_KSCOPE_INIT_PRNG(__FILE__,ITHARE_KSCOPE_LINE,__COUNTER__),ithare::kscope::kscope_exp_cycles(2),0>())
+#define ITHARE_KSCOPE_INTLIT3(c) ithare::kscope::KscopeInt<typename std::remove_cv<decltype(c)>::type,ITHARE_KSCOPE_INIT_PRNG(__FILE__,ITHARE_KSCOPE_LINE,__COUNTER__),0,0>(ithare::kscope::KscopeLiteral<typename std::remove_cv<decltype(c)>::type,c,ITHARE_KSCOPE_INIT_PRNG(__FILE__,ITHARE_KSCOPE_LINE,__COUNTER__),ithare::kscope::kscope_exp_cycles(3),0>())
+#define ITHARE_KSCOPE_INTLIT4(c) ithare::kscope::KscopeInt<typename std::remove_cv<decltype(c)>::type,ITHARE_KSCOPE_INIT_PRNG(__FILE__,ITHARE_KSCOPE_LINE,__COUNTER__),0,0>(ithare::kscope::KscopeLiteral<typename std::remove_cv<decltype(c)>::type,c,ITHARE_KSCOPE_INIT_PRNG(__FILE__,ITHARE_KSCOPE_LINE,__COUNTER__),ithare::kscope::kscope_exp_cycles(4),0>())
+#define ITHARE_KSCOPE_INTLIT5(c) ithare::kscope::KscopeInt<typename std::remove_cv<decltype(c)>::type,ITHARE_KSCOPE_INIT_PRNG(__FILE__,ITHARE_KSCOPE_LINE,__COUNTER__),0,0>(ithare::kscope::KscopeLiteral<typename std::remove_cv<decltype(c)>::type,c,ITHARE_KSCOPE_INIT_PRNG(__FILE__,ITHARE_KSCOPE_LINE,__COUNTER__),ithare::kscope::kscope_exp_cycles(5),0>())
+#define ITHARE_KSCOPE_INTLIT6(c) ithare::kscope::KscopeInt<typename std::remove_cv<decltype(c)>::type,ITHARE_KSCOPE_INIT_PRNG(__FILE__,ITHARE_KSCOPE_LINE,__COUNTER__),0,0>(ithare::kscope::KscopeLiteral<typename std::remove_cv<decltype(c)>::type,c,ITHARE_KSCOPE_INIT_PRNG(__FILE__,ITHARE_KSCOPE_LINE,__COUNTER__),ithare::kscope::kscope_exp_cycles(6),0>())
 
 //STRLIT:
 #define ITHARE_KSCOPE_STR_HELPER(seed,cycles,s) ithare::kscope::KscopeStrLiteral<seed,cycles,(sizeof(s)>0?s[0]:'\0'),(sizeof(s)>1?s[1]:'\0'),(sizeof(s)>2?s[2]:'\0'),(sizeof(s)>3?s[3]:'\0'),\
@@ -865,22 +865,22 @@ namespace ithare {
 							(sizeof(s)>28?s[28]:'\0'),(sizeof(s)>29?s[29]:'\0'),(sizeof(s)>30?s[30]:'\0'),(sizeof(s)>31?s[31]:'\0'),\
 							(sizeof(s)>32?s[32]:'\0')/*one extra to generate an error if we're over*/>
 
-#define ITHARE_KSCOPE_STRLIT0(s) ITHARE_KSCOPE_STR_HELPER(ITHARE_KSCOPE_INIT_PRNG(ITHARE_KSCOPE_LOCATION,0,__COUNTER__),ithare::kscope::kscope_exp_cycles(0),s)()
-#define ITHARE_KSCOPE_STRLIT1(s) ITHARE_KSCOPE_STR_HELPER(ITHARE_KSCOPE_INIT_PRNG(ITHARE_KSCOPE_LOCATION,0,__COUNTER__),ithare::kscope::kscope_exp_cycles(1),s)()
-#define ITHARE_KSCOPE_STRLIT2(s) ITHARE_KSCOPE_STR_HELPER(ITHARE_KSCOPE_INIT_PRNG(ITHARE_KSCOPE_LOCATION,0,__COUNTER__),ithare::kscope::kscope_exp_cycles(2),s)()
-#define ITHARE_KSCOPE_STRLIT3(s) ITHARE_KSCOPE_STR_HELPER(ITHARE_KSCOPE_INIT_PRNG(ITHARE_KSCOPE_LOCATION,0,__COUNTER__),ithare::kscope::kscope_exp_cycles(3),s)()
-#define ITHARE_KSCOPE_STRLIT4(s) ITHARE_KSCOPE_STR_HELPER(ITHARE_KSCOPE_INIT_PRNG(ITHARE_KSCOPE_LOCATION,0,__COUNTER__),ithare::kscope::kscope_exp_cycles(4),s)()
-#define ITHARE_KSCOPE_STRLIT5(s) ITHARE_KSCOPE_STR_HELPER(ITHARE_KSCOPE_INIT_PRNG(ITHARE_KSCOPE_LOCATION,0,__COUNTER__),ithare::kscope::kscope_exp_cycles(5),s)()
-#define ITHARE_KSCOPE_STRLIT6(s) ITHARE_KSCOPE_STR_HELPER(ITHARE_KSCOPE_INIT_PRNG(ITHARE_KSCOPE_LOCATION,0,__COUNTER__),ithare::kscope::kscope_exp_cycles(6),s)()
+#define ITHARE_KSCOPE_STRLIT0(s) ITHARE_KSCOPE_STR_HELPER(ITHARE_KSCOPE_INIT_PRNG(__FILE__,ITHARE_KSCOPE_LINE,__COUNTER__),ithare::kscope::kscope_exp_cycles(0),s)()
+#define ITHARE_KSCOPE_STRLIT1(s) ITHARE_KSCOPE_STR_HELPER(ITHARE_KSCOPE_INIT_PRNG(__FILE__,ITHARE_KSCOPE_LINE,__COUNTER__),ithare::kscope::kscope_exp_cycles(1),s)()
+#define ITHARE_KSCOPE_STRLIT2(s) ITHARE_KSCOPE_STR_HELPER(ITHARE_KSCOPE_INIT_PRNG(__FILE__,ITHARE_KSCOPE_LINE,__COUNTER__),ithare::kscope::kscope_exp_cycles(2),s)()
+#define ITHARE_KSCOPE_STRLIT3(s) ITHARE_KSCOPE_STR_HELPER(ITHARE_KSCOPE_INIT_PRNG(__FILE__,ITHARE_KSCOPE_LINE,__COUNTER__),ithare::kscope::kscope_exp_cycles(3),s)()
+#define ITHARE_KSCOPE_STRLIT4(s) ITHARE_KSCOPE_STR_HELPER(ITHARE_KSCOPE_INIT_PRNG(__FILE__,ITHARE_KSCOPE_LINE,__COUNTER__),ithare::kscope::kscope_exp_cycles(4),s)()
+#define ITHARE_KSCOPE_STRLIT5(s) ITHARE_KSCOPE_STR_HELPER(ITHARE_KSCOPE_INIT_PRNG(__FILE__,ITHARE_KSCOPE_LINE,__COUNTER__),ithare::kscope::kscope_exp_cycles(5),s)()
+#define ITHARE_KSCOPE_STRLIT6(s) ITHARE_KSCOPE_STR_HELPER(ITHARE_KSCOPE_INIT_PRNG(__FILE__,ITHARE_KSCOPE_LINE,__COUNTER__),ithare::kscope::kscope_exp_cycles(6),s)()
 
-#define ITHARE_KSCOPE_CALL0(fname) fname<ITHARE_KSCOPE_INIT_PRNG(ITHARE_KSCOPE_LOCATION,0,__COUNTER__),0,0>
-#define ITHARE_KSCOPE_CALL1(fname) fname<ITHARE_KSCOPE_INIT_PRNG(ITHARE_KSCOPE_LOCATION,0,__COUNTER__),1,0>
-#define ITHARE_KSCOPE_CALL2(fname) fname<ITHARE_KSCOPE_INIT_PRNG(ITHARE_KSCOPE_LOCATION,0,__COUNTER__),2,0>
-#define ITHARE_KSCOPE_CALL3(fname) fname<ITHARE_KSCOPE_INIT_PRNG(ITHARE_KSCOPE_LOCATION,0,__COUNTER__),3,0>
-#define ITHARE_KSCOPE_CALL4(fname) fname<ITHARE_KSCOPE_INIT_PRNG(ITHARE_KSCOPE_LOCATION,0,__COUNTER__),4,0>
-#define ITHARE_KSCOPE_CALL5(fname) fname<ITHARE_KSCOPE_INIT_PRNG(ITHARE_KSCOPE_LOCATION,0,__COUNTER__),5,0>
-#define ITHARE_KSCOPE_CALL6(fname) fname<ITHARE_KSCOPE_INIT_PRNG(ITHARE_KSCOPE_LOCATION,0,__COUNTER__),6,0>
-#define ITHARE_KSCOPE_CALL_AS_CONSTEXPR(fname) fname<ITHARE_KSCOPE_INIT_PRNG(ITHARE_KSCOPE_LOCATION,0,__COUNTER__),-1,ithare::kscope::kscope_flag_is_constexpr>
+#define ITHARE_KSCOPE_CALL0(fname) fname<ITHARE_KSCOPE_INIT_PRNG(__FILE__,ITHARE_KSCOPE_LINE,__COUNTER__),0,0>
+#define ITHARE_KSCOPE_CALL1(fname) fname<ITHARE_KSCOPE_INIT_PRNG(__FILE__,ITHARE_KSCOPE_LINE,__COUNTER__),1,0>
+#define ITHARE_KSCOPE_CALL2(fname) fname<ITHARE_KSCOPE_INIT_PRNG(__FILE__,ITHARE_KSCOPE_LINE,__COUNTER__),2,0>
+#define ITHARE_KSCOPE_CALL3(fname) fname<ITHARE_KSCOPE_INIT_PRNG(__FILE__,ITHARE_KSCOPE_LINE,__COUNTER__),3,0>
+#define ITHARE_KSCOPE_CALL4(fname) fname<ITHARE_KSCOPE_INIT_PRNG(__FILE__,ITHARE_KSCOPE_LINE,__COUNTER__),4,0>
+#define ITHARE_KSCOPE_CALL5(fname) fname<ITHARE_KSCOPE_INIT_PRNG(__FILE__,ITHARE_KSCOPE_LINE,__COUNTER__),5,0>
+#define ITHARE_KSCOPE_CALL6(fname) fname<ITHARE_KSCOPE_INIT_PRNG(__FILE__,ITHARE_KSCOPE_LINE,__COUNTER__),6,0>
+#define ITHARE_KSCOPE_CALL_AS_CONSTEXPR(fname) fname<ITHARE_KSCOPE_INIT_PRNG(__FILE__,ITHARE_KSCOPE_LINE,__COUNTER__),-1,ithare::kscope::kscope_flag_is_constexpr>
 
 #else//ITHARE_KSCOPE_SEED
 namespace ithare {
@@ -1291,17 +1291,17 @@ void kscope_auto_dbg_print_libfuncname(const char* fname, const char* file, int 
 }}//namespace ithare::kscope
 
 #define ITHARE_KSCOPE_DBGPRINT(x) do {\
-		ithare::kscope::kscope_auto_dbg_print<ithare::kscope::kscope_string_hash(ithare::kscope::kscope_normalize_fname(ITHARE_KSCOPE_LOCATION)),ithare::kscope::kscope_string_hash(#x)>(x,#x,ITHARE_KSCOPE_LOCATION,0);\
+		ithare::kscope::kscope_auto_dbg_print<ithare::kscope::kscope_string_hash(ithare::kscope::kscope_normalize_fname(__FILE__)),ithare::kscope::kscope_string_hash(#x)>(x,#x,__FILE__,ITHARE_KSCOPE_LINE);\
 	} while(false)
 
 #define ITHARE_KSCOPE_FDBGPRINTFUNCNAMEX(fname)  /*'X' at the end stands for "cross-platform'*/ do {\
 		if constexpr(!(kscopeflags&kscope_flag_is_constexpr)) {\
-			ithare::kscope::kscope_auto_dbg_print_libfuncname<kscopeseed,kscopelevel,kscopeflags,ithare::kscope::kscope_string_hash(ithare::kscope::kscope_normalize_fname(ITHARE_KSCOPE_LOCATION)),ithare::kscope::kscope_string_hash(#fname)>(fname,ITHARE_KSCOPE_LOCATION,0);\
+			ithare::kscope::kscope_auto_dbg_print_libfuncname<kscopeseed,kscopelevel,kscopeflags,ithare::kscope::kscope_string_hash(ithare::kscope::kscope_normalize_fname(__FILE__)),ithare::kscope::kscope_string_hash(#fname)>(fname,__FILE__,ITHARE_KSCOPE_LINE);\
 		}\
 	} while(false)
 #define ITHARE_KSCOPE_FDBGPRINTX(x) do {\
 		if constexpr(!(kscopeflags&kscope_flag_is_constexpr)) {\
-				ithare::kscope::kscope_auto_dbg_print_fromlib<kscopeseed,kscopelevel,kscopeflags,ithare::kscope::kscope_string_hash(ithare::kscope::kscope_normalize_fname(ITHARE_KSCOPE_LOCATION)),ithare::kscope::kscope_string_hash(#x)>(x,#x,ITHARE_KSCOPE_LOCATION,0);\
+				ithare::kscope::kscope_auto_dbg_print_fromlib<kscopeseed,kscopelevel,kscopeflags,ithare::kscope::kscope_string_hash(ithare::kscope::kscope_normalize_fname(__FILE__)),ithare::kscope::kscope_string_hash(#x)>(x,#x,__FILE__,ITHARE_KSCOPE_LINE);\
 		}\
 	} while(false)
 #if ITHARE_KSCOPE_ENABLE_AUTO_DBGPRINT>=2 //if not >=2, stick to cross-platform-only

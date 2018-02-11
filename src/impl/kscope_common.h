@@ -461,11 +461,12 @@ namespace ithare {
 #define ITHARE_KSCOPE_CAT(X,Y) ITHARE_KSCOPE_CAT2(X,Y)
 #define ITHARE_KSCOPE_CAT2(X,Y) X##Y
 
+#ifdef _MSC_VER
 //direct use of __LINE__ doesn't count as constexpr in MSVC - see https://developercommunity.visualstudio.com/content/problem/195665/-line-cannot-be-used-as-an-argument-for-constexpr.html
-//  AND we DO want to align other compilers with MSVC at least for ITHARE_KSCOPE_CONSISTENT_XPLATFORM_IMPLICIT_SEEDS
-
-//along the lines of https://stackoverflow.com/questions/19343205/c-concatenating-file-and-line-macros:
-#define ITHARE_KSCOPE_LOCATION __FILE__ ":" ITHARE_KSCOPE_STRINGIFY(__LINE__)
+#define ITHARE_KSCOPE_LINE int(ITHARE_KSCOPE_CAT(__LINE__,U)) //appending 'U' shouldn't change much as __LINE__ is supposedly non-negative anyway
+#else
+#define ITHARE_KSCOPE_LINE __LINE__
+#endif
 
 //KSCOPE_SEED-dependent stuff
 #ifdef ITHARE_KSCOPE_SEED
