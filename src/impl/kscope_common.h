@@ -104,6 +104,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #pragma message "GCC prior to version 7 is not likely to work :-("
 #endif
 
+#define ITHARE_KSCOPE_WORKAROUND_FOR_GCC_BUG_47488 //workaround for https://gcc.gnu.org/bugzilla/show_bug.cgi?id=47488
+
 #define ITHARE_KSCOPE_FORCEINLINE __attribute__((always_inline)) inline
 #define ITHARE_KSCOPE_NOINLINE __attribute__((noinline))
 #define ITHARE_KSCOPE_CONSTEXPR_ASSERT_UNREACHABLE  //as of GCC 7.2.0, assert(false) doesn't work in constexpr functions in GCC ; other ideas on "how to assert in supposedly-unreachable constexpr code" are very welcome

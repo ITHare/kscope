@@ -161,9 +161,10 @@ namespace ithare {
 #define	ITHARE_KSCOPE_INIT_PRNG(file,line,counter) ithare::kscope::kscope_init_prng(file,line,counter) 
 #define ITHARE_KSCOPE_NEW_PRNG(prng,modifier) ithare::kscope::kscope_new_prng(prng,modifier)
 #define ITHARE_KSCOPE_COMBINED_PRNG(prng,prng2) ithare::kscope::kscope_combined_prng(prng,prng2)
-#if defined(ITHARE_KSCOPE_WORKAROUND_FOR_MSVC_BUG_196885) || defined(ITHARE_KSCOPE_CONSISTENT_XPLATFORM_IMPLICIT_SEEDS) 
+#if defined(ITHARE_KSCOPE_WORKAROUND_FOR_MSVC_BUG_196885) || defined(ITHARE_KSCOPE_WORKAROUND_FOR_GCC_BUG_47488) || defined(ITHARE_KSCOPE_CONSISTENT_XPLATFORM_IMPLICIT_SEEDS) 
 		//https://developercommunity.visualstudio.com/content/problem/196885/c1001-in-fddvctoolscompilercxxfeslp1cwalkcpp-line.html
-		//  as soon as the bug is fixed, the whole #if branch is to be removed
+		//https://gcc.gnu.org/bugzilla/show_bug.cgi?id=47488
+		//  as soon as BOTH these bugs are fixed, the whole #if branch is to be removed
 #ifdef ITHARE_KSCOPE_CONSISTENT_XPLATFORM_IMPLICIT_SEEDS
 #define ITHARE_KSCOPE_INIT_COMBINED_PRNG(prng2,file,line,counter) (ithare::kscope::kscope_ranhash(line)^prng2)
 #else
@@ -295,6 +296,19 @@ namespace ithare {
 			uint64_t rhi = (uint64_t(v.arr[3]) << 32) | uint64_t(v.arr[2]);
 			return std::pair<uint64_t, uint64_t>(rlo, rhi);
 		}
+		constexpr std::pair<uint64_t, uint64_t> kscope_init_prng_workaround(int line, int counter) {
+			uint64_t v0 = line;
+#ifdef ITHARE_KSCOPE_CONSISTENT_XPLATFORM_IMPLICIT_SEEDS
+#else//!CONSISTENT
+			v0 ^= counter;
+#endif
+			uint64_t u = 0;
+			std::pair<uint64_t, uint64_t> ctr_block = { u ^ kscope_global_seed,v0 ^kscope_global_seed2 };
+			KscopeArrayWrapper<uint32_t, 4> v = kscope_xxtea_encipher(ctr_block, kscope_prng_xxtea_key_for_init);
+			uint64_t rlo = (uint64_t(v.arr[1]) << 32) | uint64_t(v.arr[0]);
+			uint64_t rhi = (uint64_t(v.arr[3]) << 32) | uint64_t(v.arr[2]);
+			return std::pair<uint64_t, uint64_t>(rlo, rhi);
+		}
 		constexpr std::pair<uint64_t, uint64_t> kscope_combined_prng(uint64_t lo, uint64_t hi, uint64_t lo2, uint64_t hi2) {
 			uint64_t l = lo ^ hi2;//why not?
 			uint64_t h = hi ^ lo2;
@@ -313,16 +327,22 @@ namespace ithare {
 #define	ITHARE_KSCOPE_INIT_PRNG(file,line,counter) ithare::kscope::KscopeSeed<ithare::kscope::kscope_init_prng(file,line,counter).first,ithare::kscope::kscope_init_prng(file,line,counter).second,0>
 #define ITHARE_KSCOPE_NEW_PRNG(prng,modifier) ithare::kscope::KscopeSeed<ithare::kscope::kscope_new_prng(prng::lo,prng::hi,modifier).first,ithare::kscope::kscope_new_prng(prng::lo,prng::hi,modifier).second,prng::depth+1>
 #define ITHARE_KSCOPE_COMBINED_PRNG(prng,prng2) ithare::kscope::KscopeSeed<ithare::kscope::kscope_combined_prng(prng::lo,prng::hi,prng2::lo,prng2::hi).first,ithare::kscope::kscope_combined_prng(prng::lo,prng::hi,prng2::lo,prng2::hi).second,std::max(prng::depth,prng2::depth)+1>
-#if defined(ITHARE_KSCOPE_WORKAROUND_FOR_MSVC_BUG_196900) || defined(ITHARE_KSCOPE_CONSISTENT_XPLATFORM_IMPLICIT_SEEDS) 
+#if defined(ITHARE_KSCOPE_WORKAROUND_FOR_MSVC_BUG_196900) || defined(ITHARE_KSCOPE_WORKAROUND_FOR_GCC_BUG_47488) || defined(ITHARE_KSCOPE_CONSISTENT_XPLATFORM_IMPLICIT_SEEDS) 
 		//https://developercommunity.visualstudio.com/content/problem/196900/c1001-in-file-msc1cpp-line-1507.html
-		//  as soon as the bug is fixed, the whole #if branch is to be removed
+		//https://gcc.gnu.org/bugzilla/show_bug.cgi?id=47488
+		//  as soon as BOTH bugs are fixed, the whole #if branch is to be removed
+		//  partial fixes are probably possible with only one of the compiler fixes (in particular, restoring dependency on prng2 seems to be possible if only MSVC bug is fixed)
 
-#define ITHARE_KSCOPE_INIT_COMBINED_PRNG(prng2,file,line,counter) ITHARE_KSCOPE_INIT_PRNG(file,line,counter)
+#define ITHARE_KSCOPE_INIT_COMBINED_PRNG(prng2,file,line,counter) ithare::kscope::KscopeSeed<ithare::kscope::kscope_init_prng_workaround(line,counter).first,ithare::kscope::kscope_init_prng_workaround(line,counter).second,0>
 
 #ifdef _MSC_VER
-#pragma message("SERIOUS DEGRADATION: NO DEPENDENCY ON prng2 in ITHARE_KSCOPE_INIT_COMBINED_PRNG(). Fix depends on https://developercommunity.visualstudio.com/content/problem/196900/c1001-in-file-msc1cpp-line-1507.html. Meanwhile, you may want to avoid using ITHARE_KSCOPE_CRYPTO_PRNG.")
+#pragma message("SERIOUS DEGRADATION: NO DEPENDENCY ON prng2 in ITHARE_KSCOPE_INIT_COMBINED_PRNG(). Fix depends on https://developercommunity.visualstudio.com/content/problem/196900/c1001-in-file-msc1cpp-line-1507.html. Meanwhile, you may want to avoid using ITHARE_KSCOPE_CRYPTO_PRNG under MSVC.")
 #else
-#pragma message "SERIOUS DEGRADATION: NO DEPENDENCY ON prng2 in ITHARE_KSCOPE_INIT_COMBINED_PRNG(). Problem is due to a bug in MSVC, and will go away if NOT using ITHARE_KSCOPE_CONSISTENT_XPLATFORM_IMPLICIT_SEEDS, or ITHARE_KSCOPE_CRYPTO_PRNG"
+#ifdef __clang__
+#pragma message "SERIOUS DEGRADATION: NO DEPENDENCY ON prng2 in ITHARE_KSCOPE_INIT_COMBINED_PRNG(). Problem is due to bugs in MSVC/GCC, and will go away if NOT using ITHARE_KSCOPE_CONSISTENT_XPLATFORM_IMPLICIT_SEEDS, or ITHARE_KSCOPE_CRYPTO_PRNG"
+#else
+#pragma message "SERIOUS DEGRADATION: NO DEPENDENCY ON prng2 in ITHARE_KSCOPE_INIT_COMBINED_PRNG(). Fix depends on either GCC bug fix, or MSVC bug fix (sic!). Meanwhile, you may want to avoid using ITHARE_KSCOPE_CRYPTO_PRNG under GCC."
+#endif
 #endif
 
 #else
