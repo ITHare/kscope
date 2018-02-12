@@ -223,9 +223,16 @@ static struct chacha_tv chacha_test_vectors[] = {
 
 using namespace ithare::kscope::ssl;
 
+/* Single-shot ChaCha20 using CRYPTO_chacha_20 interface. */
+static void
+crypto_chacha_20_test(const chacha_tv* tv, uint8_t* out, uint8_t* in)
+{
+	CRYPTO_chacha_20(out, in, tv->len, tv->key, tv->iv, 0);
+}
+
 /* Single-shot ChaCha20 using the ChaCha interface. */
 static void
-chacha_ctx_full_test(const chacha_tv *tv, uint8_t *out, uint8_t *in)
+chacha_ctx_full_test(const chacha_tv* tv, uint8_t *out, uint8_t* in)
 {
 	ChaCha_ctx ctx;
 
@@ -236,7 +243,7 @@ chacha_ctx_full_test(const chacha_tv *tv, uint8_t *out, uint8_t *in)
 
 /* ChaCha20 with partial writes using the Chacha interface. */
 static void
-chacha_ctx_partial_test(const chacha_tv *tv, uint8_t* out, uint8_t* in)
+chacha_ctx_partial_test(const chacha_tv* tv, uint8_t* out, uint8_t* in)
 {
 	ChaCha_ctx ctx;
 	int len, size = 0;
@@ -267,17 +274,20 @@ chacha_ctx_single_test(const chacha_tv *tv, uint8_t* out, uint8_t* in)
 		ChaCha(&ctx, out + i, in + i, 1);
 }
 
-
-
 const lest::test module[] = {
-/* --- skipping: Single-shot ChaCha20 using CRYPTO_chacha_20 interface.
-static void
-crypto_chacha_20_test(struct chacha_tv *tv, unsigned char *out,
-    unsigned char *in)
-{
-	CRYPTO_chacha_20(out, in, tv->len, tv->key, tv->iv, 0);
-}
-*/
+    CASE( "crypto_chacha_20_test()" ) 
+    {
+		for (size_t i = 0; i < N_VECTORS; i++) {
+			uint8_t in[64];
+			uint8_t out[64];
+			const chacha_tv* tv = &chacha_test_vectors[i];
+			assert(tv->len <= sizeof(in));
+			assert(tv->len <= sizeof(out));
+			memset(in,0,sizeof(in));
+			crypto_chacha_20_test(tv,out,in);
+			EXPECT(memcmp(out,tv->out,tv->len)==0);
+		}
+    },
     CASE( "chacha_ctx_full_test()" ) 
     {
 		for (size_t i = 0; i < N_VECTORS; i++) {
