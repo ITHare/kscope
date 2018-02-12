@@ -343,9 +343,10 @@ namespace ithare {
 		//https://gcc.gnu.org/bugzilla/show_bug.cgi?id=47488 ; GCC doesn't like using __FILE__ literal in this context...
 		//  as soon as the bug is fixed, the whole #elif branch is to be removed
 
-#define ITHARE_KSCOPE_INIT_COMBINED_PRNG(prng2,file,line,counter) ITHARE_KSCOPE_INIT_PRNG(prng2,ithare::kscope::KscopeSeed<ithare::kscope::kscope_init_prng_gcc_workaround(line,counter).first,ithare::kscope::kscope_init_prng_gcc_workaround(line,counter).second,0>)
+#define ITHARE_KSCOPE_INIT_PRNG_WORKAROUND(file,line,counter) ithare::kscope::KscopeSeed<ithare::kscope::kscope_init_prng_gcc_workaround(line,counter).first,ithare::kscope::kscope_init_prng_gcc_workaround(line,counter).second,0>
+#define ITHARE_KSCOPE_INIT_COMBINED_PRNG(prng2,file,line,counter) ITHARE_KSCOPE_COMBINED_PRNG(prng2,ITHARE_KSCOPE_INIT_PRNG_WORKAROUND(file,line,counter))
 
-#pragma message "MINOR DEGRADATION: __FILE__ is not used in ITHARE_KSCOPE_INIT_COMBINED_PRNG(). Problem is due to a bugs in GCC, but is hopefully not TOO bad"
+#pragma message "MINOR DEGRADATION: __FILE__ is not used in ITHARE_KSCOPE_INIT_COMBINED_PRNG(). Problem is due to a bug in GCC, but is hopefully not TOO bad"
 
 #else//!CONSISTENT_XPLATFORM && !MSVC_BUG && !GCC_BUG 
 
