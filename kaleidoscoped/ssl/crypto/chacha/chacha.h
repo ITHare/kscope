@@ -18,18 +18,18 @@ constexpr int CHACHA_CTRLEN	= 8;
 constexpr int CHACHA_STATELEN = CHACHA_NONCELEN+CHACHA_CTRLEN;
 constexpr int CHACHA_BLOCKLEN = 64;
 
-struct chacha_ctx {
+struct ChaCha_ctx {
 	uint32_t input[16];
 	uint8_t ks[CHACHA_BLOCKLEN];
 	uint8_t unused;
 };
 
-constexpr inline void chacha_keysetup(struct chacha_ctx* x, const uint8_t* k, unsigned kbits /*128 or 256*/)
+constexpr inline void chacha_keysetup(struct ChaCha_ctx* x, const uint8_t* k, unsigned kbits /*128 or 256*/)
     ITHARE_KSCOPE_BOUNDED_MINBYTES(2, CHACHA_MINKEYLEN);
-constexpr inline void chacha_ivsetup(struct chacha_ctx* x, const uint8_t* iv, const uint8_t* ctr)
+constexpr inline void chacha_ivsetup(struct ChaCha_ctx* x, const uint8_t* iv, const uint8_t* ctr)
     ITHARE_KSCOPE_BOUNDED_MINBYTES(2, CHACHA_NONCELEN)
     ITHARE_KSCOPE_BOUNDED_MINBYTES(3, CHACHA_CTRLEN);
-constexpr inline void chacha_encrypt_bytes(struct chacha_ctx *x, const uint8_t* m, uint8_t* c, size_t bytes)
+constexpr inline void chacha_encrypt_bytes(struct ChaCha_ctx *x, const uint8_t* m, uint8_t* c, size_t bytes)
     ITHARE_KSCOPE_BOUNDED_BUFFER(2, 4)
     ITHARE_KSCOPE_BOUNDED_BUFFER(3, 4);
 
@@ -65,19 +65,19 @@ constexpr inline void chacha_encrypt_bytes(struct chacha_ctx *x, const uint8_t* 
   c = ITHARE_KSCOPE_PLUS(c,d); b = ITHARE_KSCOPE_ROTATE(ITHARE_KSCOPE_XOR(b,c), 7);
 
 /* Initialise with "expand 32-byte k". */
-constexpr uint8_t sigma[16] = {
+constexpr uint8_t chacha_sigma[16] = {
 	0x65, 0x78, 0x70, 0x61, 0x6e, 0x64, 0x20, 0x33,
 	0x32, 0x2d, 0x62, 0x79, 0x74, 0x65, 0x20, 0x6b,
 };
 
 /* Initialise with "expand 16-byte k". */
-constexpr uint8_t tau[16] = {
+constexpr uint8_t chacha_tau[16] = {
 	0x65, 0x78, 0x70, 0x61, 0x6e, 0x64, 0x20, 0x31,
 	0x36, 0x2d, 0x62, 0x79, 0x74, 0x65, 0x20, 0x6b,
 };
 
 constexpr inline void
-chacha_keysetup(chacha_ctx *x, const uint8_t *k, unsigned kbits)
+chacha_keysetup(ChaCha_ctx *x, const uint8_t *k, unsigned kbits)
 {
 	const uint8_t* constants = nullptr;
 
@@ -87,10 +87,10 @@ chacha_keysetup(chacha_ctx *x, const uint8_t *k, unsigned kbits)
 	x->input[7] = ITHARE_KSCOPE_U8TO32_LITTLE(k + 12);
 	if (kbits == 256) { /* recommended */
 		k += 16;
-		constants = sigma;
+		constants = chacha_sigma;
 	} else { /* kbits == 128 */
 		assert(kbits==128);
-		constants = tau;
+		constants = chacha_tau;
 	}
 	x->input[8] = ITHARE_KSCOPE_U8TO32_LITTLE(k + 0);
 	x->input[9] = ITHARE_KSCOPE_U8TO32_LITTLE(k + 4);
@@ -103,7 +103,7 @@ chacha_keysetup(chacha_ctx *x, const uint8_t *k, unsigned kbits)
 }
 
 constexpr inline void
-chacha_ivsetup(chacha_ctx* x, const uint8_t* iv, const uint8_t* counter)
+chacha_ivsetup(ChaCha_ctx* x, const uint8_t* iv, const uint8_t* counter)
 {
 	x->input[12] = counter == NULL ? 0 : ITHARE_KSCOPE_U8TO32_LITTLE(counter + 0);
 	x->input[13] = counter == NULL ? 0 : ITHARE_KSCOPE_U8TO32_LITTLE(counter + 4);
@@ -112,7 +112,7 @@ chacha_ivsetup(chacha_ctx* x, const uint8_t* iv, const uint8_t* counter)
 }
 
 constexpr inline void
-chacha_encrypt_bytes(chacha_ctx* x, const uint8_t* m, uint8_t* c, size_t bytes)
+chacha_encrypt_bytes(ChaCha_ctx* x, const uint8_t* m, uint8_t* c, size_t bytes)
 {
 	if (!bytes)
 		return;
@@ -298,13 +298,6 @@ chacha_encrypt_bytes(chacha_ctx* x, const uint8_t* m, uint8_t* c, size_t bytes)
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-/* struct ChaCha_ctx {
-	uint32_t input[16];
-	uint8_t ks[64];
-	uint8_t unused;
-};*/
-using ChaCha_ctx = chacha_ctx;//TODO: rename
-
 /* $OpenBSD: chacha.c,v 1.7 2015/12/09 14:07:55 bcook Exp $ */
 /*
  * Copyright (c) 2014 Joel Sing <jsing@openbsd.org>
@@ -358,7 +351,7 @@ constexpr inline void
 CRYPTO_chacha_20(uint8_t* out, const uint8_t* in, size_t len,
     const uint8_t key[32], const uint8_t iv[8], uint64_t counter)
 {
-	struct chacha_ctx ctx = {};
+	struct ChaCha_ctx ctx = {};
 
 	/*
 	 * chacha_ivsetup expects the counter to be in u8. Rather than
