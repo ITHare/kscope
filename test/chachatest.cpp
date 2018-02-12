@@ -2,7 +2,7 @@
 //  adapted from tests/chachatest.c from LibreSSL 2.6.4
 
 #include "lest.hpp"
-#include "../kaleidoscoped/libressl/crypto/chacha/chacha.h"
+#include "../kaleidoscoped/ssl/crypto/chacha/chacha.h"
 
 /*
  * Copyright (c) 2014 Joel Sing <jsing@openbsd.org>
