@@ -564,7 +564,7 @@ namespace ithare {
 		static_assert(std::is_integral<T>::value);
 		static_assert(std::is_unsigned<T>::value);
 	public:
-		//TODO:split-join based on union
+		//TODO:split-join based on (using byte=unsigned char) representations (memcpy() or equivalent), which are exempt from strict aliasing rules
 		static constexpr KSCOPECYCLES availCycles = cycles - KscopeInjectionVersion3Descr<T, Context>::own_min_cycles;
 		static_assert(availCycles >= 0);
 
