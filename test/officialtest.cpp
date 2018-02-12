@@ -93,7 +93,7 @@ public:
 
 #define NBENCH 1000
 
-const lest::test spec[] = {
+static const lest::test module[] = {
 	CASE("types") {
 		//well, at least for common 32/64-bit platforms is should stand
 		using TT1 = typename ITKSCOPE kscope_integral_operator_promoconv<int8_t,unsigned short>::type;
@@ -126,14 +126,16 @@ const lest::test spec[] = {
 		EXPECT( ITKSCOPE factorial(19) == UINT64_C(121645100408832000));
 		EXPECT( ITKSCOPE factorial(20) == UINT64_C(2432902008176640000));
 		EXPECT( ITKSCOPE factorial(21) == UINT64_C(14197454024290336768));//with wrap-around(!)
-		try {
-			auto none = ITKSCOPE factorial(-1);
-		}
-		catch(MyException& x) {
-			std::cout << x.what() << std::endl;
-		}
+		EXPECT_THROWS_AS( ITKSCOPE factorial(-1),MyException);
 	},
 };
+
+lest::tests& specification() {
+	static lest::tests all_tests;
+	return all_tests;
+}
+
+MODULE( specification(), module )
 
 int main(int argc, char** argv) {
 #if !defined(ITHARE_KSCOPE_ENABLE_AUTO_DBGPRINT) || ITHARE_KSCOPE_ENABLE_AUTO_DBGPRINT == 2//excluding platform-specific stuff to avoid spurious changes to kscope.txt with -DITHARE_KSCOPE_ENABLE_AUTO_DBGPRINT
@@ -160,5 +162,5 @@ int main(int argc, char** argv) {
 		std::cout << "ITHARE_KSCOPE_SEED2=" << std::hex << ITHARE_KSCOPE_SEED2 << std::dec << std::endl;
 #endif
 
-	return lest::run(spec,argc,argv);
+	return lest::run(specification(),argc,argv);
 }

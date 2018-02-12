@@ -640,4 +640,3 @@ ITHARE_KSCOPE_SEED2=36e007a38ae8e0ea
      Context:KscopeZeroContext<uint32_t>
      KscopeInjectionVersion<0/*identity*/,uint32_t,3935891264870367316,1>: availCycles=1
       KscopeZeroContext<uint32_t>
-Negative argument to factorial!

@@ -78,6 +78,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define ITHARE_KSCOPE_NOINLINE __declspec(noinline)
 #define ITHARE_KSCOPE_CONSTEXPR_ASSERT_UNREACHABLE assert(false)
 
+#define ITHARE_KSCOPE_BOUNDED_MINBYTES(param_num,minlen) //As there are no apples growing on oak trees (="bound checks for MSVC"), we can't do much about it...
+#define ITHARE_KSCOPE_BOUNDED_BUFFER(param_num,len) //No apples growing on oak trees...
+
 #define ITHARE_KSCOPE_WORKAROUND_FOR_MSVC_BUG_195483 //workaround for https://developercommunity.visualstudio.com/content/problem/195483/continue-in-constexpr-function-causes-constexpr-fu.html
 #define ITHARE_KSCOPE_WORKAROUND_FOR_MSVC_BUG_196885 //workaround for https://developercommunity.visualstudio.com/content/problem/196885/c1001-in-fddvctoolscompilercxxfeslp1cwalkcpp-line.html
 #define ITHARE_KSCOPE_WORKAROUND_FOR_MSVC_BUG_196900 //workaround for https://developercommunity.visualstudio.com/content/problem/196900/c1001-in-file-msc1cpp-line-1507.html
@@ -98,6 +101,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define ITHARE_KSCOPE_NOINLINE __attribute__((noinline))
 #define ITHARE_KSCOPE_CONSTEXPR_ASSERT_UNREACHABLE assert(false)
 
+#define ITHARE_KSCOPE_BOUNDED_MINBYTES(param_num,minlen) __attribute__((__bounded__(__minbytes__,param_num,minlen))) 
+#define ITHARE_KSCOPE_BOUNDED_BUFFER(param_num,len) __attribute__((__bounded__(__buffer__,param_num,len))) 
+
 #elif defined(__GNUC__)
 
 #if __GNUC__ < 7
@@ -110,6 +116,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define ITHARE_KSCOPE_NOINLINE __attribute__((noinline))
 #define ITHARE_KSCOPE_CONSTEXPR_ASSERT_UNREACHABLE  //as of GCC 7.2.0, assert(false) doesn't work in constexpr functions in GCC ; other ideas on "how to assert in supposedly-unreachable constexpr code" are very welcome
 
+#define ITHARE_KSCOPE_BOUNDED_MINBYTES(param_num,minlen) __attribute__((__bounded__(__minbytes__,param_num,minlen))) 
+#define ITHARE_KSCOPE_BOUNDED_BUFFER(param_num,len) __attribute__((__bounded__(__buffer__,param_num,len))) 
+
 #else
 #error Other compilers than MSVC, Clang, and GCC are not supported
 #endif//_MSC_VER || __clang__ || __GNUC__
@@ -119,9 +128,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #pragma message "Are you sure you didn't forget to specify -std=c++17 or -std=c++1z when compiling?"
 #endif
 #endif
-//for VS2017, __cplusplus is still stuck at 199711 regardless of compiler switches :-(; no possibility to warn about missing /std:c++17
+//for VS2017, __cplusplus is still stuck at 199711 regardless of compiler switches :-( => no possibility to warn about missing /std:c++17
 
-#ifndef _MSC_VER //MSVC doesn't seem to support C++ feature test macros :-(
+#ifndef _MSC_VER //as of VS2017, MSVC doesn't seem to support C++ feature test macros :-(
 #if __cpp_constexpr < 201304
 #error "ithare::kscope DOES use constexprs extensively"
 #endif
@@ -166,6 +175,11 @@ namespace ithare {
 				u = ((u << 5) + u) + *p;
 			return u;
 		}
+		
+		static_assert(CHAR_BIT==8);
+		using kscope_aliased_byte = unsigned char;//GUARANTEES pointer aliasing even if uint8_t is not the same as unsigned char
+												  //  THE ONLY type which should be used for cast-based fooling around
+		static_assert(sizeof(kscope_aliased_byte)==1);
 		
 		enum class kscope_endian//along the lines of p0463r1, to be replaced with std::endian
 		{
