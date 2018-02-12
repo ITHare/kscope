@@ -246,10 +246,11 @@ static void
 chacha_ctx_partial_test(const chacha_tv* tv, uint8_t* out, uint8_t* in)
 {
 	ChaCha_ctx ctx;
-	int len, size = 0;
+	size_t len, size = 0;
 
 	ChaCha_set_key(&ctx, tv->key, 256);
 	ChaCha_set_iv(&ctx, tv->iv, NULL);
+	assert(tv->len > 0);
 	len = tv->len - 1;
 	while (len > 1) {
 		size = len / 2;

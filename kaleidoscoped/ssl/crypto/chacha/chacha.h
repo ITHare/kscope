@@ -256,7 +256,7 @@ chacha_encrypt_bytes(ChaCha_ctx* x, const uint8_t* m, uint8_t* c, size_t bytes)
 			}
 			x->input[12] = j12;
 			x->input[13] = j13;
-			x->unused = 64 - bytes;
+			x->unused = uint8_t(64 - bytes);
 			return;
 		}
 		bytes -= 64;
@@ -340,7 +340,7 @@ ChaCha(ChaCha_ctx* ctx, uint8_t* out, const uint8_t* in, size_t len)
 		size_t l = (len > ctx->unused) ? ctx->unused : len;
 		for (size_t i = 0; i < l; i++)
 			*(out++) = *(in++) ^ *(k++);
-		ctx->unused -= l;
+		ctx->unused -= uint8_t(l);
 		len -= l;
 	}
 
