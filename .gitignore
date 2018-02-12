@@ -4,6 +4,7 @@
 /test/nix/randomtestgen
 /test/nix/failedrandomtest.sh
 /test/nix/generatedrandomtest.sh
+/test/nix/nohup.out
 
 /.vs
 /test/win/officialtest/.vs
