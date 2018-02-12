@@ -344,7 +344,7 @@ ChaCha(ChaCha_ctx* ctx, uint8_t* out, const uint8_t* in, size_t len)
 		len -= l;
 	}
 
-	chacha_encrypt_bytes(ctx, in, out, (uint32_t)len);
+	chacha_encrypt_bytes(ctx, in, out, len);
 }
 
 constexpr inline void
@@ -365,7 +365,7 @@ CRYPTO_chacha_20(uint8_t* out, const uint8_t* in, size_t len,
 		ctx.input[13] = (uint32_t)(counter >> 32);
 	}
 
-	chacha_encrypt_bytes(&ctx, in, out, (uint32_t)len);
+	chacha_encrypt_bytes(&ctx, in, out, len);
 }
 
 
