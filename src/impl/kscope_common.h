@@ -42,6 +42,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <stdint.h>
 #include <inttypes.h>
 #include <limits>
+#include <limits.h>//CHAR_BIT
+#include <cstring>//memset/memcpy
 //#include <array> - prefer KScopeArrayWrapper instead
 //#include <algorithm>
 #include <assert.h>
@@ -116,8 +118,10 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define ITHARE_KSCOPE_NOINLINE __attribute__((noinline))
 #define ITHARE_KSCOPE_CONSTEXPR_ASSERT_UNREACHABLE  //as of GCC 7.2.0, assert(false) doesn't work in constexpr functions in GCC ; other ideas on "how to assert in supposedly-unreachable constexpr code" are very welcome
 
-#define ITHARE_KSCOPE_BOUNDED_MINBYTES(param_num,minlen) __attribute__((__bounded__(__minbytes__,param_num,minlen))) 
-#define ITHARE_KSCOPE_BOUNDED_BUFFER(param_num,len) __attribute__((__bounded__(__buffer__,param_num,len))) 
+//for GCC, attributes are not allowed on function definitions
+//  - and 99.9% of our kaleidoscoped functions are definition-only (for a good reason too) 
+#define ITHARE_KSCOPE_BOUNDED_MINBYTES(param_num,minlen)
+#define ITHARE_KSCOPE_BOUNDED_BUFFER(param_num,len) 
 
 #else
 #error Other compilers than MSVC, Clang, and GCC are not supported
