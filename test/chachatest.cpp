@@ -24,7 +24,7 @@ struct chacha_tv {
 	const char *desc;
 	const ITHARE_KSCOPE_INT3(uint8_t) key[32];
 	const ITHARE_KSCOPE_INT3(uint8_t) iv[8];
-	const size_t len;
+	const ITHARE_KSCOPE_INT3(size_t) len;
 	const unsigned char out[512];
 };
 
@@ -275,12 +275,12 @@ chacha_ctx_partial_test(const chacha_tv* tv, uint8_t* out0, uint8_t* in0)
 	len = tv->len - 1;
 	while (len > 1) {
 		size = len / 2;
-		ITHARE_KSCOPE_CALL3(ChaCha)(&ctx, out, in, size);
+		ITHARE_KSCOPE_CALL3(ChaCha)(&ctx, out, in, ITHARE_KSCOPE_INT3(size_t)(size));
 		in += size;
 		out += size;
 		len -= size;
 	}
-	ITHARE_KSCOPE_CALL3(ChaCha)(&ctx, out, in, len + 1);
+	ITHARE_KSCOPE_CALL3(ChaCha)(&ctx, out, in, ITHARE_KSCOPE_INT3(size_t)(len + 1));
 	for (size_t i = 0; i < tv->len; ++i)
 		out0[i] = out1[i];
 }

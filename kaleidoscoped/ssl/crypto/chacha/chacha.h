@@ -25,7 +25,7 @@ ITHARE_KSCOPE_DECLARECLASS
 struct ChaCha_ctx {
 	uint32_t input[16];
 	uint8_t ks[CHACHA_BLOCKLEN];
-	uint8_t unused;
+	ITHARE_KSCOPE_CINT(uint8_t) unused;
 };
 
 #define ITHARE_KSCOPE_U8V(v) ((uint8_t)(v) & UINT8_C(0xFF))
@@ -109,30 +109,30 @@ ITHARE_KSCOPE_BOUNDED_MINBYTES(3, CHACHA_CTRLEN)
 	x->input[15] = ITHARE_KSCOPE_U8TO32_LITTLE(iv + 4);
 }
 
-ITHARE_KSCOPE_DECLAREFUNC_WITHPARAMS_CLASS_2xINT
-void chacha_encrypt_bytes(ITHARE_KSCOPE_DECLAREPARAM_CLASS(ChaCha_ctx)* x, const ITHARE_KSCOPE_DECLAREPARAM_INT(uint8_t)* m, ITHARE_KSCOPE_DECLAREPARAM_INT2(uint8_t)* c, size_t bytes)
+ITHARE_KSCOPE_DECLAREFUNC_WITHPARAMS_CLASS_3xINT
+void chacha_encrypt_bytes(ITHARE_KSCOPE_DECLAREPARAM_CLASS(ChaCha_ctx)* x, const ITHARE_KSCOPE_DECLAREPARAM_INT(uint8_t)* m, ITHARE_KSCOPE_DECLAREPARAM_INT2(uint8_t)* c, ITHARE_KSCOPE_DECLAREPARAM_INT3(size_t) bytes)
 ITHARE_KSCOPE_BOUNDED_BUFFER(2, 4)
 ITHARE_KSCOPE_BOUNDED_BUFFER(3, 4)
 {
 	if (!bytes)
 		return;
 
-	uint32_t j0 = x->input[0];
-	uint32_t j1 = x->input[1];
-	uint32_t j2 = x->input[2];
-	uint32_t j3 = x->input[3];
-	uint32_t j4 = x->input[4];
-	uint32_t j5 = x->input[5];
-	uint32_t j6 = x->input[6];
-	uint32_t j7 = x->input[7];
-	uint32_t j8 = x->input[8];
-	uint32_t j9 = x->input[9];
-	uint32_t j10 = x->input[10];
-	uint32_t j11 = x->input[11];
-	uint32_t j12 = x->input[12];
-	uint32_t j13 = x->input[13];
-	uint32_t j14 = x->input[14];
-	uint32_t j15 = x->input[15];
+	ITHARE_KSCOPE_FINT(uint32_t) j0 = x->input[0];
+	ITHARE_KSCOPE_FINT(uint32_t) j1 = x->input[1];
+	ITHARE_KSCOPE_FINT(uint32_t) j2 = x->input[2];
+	ITHARE_KSCOPE_FINT(uint32_t) j3 = x->input[3];
+	ITHARE_KSCOPE_FINT(uint32_t) j4 = x->input[4];
+	ITHARE_KSCOPE_FINT(uint32_t) j5 = x->input[5];
+	ITHARE_KSCOPE_FINT(uint32_t) j6 = x->input[6];
+	ITHARE_KSCOPE_FINT(uint32_t) j7 = x->input[7];
+	ITHARE_KSCOPE_FINT(uint32_t) j8 = x->input[8];
+	ITHARE_KSCOPE_FINT(uint32_t) j9 = x->input[9];
+	ITHARE_KSCOPE_FINT(uint32_t) j10 = x->input[10];
+	ITHARE_KSCOPE_FINT(uint32_t) j11 = x->input[11];
+	ITHARE_KSCOPE_FINT(uint32_t) j12 = x->input[12];
+	ITHARE_KSCOPE_FINT(uint32_t) j13 = x->input[13];
+	ITHARE_KSCOPE_FINT(uint32_t) j14 = x->input[14];
+	ITHARE_KSCOPE_FINT(uint32_t) j15 = x->input[15];
 
 	for (;;) {
 		ITHARE_KSCOPE_PTR_OF_SAME_TYPE_AS(c) ctarget = nullptr;
@@ -145,23 +145,23 @@ ITHARE_KSCOPE_BOUNDED_BUFFER(3, 4)
 			ctarget = c;
 			c = tmpc;
 		}
-		uint32_t x0 = j0;
-		uint32_t x1 = j1;
-		uint32_t x2 = j2;
-		uint32_t x3 = j3;
-		uint32_t x4 = j4;
-		uint32_t x5 = j5;
-		uint32_t x6 = j6;
-		uint32_t x7 = j7;
-		uint32_t x8 = j8;
-		uint32_t x9 = j9;
-		uint32_t x10 = j10;
-		uint32_t x11 = j11;
-		uint32_t x12 = j12;
-		uint32_t x13 = j13;
-		uint32_t x14 = j14;
-		uint32_t x15 = j15;
-		for (unsigned i = 20; i > 0; i -= 2) {
+		ITHARE_KSCOPE_FINT(uint32_t) x0 = j0;
+		ITHARE_KSCOPE_FINT(uint32_t) x1 = j1;
+		ITHARE_KSCOPE_FINT(uint32_t) x2 = j2;
+		ITHARE_KSCOPE_FINT(uint32_t) x3 = j3;
+		ITHARE_KSCOPE_FINT(uint32_t) x4 = j4;
+		ITHARE_KSCOPE_FINT(uint32_t) x5 = j5;
+		ITHARE_KSCOPE_FINT(uint32_t) x6 = j6;
+		ITHARE_KSCOPE_FINT(uint32_t) x7 = j7;
+		ITHARE_KSCOPE_FINT(uint32_t) x8 = j8;
+		ITHARE_KSCOPE_FINT(uint32_t) x9 = j9;
+		ITHARE_KSCOPE_FINT(uint32_t) x10 = j10;
+		ITHARE_KSCOPE_FINT(uint32_t) x11 = j11;
+		ITHARE_KSCOPE_FINT(uint32_t) x12 = j12;
+		ITHARE_KSCOPE_FINT(uint32_t) x13 = j13;
+		ITHARE_KSCOPE_FINT(uint32_t) x14 = j14;
+		ITHARE_KSCOPE_FINT(uint32_t) x15 = j15;
+		for (ITHARE_KSCOPE_FINT(unsigned) i = 20; i > ITHARE_KSCOPE_FINTLIT(0); i -= 2) {
 			ITHARE_KSCOPE_QUARTERROUND(x0, x4, x8, x12)
 			ITHARE_KSCOPE_QUARTERROUND(x1, x5, x9, x13)
 			ITHARE_KSCOPE_QUARTERROUND(x2, x6, x10, x14)
@@ -331,13 +331,14 @@ void ChaCha_set_iv(ITHARE_KSCOPE_DECLAREPARAM_CLASS(ChaCha_ctx)* ctx, const ITHA
 	ctx->unused = 0;
 }
 
-ITHARE_KSCOPE_DECLAREFUNC_WITHPARAMS_CLASS_2xINT
-void ChaCha(ITHARE_KSCOPE_DECLAREPARAM_CLASS(ChaCha_ctx)* ctx, ITHARE_KSCOPE_DECLAREPARAM_INT(uint8_t)* out, const ITHARE_KSCOPE_DECLAREPARAM_INT2(uint8_t)* in, size_t len)
+ITHARE_KSCOPE_DECLAREFUNC_WITHPARAMS_CLASS_3xINT
+void ChaCha(ITHARE_KSCOPE_DECLAREPARAM_CLASS(ChaCha_ctx)* ctx, ITHARE_KSCOPE_DECLAREPARAM_INT(uint8_t)* out, const ITHARE_KSCOPE_DECLAREPARAM_INT2(uint8_t)* in, ITHARE_KSCOPE_DECLAREPARAM_INT3(size_t) len_)
 {
+	ITHARE_KSCOPE_FINT(size_t) len = ITHARE_KSCOPE_USEPARAM_INT(len_);
 	/* Consume remaining keystream, if any exists. */
 	if (ctx->unused > 0) {
 		uint8_t* k = ctx->ks + 64 - ctx->unused;
-		size_t l = (len > ctx->unused) ? ctx->unused : len;
+		size_t l = (len > ctx->unused) ? ITHARE_KSCOPE_VALUE(ctx->unused) : ITHARE_KSCOPE_VALUE(len);
 		for (size_t i = 0; i < l; i++)
 			*(out++) = *(in++) ^ *(k++);
 		assert(l <= 255);
@@ -348,9 +349,9 @@ void ChaCha(ITHARE_KSCOPE_DECLAREPARAM_CLASS(ChaCha_ctx)* ctx, ITHARE_KSCOPE_DEC
 	ITHARE_KSCOPE_FCALL(chacha_encrypt_bytes)(ctx, in, out, len);
 }
 
-ITHARE_KSCOPE_DECLAREFUNC_WITHPARAMS_4xINT 
-void CRYPTO_chacha_20(ITHARE_KSCOPE_DECLAREPARAM_INT(uint8_t)* out, const ITHARE_KSCOPE_DECLAREPARAM_INT2(uint8_t)* in, size_t len,
-    const ITHARE_KSCOPE_DECLAREPARAM_INT3(uint8_t) key[32], const ITHARE_KSCOPE_DECLAREPARAM_INT4(uint8_t) iv[8], uint64_t counter)
+ITHARE_KSCOPE_DECLAREFUNC_WITHPARAMS_5xINT 
+void CRYPTO_chacha_20(ITHARE_KSCOPE_DECLAREPARAM_INT(uint8_t)* out, const ITHARE_KSCOPE_DECLAREPARAM_INT2(uint8_t)* in, ITHARE_KSCOPE_DECLAREPARAM_INT3(size_t) len,
+    const ITHARE_KSCOPE_DECLAREPARAM_INT4(uint8_t) key[32], const ITHARE_KSCOPE_DECLAREPARAM_INT5(uint8_t) iv[8], uint64_t counter)
 {
 	ITHARE_KSCOPE_KSCOPECLASS(ChaCha_ctx) ctx = {};
 
