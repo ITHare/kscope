@@ -98,8 +98,8 @@ ITHARE_KSCOPE_BOUNDED_MINBYTES(2, CHACHA_MINKEYLEN)
 	x->input[3] = ITHARE_KSCOPE_U8TO32_LITTLE(constants + 12);
 }
 
-ITHARE_KSCOPE_DECLAREFUNC_WITHPARAMS_CLASS_INT
-void chacha_ivsetup(ITHARE_KSCOPE_DECLAREPARAM_CLASS(ChaCha_ctx)* x, const ITHARE_KSCOPE_DECLAREPARAM_INT(uint8_t)* iv, const uint8_t* counter)
+ITHARE_KSCOPE_DECLAREFUNC_WITHPARAMS_CLASS_2xINT
+void chacha_ivsetup(ITHARE_KSCOPE_DECLAREPARAM_CLASS(ChaCha_ctx)* x, const ITHARE_KSCOPE_DECLAREPARAM_INT(uint8_t)* iv, const ITHARE_KSCOPE_DECLAREPARAM_INT2(uint8_t)* counter)
 ITHARE_KSCOPE_BOUNDED_MINBYTES(2, CHACHA_NONCELEN)
 ITHARE_KSCOPE_BOUNDED_MINBYTES(3, CHACHA_CTRLEN)
 {
@@ -324,10 +324,10 @@ void ChaCha_set_key(ITHARE_KSCOPE_DECLAREPARAM_CLASS(ChaCha_ctx)* ctx, const ITH
 	ctx->unused = 0;
 }
 
-ITHARE_KSCOPE_DECLAREFUNC_WITHPARAMS_CLASS_INT
-void ChaCha_set_iv(ITHARE_KSCOPE_DECLAREPARAM_CLASS(ChaCha_ctx)* ctx, const ITHARE_KSCOPE_DECLAREPARAM_INT(uint8_t)* iv, const uint8_t* counter)
+ITHARE_KSCOPE_DECLAREFUNC_WITHPARAMS_CLASS_2xINT
+void ChaCha_set_iv(ITHARE_KSCOPE_DECLAREPARAM_CLASS(ChaCha_ctx)* ctx, const ITHARE_KSCOPE_DECLAREPARAM_INT(uint8_t)* iv, const ITHARE_KSCOPE_DECLAREPARAM_INT2(uint8_t)* counter)
 {
-	chacha_ivsetup(ctx, iv, counter);
+	ITHARE_KSCOPE_FCALL(chacha_ivsetup)(ctx, iv, counter);
 	ctx->unused = 0;
 }
 
@@ -360,7 +360,7 @@ void CRYPTO_chacha_20(ITHARE_KSCOPE_DECLAREPARAM_INT(uint8_t)* out, const ITHARE
 	 * NULL and manually assign it afterwards.
 	 */
 	ITHARE_KSCOPE_FCALL(chacha_keysetup)(&ctx, key, ITHARE_KSCOPE_FINTLITI(256));
-	ITHARE_KSCOPE_FCALL(chacha_ivsetup)(&ctx, iv, NULL);
+	ITHARE_KSCOPE_FCALL(chacha_ivsetup)(&ctx, iv, ITHARE_KSCOPE_INTNULLPTR);
 	if (counter != 0) {
 		ctx.input[12] = (uint32_t)counter;
 		ctx.input[13] = (uint32_t)(counter >> 32);

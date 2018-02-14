@@ -1270,6 +1270,8 @@ namespace ithare {
 #define ITHARE_KSCOPE_INT5(type) ithare::kscope::KscopeIntDbg<type>
 #define ITHARE_KSCOPE_INT6(type) ithare::kscope::KscopeIntDbg<type>
 
+#define ITHARE_KSCOPE_INTNULLPTR ((ithare::kscope::KscopeIntDbg<int>*)nullptr)
+
 #define ITHARE_KSCOPE_INTLIT0(c) ithare::kscope::KscopeLiteralDbg<typename std::remove_cv<decltype(c)>::type,c>()
 #define ITHARE_KSCOPE_INTLIT1(c) ithare::kscope::KscopeLiteralDbg<typename std::remove_cv<decltype(c)>::type,c>()
 #define ITHARE_KSCOPE_INTLIT2(c) ithare::kscope::KscopeLiteralDbg<typename std::remove_cv<decltype(c)>::type,c>()
