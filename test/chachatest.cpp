@@ -225,28 +225,41 @@ using namespace ithare::kscope::ssl;
 
 /* Single-shot ChaCha20 using CRYPTO_chacha_20 interface. */
 static void
-crypto_chacha_20_test(const chacha_tv* tv, uint8_t* out, uint8_t* in)
+crypto_chacha_20_test(const chacha_tv* tv, uint8_t* out, uint8_t* in0)
 {
+	assert(tv->len <= 64);
+	ITHARE_KSCOPE_INT3(uint8_t) in[64];
+	for (size_t i = 0; i < 64; ++i)
+		in[i] = in0[i];
 	ITHARE_KSCOPE_CALL3(CRYPTO_chacha_20)(out, in, tv->len, tv->key, tv->iv, 0);
 }
 
 /* Single-shot ChaCha20 using the ChaCha interface. */
 static void
-chacha_ctx_full_test(const chacha_tv* tv, uint8_t *out, uint8_t* in)
+chacha_ctx_full_test(const chacha_tv* tv, uint8_t *out, uint8_t* in0)
 {
 	ITHARE_KSCOPE_KSCOPECLASS(ChaCha_ctx) ctx;
 
 	ITHARE_KSCOPE_CALL3(ChaCha_set_key)(&ctx, tv->key, ITHARE_KSCOPE_INTLIT3I(256));
 	ITHARE_KSCOPE_CALL3(ChaCha_set_iv)(&ctx, tv->iv, nullptr);
-	ChaCha(&ctx, out, in, tv->len);
+	assert(tv->len <= 64);
+	ITHARE_KSCOPE_INT3(uint8_t) in[64];
+	for (size_t i = 0; i < 64; ++i)
+		in[i] = in0[i];
+	ITHARE_KSCOPE_CALL3(ChaCha)(&ctx, out, in, tv->len);
 }
 
 /* ChaCha20 with partial writes using the Chacha interface. */
 static void
-chacha_ctx_partial_test(const chacha_tv* tv, uint8_t* out, uint8_t* in)
+chacha_ctx_partial_test(const chacha_tv* tv, uint8_t* out, uint8_t* in0)
 {
 	ITHARE_KSCOPE_KSCOPECLASS(ChaCha_ctx) ctx;
 	size_t len, size = 0;
+	assert(tv->len <= 64);
+	ITHARE_KSCOPE_INT3(uint8_t) in1[64];
+	for (size_t i = 0; i < 64; ++i)
+		in1[i] = in0[i];
+	ITHARE_KSCOPE_PTR_OF_SAME_TYPE_AS(in1) in = in1;
 
 	ITHARE_KSCOPE_CALL3(ChaCha_set_key)(&ctx, tv->key, ITHARE_KSCOPE_INTLIT3I(256));
 	ChaCha_set_iv(&ctx, tv->iv, NULL);
@@ -254,25 +267,28 @@ chacha_ctx_partial_test(const chacha_tv* tv, uint8_t* out, uint8_t* in)
 	len = tv->len - 1;
 	while (len > 1) {
 		size = len / 2;
-		ChaCha(&ctx, out, in, size);
+		ITHARE_KSCOPE_CALL3(ChaCha)(&ctx, out, in, size);
 		in += size;
 		out += size;
 		len -= size;
 	}
-	ChaCha(&ctx, out, in, len + 1);
+	ITHARE_KSCOPE_CALL3(ChaCha)(&ctx, out, in, len + 1);
 }
 
 /* ChaCha20 with single byte writes using the Chacha interface. */
 static void
-chacha_ctx_single_test(const chacha_tv *tv, uint8_t* out, uint8_t* in)
+chacha_ctx_single_test(const chacha_tv *tv, uint8_t* out, uint8_t* in0)
 {
 	ITHARE_KSCOPE_KSCOPECLASS(ChaCha_ctx) ctx;
-	size_t i;
+	assert(tv->len <= 64);
+	ITHARE_KSCOPE_INT3(uint8_t) in[64];
+	for (size_t i = 0; i < 64; ++i)
+		in[i] = in0[i];
 
 	ITHARE_KSCOPE_CALL3(ChaCha_set_key)(&ctx, tv->key, ITHARE_KSCOPE_INTLIT3I(256));
 	ChaCha_set_iv(&ctx, tv->iv, NULL);
-	for (i = 0; i < tv->len; i++)
-		ChaCha(&ctx, out + i, in + i, 1);
+	for (size_t i = 0; i < tv->len; i++)
+		ITHARE_KSCOPE_CALL3(ChaCha)(&ctx, out + i, &in[i], ITHARE_KSCOPE_INTLIT3I(1));
 }
 
 const lest::test module[] = {

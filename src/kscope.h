@@ -1210,6 +1210,9 @@ namespace ithare {
 #define ITHARE_KSCOPE_DECLAREFUNC_WITHEXTRA(...) template<KSCOPEFLAGS kscopeflags=0,__VA_ARGS__> constexpr inline
 #define ITHARE_KSCOPE_DECLAREFUNC_WITHPARAMS_INT template<KSCOPEFLAGS kscopeflags=0,class kscopeinttype> constexpr inline
 #define ITHARE_KSCOPE_DECLAREFUNC_WITHPARAMS_2xINT template<KSCOPEFLAGS kscopeflags=0,class kscopeinttype, class kscopeinttype2> constexpr inline
+#define ITHARE_KSCOPE_DECLAREFUNC_WITHPARAMS_3xINT template<KSCOPEFLAGS kscopeflags=0,class kscopeinttype, class kscopeinttype2, class kscopeinttype3> constexpr inline
+#define ITHARE_KSCOPE_DECLAREFUNC_WITHPARAMS_4xINT template<KSCOPEFLAGS kscopeflags=0,class kscopeinttype, class kscopeinttype2, class kscopeinttype3, class kscopeinttype4> constexpr inline
+#define ITHARE_KSCOPE_DECLAREFUNC_WITHPARAMS_5xINT template<KSCOPEFLAGS kscopeflags=0,class kscopeinttype, class kscopeinttype2, class kscopeinttype3, class kscopeinttype4, class kscopeinttype5> constexpr inline
 #define ITHARE_KSCOPE_DECLAREFUNC_WITHPARAMS_CLASS template<KSCOPEFLAGS kscopeflags=0,KSCOPEFLAGS kscopeclsflags> constexpr ITHARE_KSCOPE_FORCEINLINE
 #define ITHARE_KSCOPE_DECLAREFUNC_WITHPARAMS_CLASS_INT template<KSCOPEFLAGS kscopeflags=0,KSCOPEFLAGS kscopeclsflags,class kscopeinttype> constexpr ITHARE_KSCOPE_FORCEINLINE
 #define ITHARE_KSCOPE_DECLAREFUNC_WITHPARAMS_CLASS_2xINT template<KSCOPEFLAGS kscopeflags=0,KSCOPEFLAGS kscopeclsflags,class kscopeinttype,class kscopeinttype2> constexpr ITHARE_KSCOPE_FORCEINLINE
@@ -1217,6 +1220,8 @@ namespace ithare {
 #define ITHARE_KSCOPE_DECLAREPARAM_INT(type) ithare::kscope::KscopeIntDbg<kscopeinttype>
 #define ITHARE_KSCOPE_DECLAREPARAM_INT2(type) ithare::kscope::KscopeIntDbg<kscopeinttype2>
 #define ITHARE_KSCOPE_DECLAREPARAM_INT3(type) ithare::kscope::KscopeIntDbg<kscopeinttype3>
+#define ITHARE_KSCOPE_DECLAREPARAM_INT4(type) ithare::kscope::KscopeIntDbg<kscopeinttype4>
+#define ITHARE_KSCOPE_DECLAREPARAM_INT5(type) ithare::kscope::KscopeIntDbg<kscopeinttype5>
 #define ITHARE_KSCOPE_DECLAREPARAM_CLASS(name) name<kscopeclsflags>
 
 #define ITHARE_KSCOPE_USEPARAM_INT(name) name.value()
@@ -1307,6 +1312,10 @@ namespace ithare {
 #define ITHARE_KSCOPE_CALL5(fname) fname<0>
 #define ITHARE_KSCOPE_CALL6(fname) fname<0>
 #define ITHARE_KSCOPE_CALL_AS_CONSTEXPR(fname) fname<ithare::kscope::kscope_flag_is_constexpr>
+
+#define ITHARE_KSCOPE_VALUE(x) x.value()
+#define ITHARE_KSCOPE_ARRAY_OF_SAME_TYPE_AS(arr) typename std::remove_cv<std::remove_reference<decltype(*arr)>::type>::type
+#define ITHARE_KSCOPE_PTR_OF_SAME_TYPE_AS(arr) typename std::remove_cv<std::remove_reference<decltype(*arr)>::type>::type*
 
 #endif //ITHARE_KSCOPE_SEED
 
