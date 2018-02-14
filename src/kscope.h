@@ -912,8 +912,8 @@ namespace ithare {
 #define ITHARE_KSCOPE_CALL_AS_CONSTEXPR(fname) fname<ITHARE_KSCOPE_INIT_PRNG(__FILE__,ITHARE_KSCOPE_LINE,__COUNTER__),-1,ithare::kscope::kscope_flag_is_constexpr>
 
 #define ITHARE_KSCOPE_VALUE(x) x.value()
-#define ITHARE_KSCOPE_ARRAY_OF_SAME_TYPE_AS(arr) typename std::remove_cv<std::remove_reference<decltype(*arr)>::type>::type
-#define ITHARE_KSCOPE_PTR_OF_SAME_TYPE_AS(arr) typename std::remove_cv<std::remove_reference<decltype(*arr)>::type>::type*
+#define ITHARE_KSCOPE_ARRAY_OF_SAME_TYPE_AS(arr) typename std::remove_cv<typename std::remove_reference<decltype(*arr)>::type>::type
+#define ITHARE_KSCOPE_PTR_OF_SAME_TYPE_AS(arr) typename std::remove_cv<typename std::remove_reference<decltype(*arr)>::type>::type*
 
 #else//ITHARE_KSCOPE_SEED
 namespace ithare {
@@ -1314,8 +1314,8 @@ namespace ithare {
 #define ITHARE_KSCOPE_CALL_AS_CONSTEXPR(fname) fname<ithare::kscope::kscope_flag_is_constexpr>
 
 #define ITHARE_KSCOPE_VALUE(x) x.value()
-#define ITHARE_KSCOPE_ARRAY_OF_SAME_TYPE_AS(arr) typename std::remove_cv<std::remove_reference<decltype(*arr)>::type>::type
-#define ITHARE_KSCOPE_PTR_OF_SAME_TYPE_AS(arr) typename std::remove_cv<std::remove_reference<decltype(*arr)>::type>::type*
+#define ITHARE_KSCOPE_ARRAY_OF_SAME_TYPE_AS(arr) typename std::remove_cv<typename std::remove_reference<decltype(*arr)>::type>::type
+#define ITHARE_KSCOPE_PTR_OF_SAME_TYPE_AS(arr) typename std::remove_cv<typename std::remove_reference<decltype(*arr)>::type>::type*
 
 #endif //ITHARE_KSCOPE_SEED
 
