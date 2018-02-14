@@ -71,8 +71,8 @@ constexpr uint8_t chacha_tau[16] = {
 	0x36, 0x2d, 0x62, 0x79, 0x74, 0x65, 0x20, 0x6b,
 };
 
-ITHARE_KSCOPE_DECLAREFUNC_WITHPARAMS_CLASS
-void chacha_keysetup(ITHARE_KSCOPE_DECLAREPARAM_CLASS(ChaCha_ctx) *x, const uint8_t *k, unsigned kbits/*128 or 256*/)
+ITHARE_KSCOPE_DECLAREFUNC_WITHPARAMS_CLASS_INT
+void chacha_keysetup(ITHARE_KSCOPE_DECLAREPARAM_CLASS(ChaCha_ctx) *x, const ITHARE_KSCOPE_DECLAREPARAM_INT(uint8_t) *k, unsigned kbits/*128 or 256*/)
 ITHARE_KSCOPE_BOUNDED_MINBYTES(2, CHACHA_MINKEYLEN)
 {
 	const uint8_t* constants = nullptr;
@@ -315,8 +315,8 @@ ITHARE_KSCOPE_BOUNDED_BUFFER(3, 4)
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-ITHARE_KSCOPE_DECLAREFUNC_WITHPARAMS_CLASS
-void ChaCha_set_key(ITHARE_KSCOPE_DECLAREPARAM_CLASS(ChaCha_ctx)* ctx, const uint8_t* key, uint32_t keybits /*128 or 256*/)
+ITHARE_KSCOPE_DECLAREFUNC_WITHPARAMS_CLASS_INT
+void ChaCha_set_key(ITHARE_KSCOPE_DECLAREPARAM_CLASS(ChaCha_ctx)* ctx, const ITHARE_KSCOPE_DECLAREPARAM_INT(uint8_t)* key, uint32_t keybits /*128 or 256*/)
 {
 	assert(keybits == 128 || keybits == 256);
 	chacha_keysetup(ctx, key, keybits);
@@ -347,9 +347,9 @@ void ChaCha(ITHARE_KSCOPE_DECLAREPARAM_CLASS(ChaCha_ctx)* ctx, uint8_t* out, con
 	chacha_encrypt_bytes(ctx, in, out, len);
 }
 
-constexpr inline void
-CRYPTO_chacha_20(uint8_t* out, const uint8_t* in, size_t len,
-    const uint8_t key[32], const uint8_t iv[8], uint64_t counter)
+ITHARE_KSCOPE_DECLAREFUNC_WITHPARAMS_INT 
+void CRYPTO_chacha_20(uint8_t* out, const uint8_t* in, size_t len,
+    const ITHARE_KSCOPE_DECLAREPARAM_INT(uint8_t) key[32], const uint8_t iv[8], uint64_t counter)
 {
 	ITHARE_KSCOPE_KSCOPECLASS(ChaCha_ctx) ctx = {};
 
@@ -358,7 +358,7 @@ CRYPTO_chacha_20(uint8_t* out, const uint8_t* in, size_t len,
 	 * converting size_t to u8 and then back again, pass a counter of
 	 * NULL and manually assign it afterwards.
 	 */
-	chacha_keysetup(&ctx, key, 256);
+	ITHARE_KSCOPE_FCALL(chacha_keysetup)(&ctx, key, 256);
 	chacha_ivsetup(&ctx, iv, NULL);
 	if (counter != 0) {
 		ctx.input[12] = (uint32_t)counter;

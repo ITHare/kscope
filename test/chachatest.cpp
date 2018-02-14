@@ -22,7 +22,7 @@
 
 struct chacha_tv {
 	const char *desc;
-	const unsigned char key[32];
+	const ITHARE_KSCOPE_INT3(unsigned char) key[32];
 	const unsigned char iv[8];
 	const size_t len;
 	const unsigned char out[512];
@@ -227,7 +227,7 @@ using namespace ithare::kscope::ssl;
 static void
 crypto_chacha_20_test(const chacha_tv* tv, uint8_t* out, uint8_t* in)
 {
-	CRYPTO_chacha_20(out, in, tv->len, tv->key, tv->iv, 0);
+	ITHARE_KSCOPE_CALL3(CRYPTO_chacha_20)(out, in, tv->len, tv->key, tv->iv, 0);
 }
 
 /* Single-shot ChaCha20 using the ChaCha interface. */
