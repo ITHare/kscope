@@ -753,7 +753,7 @@ namespace ithare {
 
 		template<ITHARE_KSCOPE_SEEDTPARAM seedc>
 		ITHARE_KSCOPE_FORCEINLINE constexpr static T local_surjection(T y) {
-			return y * C;
+			return typename Traits::UintT(y) * typename Traits::UintT(C);
 		}
 		template<ITHARE_KSCOPE_SEEDTPARAM seed2>
 		ITHARE_KSCOPE_FORCEINLINE constexpr static T surjection(return_type y) {
