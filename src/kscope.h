@@ -797,9 +797,10 @@ namespace ithare {
 
 #define ITHARE_KSCOPE_DECLAREFUNC template<ITHARE_KSCOPE_SEEDTPARAM kscopeseed = ITHARE_KSCOPE_DUMMYSEED, KSCOPELEVEL kscopelevel=-1,KSCOPEFLAGS kscopeflags=0> constexpr ITHARE_KSCOPE_FORCEINLINE
 #define ITHARE_KSCOPE_DECLAREFUNC_WITHEXTRA(...) template<ITHARE_KSCOPE_SEEDTPARAM kscopeseed = ITHARE_KSCOPE_DUMMYSEED, KSCOPELEVEL kscopelevel=-1,KSCOPEFLAGS kscopeflags=0,__VA_ARGS__> constexpr ITHARE_KSCOPE_FORCEINLINE
-#define ITHARE_KSCOPE_DECLAREFUNC_INT template<ITHARE_KSCOPE_SEEDTPARAM kscopeseed = ITHARE_KSCOPE_DUMMYSEED, KSCOPELEVEL kscopelevel=-1,KSCOPEFLAGS kscopeflags=0,class kscopeinttype, ITHARE_KSCOPE_SEEDTPARAM kscopeintseed,KSCOPECYCLES kscopeintcycles,KSCOPEFLAGS kscopeintflags> constexpr ITHARE_KSCOPE_FORCEINLINE
-#define ITHARE_KSCOPE_DECLAREFUNC_INT_INT template<ITHARE_KSCOPE_SEEDTPARAM kscopeseed = ITHARE_KSCOPE_DUMMYSEED, KSCOPELEVEL kscopelevel=-1,KSCOPEFLAGS kscopeflags=0,ITHARE_KSCOPE_SEEDTPARAM kscopeintseed,KSCOPECYCLES kscopeintcycles,KSCOPEFLAGS kscopeintflags,class kscopeinttype2, ITHARE_KSCOPE_SEEDTPARAM kscopeintseed2,KSCOPECYCLES kscopeintcycles2,KSCOPEFLAGS kscopeintflags2> constexpr ITHARE_KSCOPE_FORCEINLINE
-#define ITHARE_KSCOPE_DECLAREFUNC_CLASS_INT template<ITHARE_KSCOPE_SEEDTPARAM kscopeseed = ITHARE_KSCOPE_DUMMYSEED, KSCOPELEVEL kscopelevel=-1,KSCOPEFLAGS kscopeflags=0,ITHARE_KSCOPE_SEEDTPARAM kscopeclsseed,KSCOPELEVEL kscopeclslevel,KSCOPEFLAGS kscopeclsflags,ITHARE_KSCOPE_SEEDTPARAM kscopeintseed,KSCOPECYCLES kscopeintcycles,KSCOPEFLAGS kscopeintflags> constexpr ITHARE_KSCOPE_FORCEINLINE
+#define ITHARE_KSCOPE_DECLAREFUNC_WITHPARAMS_INT template<ITHARE_KSCOPE_SEEDTPARAM kscopeseed = ITHARE_KSCOPE_DUMMYSEED, KSCOPELEVEL kscopelevel=-1,KSCOPEFLAGS kscopeflags=0,class kscopeinttype, ITHARE_KSCOPE_SEEDTPARAM kscopeintseed,KSCOPECYCLES kscopeintcycles,KSCOPEFLAGS kscopeintflags> constexpr ITHARE_KSCOPE_FORCEINLINE
+#define ITHARE_KSCOPE_DECLAREFUNC_WITHPARAMS_INT_INT template<ITHARE_KSCOPE_SEEDTPARAM kscopeseed = ITHARE_KSCOPE_DUMMYSEED, KSCOPELEVEL kscopelevel=-1,KSCOPEFLAGS kscopeflags=0,ITHARE_KSCOPE_SEEDTPARAM kscopeintseed,KSCOPECYCLES kscopeintcycles,KSCOPEFLAGS kscopeintflags,class kscopeinttype2, ITHARE_KSCOPE_SEEDTPARAM kscopeintseed2,KSCOPECYCLES kscopeintcycles2,KSCOPEFLAGS kscopeintflags2> constexpr ITHARE_KSCOPE_FORCEINLINE
+#define ITHARE_KSCOPE_DECLAREFUNC_WITHPARAMS_CLASS template<ITHARE_KSCOPE_SEEDTPARAM kscopeseed = ITHARE_KSCOPE_DUMMYSEED, KSCOPELEVEL kscopelevel=-1,KSCOPEFLAGS kscopeflags=0,ITHARE_KSCOPE_SEEDTPARAM kscopeclsseed,KSCOPELEVEL kscopeclslevel,KSCOPEFLAGS kscopeclsflags> constexpr ITHARE_KSCOPE_FORCEINLINE
+#define ITHARE_KSCOPE_DECLAREFUNC_WITHPARAMS_CLASS_INT template<ITHARE_KSCOPE_SEEDTPARAM kscopeseed = ITHARE_KSCOPE_DUMMYSEED, KSCOPELEVEL kscopelevel=-1,KSCOPEFLAGS kscopeflags=0,ITHARE_KSCOPE_SEEDTPARAM kscopeclsseed,KSCOPELEVEL kscopeclslevel,KSCOPEFLAGS kscopeclsflags,ITHARE_KSCOPE_SEEDTPARAM kscopeintseed,KSCOPECYCLES kscopeintcycles,KSCOPEFLAGS kscopeintflags> constexpr ITHARE_KSCOPE_FORCEINLINE
 #define ITHARE_KSCOPE_DECLAREPARAM_INT(type) ithare::kscope::KscopeInt<kscopeinttype,kscopeintseed,kscopeintcycles,kscopeintflags>
 #define ITHARE_KSCOPE_DECLAREPARAM_INT2(type) ithare::kscope::KscopeInt<kscopeinttype2,kscopeintseed2,kscopeintcycles2,kscopeintflags2>
 #define ITHARE_KSCOPE_DECLAREPARAM_CLASS(name) name<kscopeclsseed,kscopeclslevel,kscopeclsflags>
@@ -1175,12 +1176,13 @@ namespace ithare {
 
 #define ITHARE_KSCOPE_DECLAREFUNC template<KSCOPEFLAGS kscopeflags=0> constexpr inline
 #define ITHARE_KSCOPE_DECLAREFUNC_WITHEXTRA(...) template<KSCOPEFLAGS kscopeflags=0,__VA_ARGS__> constexpr inline
-#define ITHARE_KSCOPE_DECLAREFUNC_INT template<KSCOPEFLAGS kscopeflags=0,class kscopeinttype> constexpr inline
-#define ITHARE_KSCOPE_DECLAREFUNC_INT_INT template<KSCOPEFLAGS kscopeflags=0,class kscopeinttype, class kscopeinttype2> constexpr inline
-#define ITHARE_KSCOPE_DECLAREFUNC_CLASS_INT template<KSCOPEFLAGS kscopeflags=0,KSCOPEFLAGS kscopeclsflags> constexpr ITHARE_KSCOPE_FORCEINLINE
+#define ITHARE_KSCOPE_DECLAREFUNC_WITHPARAMS_INT template<KSCOPEFLAGS kscopeflags=0,class kscopeinttype> constexpr inline
+#define ITHARE_KSCOPE_DECLAREFUNC_WITHPARAMS_INT_INT template<KSCOPEFLAGS kscopeflags=0,class kscopeinttype, class kscopeinttype2> constexpr inline
+#define ITHARE_KSCOPE_DECLAREFUNC_WITHPARAMS_CLASS template<KSCOPEFLAGS kscopeflags=0,KSCOPEFLAGS kscopeclsflags> constexpr ITHARE_KSCOPE_FORCEINLINE
+#define ITHARE_KSCOPE_DECLAREFUNC_WITHPARAMS_CLASS_INT template<KSCOPEFLAGS kscopeflags=0,KSCOPEFLAGS kscopeclsflags> constexpr ITHARE_KSCOPE_FORCEINLINE
 #define ITHARE_KSCOPE_DECLAREPARAM_INT(type) ithare::kscope::KscopeIntDbg<kscopeinttype>
 #define ITHARE_KSCOPE_DECLAREPARAM_INT2(type) ithare::kscope::KscopeInt<kscopeinttype2>
-#define ITHARE_KSCOPE_DECLAREPARAM_CLASS(name) name<kscopeclsseed,kscopeclslevel,kscopeclsflags>
+#define ITHARE_KSCOPE_DECLAREPARAM_CLASS(name) name<kscopeclsflags>
 
 #define ITHARE_KSCOPE_USEPARAM_INT(name) name.value()
 

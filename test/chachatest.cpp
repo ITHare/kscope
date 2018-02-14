@@ -234,7 +234,7 @@ crypto_chacha_20_test(const chacha_tv* tv, uint8_t* out, uint8_t* in)
 static void
 chacha_ctx_full_test(const chacha_tv* tv, uint8_t *out, uint8_t* in)
 {
-	ChaCha_ctx ctx;
+	ITHARE_KSCOPE_KSCOPECLASS(ChaCha_ctx) ctx;
 
 	ChaCha_set_key(&ctx, tv->key, 256);
 	ChaCha_set_iv(&ctx, tv->iv, NULL);
@@ -245,7 +245,7 @@ chacha_ctx_full_test(const chacha_tv* tv, uint8_t *out, uint8_t* in)
 static void
 chacha_ctx_partial_test(const chacha_tv* tv, uint8_t* out, uint8_t* in)
 {
-	ChaCha_ctx ctx;
+	ITHARE_KSCOPE_KSCOPECLASS(ChaCha_ctx) ctx;
 	size_t len, size = 0;
 
 	ChaCha_set_key(&ctx, tv->key, 256);
@@ -266,7 +266,7 @@ chacha_ctx_partial_test(const chacha_tv* tv, uint8_t* out, uint8_t* in)
 static void
 chacha_ctx_single_test(const chacha_tv *tv, uint8_t* out, uint8_t* in)
 {
-	ChaCha_ctx ctx;
+	ITHARE_KSCOPE_KSCOPECLASS(ChaCha_ctx) ctx;
 	size_t i;
 
 	ChaCha_set_key(&ctx, tv->key, 256);

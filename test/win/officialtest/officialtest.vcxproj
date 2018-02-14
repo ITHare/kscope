@@ -149,9 +149,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\chachatest.cpp" />
     <ClCompile Include="..\..\officialtest.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\kaleidoscoped\ssl\crypto\chacha\chacha.h" />
     <ClInclude Include="..\..\..\src\impl\kscope_common.h" />
     <ClInclude Include="..\..\..\src\impl\kscope_injection.h" />
     <ClInclude Include="..\..\..\src\impl\kscope_literal.h" />

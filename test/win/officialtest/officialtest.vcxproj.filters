@@ -18,6 +18,9 @@
     <ClCompile Include="..\..\officialtest.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\chachatest.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\src\impl\kscope_common.h">
@@ -33,6 +36,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\src\kscope.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\kaleidoscoped\ssl\crypto\chacha\chacha.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

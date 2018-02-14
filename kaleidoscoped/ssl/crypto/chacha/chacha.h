@@ -1,6 +1,9 @@
 //ithare::kscope chacha.h 
 //  kaleidoscoped version of crypto/chacha/chacha-merged.c, include/openssl/chacha.h, and crypto/chacha/chacha.c from LibreSSL 2.6.4
 
+#ifndef ithare_kscope_kaleidoscoped_ssl_crypto_chacha_h_included
+#define ithare_kscope_kaleidoscoped_ssl_crypto_chacha_h_included
+
 #include "../../../../src/kscope.h"
 
 namespace ithare { namespace kscope { namespace ssl {
@@ -18,20 +21,12 @@ constexpr int CHACHA_CTRLEN	= 8;
 constexpr int CHACHA_STATELEN = CHACHA_NONCELEN+CHACHA_CTRLEN;
 constexpr int CHACHA_BLOCKLEN = 64;
 
+ITHARE_KSCOPE_DECLARECLASS
 struct ChaCha_ctx {
 	uint32_t input[16];
 	uint8_t ks[CHACHA_BLOCKLEN];
 	uint8_t unused;
 };
-
-constexpr inline void chacha_keysetup(struct ChaCha_ctx* x, const uint8_t* k, unsigned kbits /*128 or 256*/)
-    ITHARE_KSCOPE_BOUNDED_MINBYTES(2, CHACHA_MINKEYLEN);
-constexpr inline void chacha_ivsetup(struct ChaCha_ctx* x, const uint8_t* iv, const uint8_t* ctr)
-    ITHARE_KSCOPE_BOUNDED_MINBYTES(2, CHACHA_NONCELEN)
-    ITHARE_KSCOPE_BOUNDED_MINBYTES(3, CHACHA_CTRLEN);
-constexpr inline void chacha_encrypt_bytes(struct ChaCha_ctx *x, const uint8_t* m, uint8_t* c, size_t bytes)
-    ITHARE_KSCOPE_BOUNDED_BUFFER(2, 4)
-    ITHARE_KSCOPE_BOUNDED_BUFFER(3, 4);
 
 #define ITHARE_KSCOPE_U8V(v) ((uint8_t)(v) & UINT8_C(0xFF))
 #define ITHARE_KSCOPE_U32V(v) ((uint32_t)(v) & UINT32_C(0xFFFFFFFF))
@@ -76,8 +71,9 @@ constexpr uint8_t chacha_tau[16] = {
 	0x36, 0x2d, 0x62, 0x79, 0x74, 0x65, 0x20, 0x6b,
 };
 
-constexpr inline void
-chacha_keysetup(ChaCha_ctx *x, const uint8_t *k, unsigned kbits)
+ITHARE_KSCOPE_DECLAREFUNC_WITHPARAMS_CLASS
+void chacha_keysetup(ITHARE_KSCOPE_DECLAREPARAM_CLASS(ChaCha_ctx) *x, const uint8_t *k, unsigned kbits/*128 or 256*/)
+ITHARE_KSCOPE_BOUNDED_MINBYTES(2, CHACHA_MINKEYLEN)
 {
 	const uint8_t* constants = nullptr;
 
@@ -102,8 +98,10 @@ chacha_keysetup(ChaCha_ctx *x, const uint8_t *k, unsigned kbits)
 	x->input[3] = ITHARE_KSCOPE_U8TO32_LITTLE(constants + 12);
 }
 
-constexpr inline void
-chacha_ivsetup(ChaCha_ctx* x, const uint8_t* iv, const uint8_t* counter)
+ITHARE_KSCOPE_DECLAREFUNC_WITHPARAMS_CLASS
+void chacha_ivsetup(ITHARE_KSCOPE_DECLAREPARAM_CLASS(ChaCha_ctx)* x, const uint8_t* iv, const uint8_t* counter)
+ITHARE_KSCOPE_BOUNDED_MINBYTES(2, CHACHA_NONCELEN)
+ITHARE_KSCOPE_BOUNDED_MINBYTES(3, CHACHA_CTRLEN)
 {
 	x->input[12] = counter == NULL ? 0 : ITHARE_KSCOPE_U8TO32_LITTLE(counter + 0);
 	x->input[13] = counter == NULL ? 0 : ITHARE_KSCOPE_U8TO32_LITTLE(counter + 4);
@@ -111,8 +109,10 @@ chacha_ivsetup(ChaCha_ctx* x, const uint8_t* iv, const uint8_t* counter)
 	x->input[15] = ITHARE_KSCOPE_U8TO32_LITTLE(iv + 4);
 }
 
-constexpr inline void
-chacha_encrypt_bytes(ChaCha_ctx* x, const uint8_t* m, uint8_t* c, size_t bytes)
+ITHARE_KSCOPE_DECLAREFUNC_WITHPARAMS_CLASS
+void chacha_encrypt_bytes(ITHARE_KSCOPE_DECLAREPARAM_CLASS(ChaCha_ctx)* x, const uint8_t* m, uint8_t* c, size_t bytes)
+ITHARE_KSCOPE_BOUNDED_BUFFER(2, 4)
+ITHARE_KSCOPE_BOUNDED_BUFFER(3, 4)
 {
 	if (!bytes)
 		return;
@@ -315,24 +315,23 @@ chacha_encrypt_bytes(ChaCha_ctx* x, const uint8_t* m, uint8_t* c, size_t bytes)
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-constexpr inline void
-ChaCha_set_key(ChaCha_ctx* ctx, const uint8_t* key, uint32_t keybits /*128 or 256*/)
+ITHARE_KSCOPE_DECLAREFUNC_WITHPARAMS_CLASS
+void ChaCha_set_key(ITHARE_KSCOPE_DECLAREPARAM_CLASS(ChaCha_ctx)* ctx, const uint8_t* key, uint32_t keybits /*128 or 256*/)
 {
 	assert(keybits == 128 || keybits == 256);
 	chacha_keysetup(ctx, key, keybits);
 	ctx->unused = 0;
 }
 
-constexpr inline void
-ChaCha_set_iv(ChaCha_ctx* ctx, const uint8_t* iv,
-    const uint8_t* counter)
+ITHARE_KSCOPE_DECLAREFUNC_WITHPARAMS_CLASS
+void ChaCha_set_iv(ITHARE_KSCOPE_DECLAREPARAM_CLASS(ChaCha_ctx)* ctx, const uint8_t* iv, const uint8_t* counter)
 {
 	chacha_ivsetup(ctx, iv, counter);
 	ctx->unused = 0;
 }
 
-constexpr inline void
-ChaCha(ChaCha_ctx* ctx, uint8_t* out, const uint8_t* in, size_t len)
+ITHARE_KSCOPE_DECLAREFUNC_WITHPARAMS_CLASS
+void ChaCha(ITHARE_KSCOPE_DECLAREPARAM_CLASS(ChaCha_ctx)* ctx, uint8_t* out, const uint8_t* in, size_t len)
 {
 	/* Consume remaining keystream, if any exists. */
 	if (ctx->unused > 0) {
@@ -340,6 +339,7 @@ ChaCha(ChaCha_ctx* ctx, uint8_t* out, const uint8_t* in, size_t len)
 		size_t l = (len > ctx->unused) ? ctx->unused : len;
 		for (size_t i = 0; i < l; i++)
 			*(out++) = *(in++) ^ *(k++);
+		assert(l <= 255);
 		ctx->unused -= uint8_t(l);
 		len -= l;
 	}
@@ -351,7 +351,7 @@ constexpr inline void
 CRYPTO_chacha_20(uint8_t* out, const uint8_t* in, size_t len,
     const uint8_t key[32], const uint8_t iv[8], uint64_t counter)
 {
-	struct ChaCha_ctx ctx = {};
+	ITHARE_KSCOPE_KSCOPECLASS(ChaCha_ctx) ctx = {};
 
 	/*
 	 * chacha_ivsetup expects the counter to be in u8. Rather than
@@ -370,3 +370,5 @@ CRYPTO_chacha_20(uint8_t* out, const uint8_t* in, size_t len,
 
 
 }}} // namespace ithare::kscope::ssl
+
+#endif //ithare_kscope_kaleidoscoped_ssl_crypto_chacha_h_included
