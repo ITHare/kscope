@@ -236,7 +236,7 @@ chacha_ctx_full_test(const chacha_tv* tv, uint8_t *out, uint8_t* in)
 {
 	ITHARE_KSCOPE_KSCOPECLASS(ChaCha_ctx) ctx;
 
-	ChaCha_set_key(&ctx, tv->key, 256);
+	ITHARE_KSCOPE_CALL3(ChaCha_set_key)(&ctx, tv->key, ITHARE_KSCOPE_INTLIT3I(256));
 	ChaCha_set_iv(&ctx, tv->iv, NULL);
 	ChaCha(&ctx, out, in, tv->len);
 }
@@ -248,7 +248,7 @@ chacha_ctx_partial_test(const chacha_tv* tv, uint8_t* out, uint8_t* in)
 	ITHARE_KSCOPE_KSCOPECLASS(ChaCha_ctx) ctx;
 	size_t len, size = 0;
 
-	ChaCha_set_key(&ctx, tv->key, 256);
+	ITHARE_KSCOPE_CALL3(ChaCha_set_key)(&ctx, tv->key, ITHARE_KSCOPE_INTLIT3I(256));
 	ChaCha_set_iv(&ctx, tv->iv, NULL);
 	assert(tv->len > 0);
 	len = tv->len - 1;
@@ -269,7 +269,7 @@ chacha_ctx_single_test(const chacha_tv *tv, uint8_t* out, uint8_t* in)
 	ITHARE_KSCOPE_KSCOPECLASS(ChaCha_ctx) ctx;
 	size_t i;
 
-	ChaCha_set_key(&ctx, tv->key, 256);
+	ITHARE_KSCOPE_CALL3(ChaCha_set_key)(&ctx, tv->key, ITHARE_KSCOPE_INTLIT3I(256));
 	ChaCha_set_iv(&ctx, tv->iv, NULL);
 	for (i = 0; i < tv->len; i++)
 		ChaCha(&ctx, out + i, in + i, 1);

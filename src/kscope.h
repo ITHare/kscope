@@ -801,6 +801,7 @@ namespace ithare {
 #define ITHARE_KSCOPE_DECLAREFUNC_WITHPARAMS_2xINT template<ITHARE_KSCOPE_SEEDTPARAM kscopeseed = ITHARE_KSCOPE_DUMMYSEED, KSCOPELEVEL kscopelevel=-1,KSCOPEFLAGS kscopeflags=0,ITHARE_KSCOPE_SEEDTPARAM kscopeintseed,KSCOPECYCLES kscopeintcycles,KSCOPEFLAGS kscopeintflags,class kscopeinttype2, ITHARE_KSCOPE_SEEDTPARAM kscopeintseed2,KSCOPECYCLES kscopeintcycles2,KSCOPEFLAGS kscopeintflags2> constexpr ITHARE_KSCOPE_FORCEINLINE
 #define ITHARE_KSCOPE_DECLAREFUNC_WITHPARAMS_CLASS template<ITHARE_KSCOPE_SEEDTPARAM kscopeseed = ITHARE_KSCOPE_DUMMYSEED, KSCOPELEVEL kscopelevel=-1,KSCOPEFLAGS kscopeflags=0,ITHARE_KSCOPE_SEEDTPARAM kscopeclsseed,KSCOPELEVEL kscopeclslevel,KSCOPEFLAGS kscopeclsflags> constexpr ITHARE_KSCOPE_FORCEINLINE
 #define ITHARE_KSCOPE_DECLAREFUNC_WITHPARAMS_CLASS_INT template<ITHARE_KSCOPE_SEEDTPARAM kscopeseed = ITHARE_KSCOPE_DUMMYSEED, KSCOPELEVEL kscopelevel=-1,KSCOPEFLAGS kscopeflags=0,ITHARE_KSCOPE_SEEDTPARAM kscopeclsseed,KSCOPELEVEL kscopeclslevel,KSCOPEFLAGS kscopeclsflags,class kscopeinttype,ITHARE_KSCOPE_SEEDTPARAM kscopeintseed,KSCOPECYCLES kscopeintcycles,KSCOPEFLAGS kscopeintflags> constexpr ITHARE_KSCOPE_FORCEINLINE
+#define ITHARE_KSCOPE_DECLAREFUNC_WITHPARAMS_CLASS_2xINT template<ITHARE_KSCOPE_SEEDTPARAM kscopeseed = ITHARE_KSCOPE_DUMMYSEED, KSCOPELEVEL kscopelevel=-1,KSCOPEFLAGS kscopeflags=0,ITHARE_KSCOPE_SEEDTPARAM kscopeclsseed,KSCOPELEVEL kscopeclslevel,KSCOPEFLAGS kscopeclsflags,class kscopeinttype,ITHARE_KSCOPE_SEEDTPARAM kscopeintseed,KSCOPECYCLES kscopeintcycles,KSCOPEFLAGS kscopeintflags,class kscopeinttype2, ITHARE_KSCOPE_SEEDTPARAM kscopeintseed2,KSCOPECYCLES kscopeintcycles2,KSCOPEFLAGS kscopeintflags2> constexpr ITHARE_KSCOPE_FORCEINLINE
 #define ITHARE_KSCOPE_DECLAREPARAM_INT(type) /* yes, 'type' parameter is NOT used here */ ithare::kscope::KscopeInt<kscopeinttype,kscopeintseed,kscopeintcycles,kscopeintflags> 
 #define ITHARE_KSCOPE_DECLAREPARAM_INT2(type) /* yes, 'type' parameter is NOT used here */ ithare::kscope::KscopeInt<kscopeinttype2,kscopeintseed2,kscopeintcycles2,kscopeintflags2>
 #define ITHARE_KSCOPE_DECLAREPARAM_CLASS(name) name<kscopeclsseed,kscopeclslevel,kscopeclsflags>
@@ -827,13 +828,22 @@ namespace ithare {
 //TODO!: M3..P3
 //TODO!: FCINT
 
-#define ITHARE_KSCOPE_FINTLITM3(c) KscopeLiteral<typename std::remove_cv<decltype(c)>::type,c,ITHARE_KSCOPE_COMBINED_PRNG(kscopeseed,ITHARE_KSCOPE_INIT_PRNG(__FILE__,ITHARE_KSCOPE_LINE,__COUNTER__)),ithare::kscope::kscope_exp_cycles(ithare::kscope::kscope_addlevel(kscopelevel,-3)),kscopeflags>()
-#define ITHARE_KSCOPE_FINTLITM2(c) KscopeLiteral<typename std::remove_cv<decltype(c)>::type,c,ITHARE_KSCOPE_COMBINED_PRNG(kscopeseed,ITHARE_KSCOPE_INIT_PRNG(__FILE__,ITHARE_KSCOPE_LINE,__COUNTER__)),ithare::kscope::kscope_exp_cycles(ithare::kscope::kscope_addlevel(kscopelevel,-2)),kscopeflags>()
-#define ITHARE_KSCOPE_FINTLITM1(c) KscopeLiteral<typename std::remove_cv<decltype(c)>::type,c,ITHARE_KSCOPE_COMBINED_PRNG(kscopeseed,ITHARE_KSCOPE_INIT_PRNG(__FILE__,ITHARE_KSCOPE_LINE,__COUNTER__)),ithare::kscope::kscope_exp_cycles(ithare::kscope::kscope_addlevel(kscopelevel,-1)),kscopeflags>()
-#define ITHARE_KSCOPE_FINTLIT(c) KscopeLiteral<typename std::remove_cv<decltype(c)>::type,c,ITHARE_KSCOPE_COMBINED_PRNG(kscopeseed,ITHARE_KSCOPE_INIT_PRNG(__FILE__,ITHARE_KSCOPE_LINE,__COUNTER__)),ithare::kscope::kscope_exp_cycles(kscopelevel),kscopeflags>()
-#define ITHARE_KSCOPE_FINTLITP1(c) KscopeLiteral<typename std::remove_cv<decltype(c)>::type,c,ITHARE_KSCOPE_COMBINED_PRNG(kscopeseed,ITHARE_KSCOPE_INIT_PRNG(__FILE__,ITHARE_KSCOPE_LINE,__COUNTER__)),ithare::kscope::kscope_exp_cycles(ithare::kscope::kscope_addlevel(kscopelevel,1)),kscopeflags>()
-#define ITHARE_KSCOPE_FINTLITP2(c) KscopeLiteral<typename std::remove_cv<decltype(c)>::type,c,ITHARE_KSCOPE_COMBINED_PRNG(kscopeseed,ITHARE_KSCOPE_INIT_PRNG(__FILE__,ITHARE_KSCOPE_LINE,__COUNTER__)),ithare::kscope::kscope_exp_cycles(ithare::kscope::kscope_addlevel(kscopelevel,2)),kscopeflags>()
-#define ITHARE_KSCOPE_FINTLITP3(c) KscopeLiteral<typename std::remove_cv<decltype(c)>::type,c,ITHARE_KSCOPE_COMBINED_PRNG(kscopeseed,ITHARE_KSCOPE_INIT_PRNG(__FILE__,ITHARE_KSCOPE_LINE,__COUNTER__)),ithare::kscope::kscope_exp_cycles(ithare::kscope::kscope_addlevel(kscopelevel,3)),kscopeflags>()
+#define ITHARE_KSCOPE_FINTLITM3(c) ithare::kscope::KscopeLiteral<typename std::remove_cv<decltype(c)>::type,c,ITHARE_KSCOPE_COMBINED_PRNG(kscopeseed,ITHARE_KSCOPE_INIT_PRNG(__FILE__,ITHARE_KSCOPE_LINE,__COUNTER__)),ithare::kscope::kscope_exp_cycles(ithare::kscope::kscope_addlevel(kscopelevel,-3)),kscopeflags>()
+#define ITHARE_KSCOPE_FINTLITM2(c) ithare::kscope::KscopeLiteral<typename std::remove_cv<decltype(c)>::type,c,ITHARE_KSCOPE_COMBINED_PRNG(kscopeseed,ITHARE_KSCOPE_INIT_PRNG(__FILE__,ITHARE_KSCOPE_LINE,__COUNTER__)),ithare::kscope::kscope_exp_cycles(ithare::kscope::kscope_addlevel(kscopelevel,-2)),kscopeflags>()
+#define ITHARE_KSCOPE_FINTLITM1(c) ithare::kscope::KscopeLiteral<typename std::remove_cv<decltype(c)>::type,c,ITHARE_KSCOPE_COMBINED_PRNG(kscopeseed,ITHARE_KSCOPE_INIT_PRNG(__FILE__,ITHARE_KSCOPE_LINE,__COUNTER__)),ithare::kscope::kscope_exp_cycles(ithare::kscope::kscope_addlevel(kscopelevel,-1)),kscopeflags>()
+#define ITHARE_KSCOPE_FINTLIT(c) ithare::kscope::KscopeLiteral<typename std::remove_cv<decltype(c)>::type,c,ITHARE_KSCOPE_COMBINED_PRNG(kscopeseed,ITHARE_KSCOPE_INIT_PRNG(__FILE__,ITHARE_KSCOPE_LINE,__COUNTER__)),ithare::kscope::kscope_exp_cycles(kscopelevel),kscopeflags>()
+#define ITHARE_KSCOPE_FINTLITP1(c) ithare::kscope::KscopeLiteral<typename std::remove_cv<decltype(c)>::type,c,ITHARE_KSCOPE_COMBINED_PRNG(kscopeseed,ITHARE_KSCOPE_INIT_PRNG(__FILE__,ITHARE_KSCOPE_LINE,__COUNTER__)),ithare::kscope::kscope_exp_cycles(ithare::kscope::kscope_addlevel(kscopelevel,1)),kscopeflags>()
+#define ITHARE_KSCOPE_FINTLITP2(c) ithare::kscope::KscopeLiteral<typename std::remove_cv<decltype(c)>::type,c,ITHARE_KSCOPE_COMBINED_PRNG(kscopeseed,ITHARE_KSCOPE_INIT_PRNG(__FILE__,ITHARE_KSCOPE_LINE,__COUNTER__)),ithare::kscope::kscope_exp_cycles(ithare::kscope::kscope_addlevel(kscopelevel,2)),kscopeflags>()
+#define ITHARE_KSCOPE_FINTLITP3(c) ithare::kscope::KscopeLiteral<typename std::remove_cv<decltype(c)>::type,c,ITHARE_KSCOPE_COMBINED_PRNG(kscopeseed,ITHARE_KSCOPE_INIT_PRNG(__FILE__,ITHARE_KSCOPE_LINE,__COUNTER__)),ithare::kscope::kscope_exp_cycles(ithare::kscope::kscope_addlevel(kscopelevel,3)),kscopeflags>()
+
+//INTLIT?I(c): INTLIT-casted-to-INT (shortcut to pass literals to functions)
+#define ITHARE_KSCOPE_FINTLITM3I(c) ithare::kscope::KscopeInt<typename std::remove_cv<decltype(c)>::type,ITHARE_KSCOPE_DUMMYSEED,0,0>(ITHARE_KSCOPE_FINTLITM3(c))
+#define ITHARE_KSCOPE_FINTLITM2I(c) ithare::kscope::KscopeInt<typename std::remove_cv<decltype(c)>::type,ITHARE_KSCOPE_DUMMYSEED,0,0>(ITHARE_KSCOPE_FINTLITM2(c))
+#define ITHARE_KSCOPE_FINTLITM1I(c) ithare::kscope::KscopeInt<typename std::remove_cv<decltype(c)>::type,ITHARE_KSCOPE_DUMMYSEED,0,0>(ITHARE_KSCOPE_FINTLITM1(c))
+#define ITHARE_KSCOPE_FINTLITI(c) ithare::kscope::KscopeInt<typename std::remove_cv<decltype(c)>::type,ITHARE_KSCOPE_DUMMYSEED,0,0>(ITHARE_KSCOPE_FINTLIT(c))
+#define ITHARE_KSCOPE_FINTLITP1I(c) ithare::kscope::KscopeInt<typename std::remove_cv<decltype(c)>::type,ITHARE_KSCOPE_DUMMYSEED,0,0>(ITHARE_KSCOPE_FINTLITP1(c))
+#define ITHARE_KSCOPE_FINTLITP2I(c) ithare::kscope::KscopeInt<typename std::remove_cv<decltype(c)>::type,ITHARE_KSCOPE_DUMMYSEED,0,0>(ITHARE_KSCOPE_FINTLITP2(c))
+#define ITHARE_KSCOPE_FINTLITP3I(c) ithare::kscope::KscopeInt<typename std::remove_cv<decltype(c)>::type,ITHARE_KSCOPE_DUMMYSEED,0,0>(ITHARE_KSCOPE_FINTLITP3(c))
 
 //TODO: ITHARE_KSCOPE_FSTRLIT
 
@@ -847,13 +857,22 @@ namespace ithare {
 #define ITHARE_KSCOPE_INT6(type) ithare::kscope::KscopeInt<type,ITHARE_KSCOPE_INIT_PRNG(__FILE__,ITHARE_KSCOPE_LINE,__COUNTER__),ithare::kscope::kscope_exp_cycles(6),0>
 
 //INTLIT: constructing KscopeInt to be compatible with ITHARE_KSCOPE_DECLAREFUNC* functions
-#define ITHARE_KSCOPE_INTLIT0(c) ithare::kscope::KscopeInt<typename std::remove_cv<decltype(c)>::type,ITHARE_KSCOPE_INIT_PRNG(__FILE__,ITHARE_KSCOPE_LINE,__COUNTER__),0,0>(ithare::kscope::KscopeLiteral<typename std::remove_cv<decltype(c)>::type,c,ITHARE_KSCOPE_INIT_PRNG(__FILE__,ITHARE_KSCOPE_LINE,__COUNTER__),ithare::kscope::kscope_exp_cycles(0),0>())
-#define ITHARE_KSCOPE_INTLIT1(c) ithare::kscope::KscopeInt<typename std::remove_cv<decltype(c)>::type,ITHARE_KSCOPE_INIT_PRNG(__FILE__,ITHARE_KSCOPE_LINE,__COUNTER__),0,0>(ithare::kscope::KscopeLiteral<typename std::remove_cv<decltype(c)>::type,c,ITHARE_KSCOPE_INIT_PRNG(__FILE__,ITHARE_KSCOPE_LINE,__COUNTER__),ithare::kscope::kscope_exp_cycles(1),0>())
-#define ITHARE_KSCOPE_INTLIT2(c) ithare::kscope::KscopeInt<typename std::remove_cv<decltype(c)>::type,ITHARE_KSCOPE_INIT_PRNG(__FILE__,ITHARE_KSCOPE_LINE,__COUNTER__),0,0>(ithare::kscope::KscopeLiteral<typename std::remove_cv<decltype(c)>::type,c,ITHARE_KSCOPE_INIT_PRNG(__FILE__,ITHARE_KSCOPE_LINE,__COUNTER__),ithare::kscope::kscope_exp_cycles(2),0>())
-#define ITHARE_KSCOPE_INTLIT3(c) ithare::kscope::KscopeInt<typename std::remove_cv<decltype(c)>::type,ITHARE_KSCOPE_INIT_PRNG(__FILE__,ITHARE_KSCOPE_LINE,__COUNTER__),0,0>(ithare::kscope::KscopeLiteral<typename std::remove_cv<decltype(c)>::type,c,ITHARE_KSCOPE_INIT_PRNG(__FILE__,ITHARE_KSCOPE_LINE,__COUNTER__),ithare::kscope::kscope_exp_cycles(3),0>())
-#define ITHARE_KSCOPE_INTLIT4(c) ithare::kscope::KscopeInt<typename std::remove_cv<decltype(c)>::type,ITHARE_KSCOPE_INIT_PRNG(__FILE__,ITHARE_KSCOPE_LINE,__COUNTER__),0,0>(ithare::kscope::KscopeLiteral<typename std::remove_cv<decltype(c)>::type,c,ITHARE_KSCOPE_INIT_PRNG(__FILE__,ITHARE_KSCOPE_LINE,__COUNTER__),ithare::kscope::kscope_exp_cycles(4),0>())
-#define ITHARE_KSCOPE_INTLIT5(c) ithare::kscope::KscopeInt<typename std::remove_cv<decltype(c)>::type,ITHARE_KSCOPE_INIT_PRNG(__FILE__,ITHARE_KSCOPE_LINE,__COUNTER__),0,0>(ithare::kscope::KscopeLiteral<typename std::remove_cv<decltype(c)>::type,c,ITHARE_KSCOPE_INIT_PRNG(__FILE__,ITHARE_KSCOPE_LINE,__COUNTER__),ithare::kscope::kscope_exp_cycles(5),0>())
-#define ITHARE_KSCOPE_INTLIT6(c) ithare::kscope::KscopeInt<typename std::remove_cv<decltype(c)>::type,ITHARE_KSCOPE_INIT_PRNG(__FILE__,ITHARE_KSCOPE_LINE,__COUNTER__),0,0>(ithare::kscope::KscopeLiteral<typename std::remove_cv<decltype(c)>::type,c,ITHARE_KSCOPE_INIT_PRNG(__FILE__,ITHARE_KSCOPE_LINE,__COUNTER__),ithare::kscope::kscope_exp_cycles(6),0>())
+#define ITHARE_KSCOPE_INTLIT0(c) ithare::kscope::KscopeLiteral<typename std::remove_cv<decltype(c)>::type,c,ITHARE_KSCOPE_INIT_PRNG(__FILE__,ITHARE_KSCOPE_LINE,__COUNTER__),ithare::kscope::kscope_exp_cycles(0),0>()
+#define ITHARE_KSCOPE_INTLIT1(c) ithare::kscope::KscopeLiteral<typename std::remove_cv<decltype(c)>::type,c,ITHARE_KSCOPE_INIT_PRNG(__FILE__,ITHARE_KSCOPE_LINE,__COUNTER__),ithare::kscope::kscope_exp_cycles(1),0>()
+#define ITHARE_KSCOPE_INTLIT2(c) ithare::kscope::KscopeLiteral<typename std::remove_cv<decltype(c)>::type,c,ITHARE_KSCOPE_INIT_PRNG(__FILE__,ITHARE_KSCOPE_LINE,__COUNTER__),ithare::kscope::kscope_exp_cycles(2),0>()
+#define ITHARE_KSCOPE_INTLIT3(c) ithare::kscope::KscopeLiteral<typename std::remove_cv<decltype(c)>::type,c,ITHARE_KSCOPE_INIT_PRNG(__FILE__,ITHARE_KSCOPE_LINE,__COUNTER__),ithare::kscope::kscope_exp_cycles(3),0>()
+#define ITHARE_KSCOPE_INTLIT4(c) ithare::kscope::KscopeLiteral<typename std::remove_cv<decltype(c)>::type,c,ITHARE_KSCOPE_INIT_PRNG(__FILE__,ITHARE_KSCOPE_LINE,__COUNTER__),ithare::kscope::kscope_exp_cycles(4),0>()
+#define ITHARE_KSCOPE_INTLIT5(c) ithare::kscope::KscopeLiteral<typename std::remove_cv<decltype(c)>::type,c,ITHARE_KSCOPE_INIT_PRNG(__FILE__,ITHARE_KSCOPE_LINE,__COUNTER__),ithare::kscope::kscope_exp_cycles(5),0>()
+#define ITHARE_KSCOPE_INTLIT6(c) ithare::kscope::KscopeLiteral<typename std::remove_cv<decltype(c)>::type,c,ITHARE_KSCOPE_INIT_PRNG(__FILE__,ITHARE_KSCOPE_LINE,__COUNTER__),ithare::kscope::kscope_exp_cycles(6),0>()
+
+//INTLIT?I(c): INTLIT-casted-to-INT (shortcut to pass literals to functions)
+#define ITHARE_KSCOPE_INTLIT0I(c) ithare::kscope::KscopeInt<typename std::remove_cv<decltype(c)>::type,ITHARE_KSCOPE_DUMMYSEED,0,0>(ITHARE_KSCOPE_INTLIT0(c))
+#define ITHARE_KSCOPE_INTLIT1I(c) ithare::kscope::KscopeInt<typename std::remove_cv<decltype(c)>::type,ITHARE_KSCOPE_DUMMYSEED,0,0>(ITHARE_KSCOPE_INTLIT1(c))
+#define ITHARE_KSCOPE_INTLIT2I(c) ithare::kscope::KscopeInt<typename std::remove_cv<decltype(c)>::type,ITHARE_KSCOPE_DUMMYSEED,0,0>(ITHARE_KSCOPE_INTLIT2(c))
+#define ITHARE_KSCOPE_INTLIT3I(c) ithare::kscope::KscopeInt<typename std::remove_cv<decltype(c)>::type,ITHARE_KSCOPE_DUMMYSEED,0,0>(ITHARE_KSCOPE_INTLIT3(c))
+#define ITHARE_KSCOPE_INTLIT4I(c) ithare::kscope::KscopeInt<typename std::remove_cv<decltype(c)>::type,ITHARE_KSCOPE_DUMMYSEED,0,0>(ITHARE_KSCOPE_INTLIT4(c))
+#define ITHARE_KSCOPE_INTLIT5I(c) ithare::kscope::KscopeInt<typename std::remove_cv<decltype(c)>::type,ITHARE_KSCOPE_DUMMYSEED,0,0>(ITHARE_KSCOPE_INTLIT5(c))
+#define ITHARE_KSCOPE_INTLIT6I(c) ithare::kscope::KscopeInt<typename std::remove_cv<decltype(c)>::type,ITHARE_KSCOPE_DUMMYSEED,0,0>(ITHARE_KSCOPE_INTLIT6(c))
 
 //STRLIT:
 #define ITHARE_KSCOPE_STR_HELPER(seed,cycles,s) ithare::kscope::KscopeStrLiteral<seed,cycles,(sizeof(s)>0?s[0]:'\0'),(sizeof(s)>1?s[1]:'\0'),(sizeof(s)>2?s[2]:'\0'),(sizeof(s)>3?s[3]:'\0'),\
@@ -1180,8 +1199,9 @@ namespace ithare {
 #define ITHARE_KSCOPE_DECLAREFUNC_WITHPARAMS_2xINT template<KSCOPEFLAGS kscopeflags=0,class kscopeinttype, class kscopeinttype2> constexpr inline
 #define ITHARE_KSCOPE_DECLAREFUNC_WITHPARAMS_CLASS template<KSCOPEFLAGS kscopeflags=0,KSCOPEFLAGS kscopeclsflags> constexpr ITHARE_KSCOPE_FORCEINLINE
 #define ITHARE_KSCOPE_DECLAREFUNC_WITHPARAMS_CLASS_INT template<KSCOPEFLAGS kscopeflags=0,KSCOPEFLAGS kscopeclsflags,class kscopeinttype> constexpr ITHARE_KSCOPE_FORCEINLINE
+#define ITHARE_KSCOPE_DECLAREFUNC_WITHPARAMS_CLASS_2xINT template<KSCOPEFLAGS kscopeflags=0,KSCOPEFLAGS kscopeclsflags,class kscopeinttype,class kscopeinttype2> constexpr ITHARE_KSCOPE_FORCEINLINE
 #define ITHARE_KSCOPE_DECLAREPARAM_INT(type) ithare::kscope::KscopeIntDbg<kscopeinttype>
-#define ITHARE_KSCOPE_DECLAREPARAM_INT2(type) ithare::kscope::KscopeInt<kscopeinttype2>
+#define ITHARE_KSCOPE_DECLAREPARAM_INT2(type) ithare::kscope::KscopeIntDbg<kscopeinttype2>
 #define ITHARE_KSCOPE_DECLAREPARAM_CLASS(name) name<kscopeclsflags>
 
 #define ITHARE_KSCOPE_USEPARAM_INT(name) name.value()
@@ -1213,6 +1233,14 @@ namespace ithare {
 #define ITHARE_KSCOPE_FINTLITP2(c) KscopeLiteralDbg<typename std::remove_cv<decltype(c)>::type,c>()
 #define ITHARE_KSCOPE_FINTLITP3(c) KscopeLiteralDbg<typename std::remove_cv<decltype(c)>::type,c>()
 
+#define ITHARE_KSCOPE_FINTLITM3I(c) ithare::kscope::KscopeIntDbg<typename std::remove_cv<decltype(c)>::type>(ITHARE_KSCOPE_FINTLITM3(c))
+#define ITHARE_KSCOPE_FINTLITM2I(c) ithare::kscope::KscopeIntDbg<typename std::remove_cv<decltype(c)>::type>(ITHARE_KSCOPE_FINTLITM2(c))
+#define ITHARE_KSCOPE_FINTLITM1I(c) ithare::kscope::KscopeIntDbg<typename std::remove_cv<decltype(c)>::type>(ITHARE_KSCOPE_FINTLITM1(c))
+#define ITHARE_KSCOPE_FINTLITI(c) ithare::kscope::KscopeIntDbg<typename std::remove_cv<decltype(c)>::type>(ITHARE_KSCOPE_FINTLIT(c))
+#define ITHARE_KSCOPE_FINTLITP1I(c) ithare::kscope::KscopeIntDbg<typename std::remove_cv<decltype(c)>::type>(ITHARE_KSCOPE_FINTLITP1(c))
+#define ITHARE_KSCOPE_FINTLITP2I(c) ithare::kscope::KscopeIntDbg<typename std::remove_cv<decltype(c)>::type>(ITHARE_KSCOPE_FINTLITP2(c))
+#define ITHARE_KSCOPE_FINTLITP3I(c) ithare::kscope::KscopeIntDbg<typename std::remove_cv<decltype(c)>::type>(ITHARE_KSCOPE_FINTLITP3(c))
+
 //Macros to be used OUTSIDE of 'kaleidoscoped' libraries 
 #define ITHARE_KSCOPE_INT0(type) ithare::kscope::KscopeIntDbg<type>
 #define ITHARE_KSCOPE_INT1(type) ithare::kscope::KscopeIntDbg<type>
@@ -1222,13 +1250,21 @@ namespace ithare {
 #define ITHARE_KSCOPE_INT5(type) ithare::kscope::KscopeIntDbg<type>
 #define ITHARE_KSCOPE_INT6(type) ithare::kscope::KscopeIntDbg<type>
 
-#define ITHARE_KSCOPE_INTLIT0(c) ithare::kscope::KscopeIntDbg<typename std::remove_cv<decltype(c)>::type>(ithare::kscope::KscopeLiteralDbg<typename std::remove_cv<decltype(c)>::type,c>())
-#define ITHARE_KSCOPE_INTLIT1(c) ithare::kscope::KscopeIntDbg<typename std::remove_cv<decltype(c)>::type>(ithare::kscope::KscopeLiteralDbg<typename std::remove_cv<decltype(c)>::type,c>())
-#define ITHARE_KSCOPE_INTLIT2(c) ithare::kscope::KscopeIntDbg<typename std::remove_cv<decltype(c)>::type>(ithare::kscope::KscopeLiteralDbg<typename std::remove_cv<decltype(c)>::type,c>())
-#define ITHARE_KSCOPE_INTLIT3(c) ithare::kscope::KscopeIntDbg<typename std::remove_cv<decltype(c)>::type>(ithare::kscope::KscopeLiteralDbg<typename std::remove_cv<decltype(c)>::type,c>())
-#define ITHARE_KSCOPE_INTLIT4(c) ithare::kscope::KscopeIntDbg<typename std::remove_cv<decltype(c)>::type>(ithare::kscope::KscopeLiteralDbg<typename std::remove_cv<decltype(c)>::type,c>())
-#define ITHARE_KSCOPE_INTLIT5(c) ithare::kscope::KscopeIntDbg<typename std::remove_cv<decltype(c)>::type>(ithare::kscope::KscopeLiteralDbg<typename std::remove_cv<decltype(c)>::type,c>())
-#define ITHARE_KSCOPE_INTLIT6(c) ithare::kscope::KscopeIntDbg<typename std::remove_cv<decltype(c)>::type>(ithare::kscope::KscopeLiteralDbg<typename std::remove_cv<decltype(c)>::type,c>())
+#define ITHARE_KSCOPE_INTLIT0(c) ithare::kscope::KscopeLiteralDbg<typename std::remove_cv<decltype(c)>::type,c>()
+#define ITHARE_KSCOPE_INTLIT1(c) ithare::kscope::KscopeLiteralDbg<typename std::remove_cv<decltype(c)>::type,c>()
+#define ITHARE_KSCOPE_INTLIT2(c) ithare::kscope::KscopeLiteralDbg<typename std::remove_cv<decltype(c)>::type,c>()
+#define ITHARE_KSCOPE_INTLIT3(c) ithare::kscope::KscopeLiteralDbg<typename std::remove_cv<decltype(c)>::type,c>()
+#define ITHARE_KSCOPE_INTLIT4(c) ithare::kscope::KscopeLiteralDbg<typename std::remove_cv<decltype(c)>::type,c>()
+#define ITHARE_KSCOPE_INTLIT5(c) ithare::kscope::KscopeLiteralDbg<typename std::remove_cv<decltype(c)>::type,c>()
+#define ITHARE_KSCOPE_INTLIT6(c) ithare::kscope::KscopeLiteralDbg<typename std::remove_cv<decltype(c)>::type,c>()
+
+#define ITHARE_KSCOPE_INTLIT0I(c) ithare::kscope::KscopeIntDbg<typename std::remove_cv<decltype(c)>::type>(ITHARE_KSCOPE_INTLIT0(c))
+#define ITHARE_KSCOPE_INTLIT1I(c) ithare::kscope::KscopeIntDbg<typename std::remove_cv<decltype(c)>::type>(ITHARE_KSCOPE_INTLIT1(c))
+#define ITHARE_KSCOPE_INTLIT2I(c) ithare::kscope::KscopeIntDbg<typename std::remove_cv<decltype(c)>::type>(ITHARE_KSCOPE_INTLIT2(c))
+#define ITHARE_KSCOPE_INTLIT3I(c) ithare::kscope::KscopeIntDbg<typename std::remove_cv<decltype(c)>::type>(ITHARE_KSCOPE_INTLIT3(c))
+#define ITHARE_KSCOPE_INTLIT4I(c) ithare::kscope::KscopeIntDbg<typename std::remove_cv<decltype(c)>::type>(ITHARE_KSCOPE_INTLIT4(c))
+#define ITHARE_KSCOPE_INTLIT5I(c) ithare::kscope::KscopeIntDbg<typename std::remove_cv<decltype(c)>::type>(ITHARE_KSCOPE_INTLIT5(c))
+#define ITHARE_KSCOPE_INTLIT6I(c) ithare::kscope::KscopeIntDbg<typename std::remove_cv<decltype(c)>::type>(ITHARE_KSCOPE_INTLIT6(c))
 
 #define ITHARE_KSCOPE_STR_DBG_HELPER(s) ithare::kscope::KscopeStrLiteralDbg<(sizeof(s)>0?s[0]:'\0'),(sizeof(s)>1?s[1]:'\0'),(sizeof(s)>2?s[2]:'\0'),(sizeof(s)>3?s[3]:'\0'),\
 							(sizeof(s)>4?s[4]:'\0'),(sizeof(s)>5?s[5]:'\0'),(sizeof(s)>6?s[6]:'\0'),(sizeof(s)>7?s[7]:'\0'),\
