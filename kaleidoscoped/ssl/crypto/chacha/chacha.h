@@ -109,8 +109,8 @@ ITHARE_KSCOPE_BOUNDED_MINBYTES(3, CHACHA_CTRLEN)
 	x->input[15] = ITHARE_KSCOPE_U8TO32_LITTLE(iv + 4);
 }
 
-ITHARE_KSCOPE_DECLAREFUNC_WITHPARAMS_CLASS_INT
-void chacha_encrypt_bytes(ITHARE_KSCOPE_DECLAREPARAM_CLASS(ChaCha_ctx)* x, const ITHARE_KSCOPE_DECLAREPARAM_INT(uint8_t)* m, uint8_t* c, size_t bytes)
+ITHARE_KSCOPE_DECLAREFUNC_WITHPARAMS_CLASS_2xINT
+void chacha_encrypt_bytes(ITHARE_KSCOPE_DECLAREPARAM_CLASS(ChaCha_ctx)* x, const ITHARE_KSCOPE_DECLAREPARAM_INT(uint8_t)* m, ITHARE_KSCOPE_DECLAREPARAM_INT2(uint8_t)* c, size_t bytes)
 ITHARE_KSCOPE_BOUNDED_BUFFER(2, 4)
 ITHARE_KSCOPE_BOUNDED_BUFFER(3, 4)
 {
@@ -135,9 +135,9 @@ ITHARE_KSCOPE_BOUNDED_BUFFER(3, 4)
 	uint32_t j15 = x->input[15];
 
 	for (;;) {
-		uint8_t* ctarget = nullptr;
+		ITHARE_KSCOPE_PTR_OF_SAME_TYPE_AS(c) ctarget = nullptr;
 		ITHARE_KSCOPE_ARRAY_OF_SAME_TYPE_AS(m) tmpm[64] = {};
-		uint8_t tmpc[64] = {};
+		ITHARE_KSCOPE_ARRAY_OF_SAME_TYPE_AS(c) tmpc[64] = {};
 		if (bytes < 64) {
 			for (size_t i = 0; i < bytes; ++i)
 				tmpm[i] = m[i];
@@ -331,8 +331,8 @@ void ChaCha_set_iv(ITHARE_KSCOPE_DECLAREPARAM_CLASS(ChaCha_ctx)* ctx, const ITHA
 	ctx->unused = 0;
 }
 
-ITHARE_KSCOPE_DECLAREFUNC_WITHPARAMS_CLASS_INT
-void ChaCha(ITHARE_KSCOPE_DECLAREPARAM_CLASS(ChaCha_ctx)* ctx, uint8_t* out, const ITHARE_KSCOPE_DECLAREPARAM_INT(uint8_t)* in, size_t len)
+ITHARE_KSCOPE_DECLAREFUNC_WITHPARAMS_CLASS_2xINT
+void ChaCha(ITHARE_KSCOPE_DECLAREPARAM_CLASS(ChaCha_ctx)* ctx, ITHARE_KSCOPE_DECLAREPARAM_INT(uint8_t)* out, const ITHARE_KSCOPE_DECLAREPARAM_INT2(uint8_t)* in, size_t len)
 {
 	/* Consume remaining keystream, if any exists. */
 	if (ctx->unused > 0) {
@@ -348,9 +348,9 @@ void ChaCha(ITHARE_KSCOPE_DECLAREPARAM_CLASS(ChaCha_ctx)* ctx, uint8_t* out, con
 	ITHARE_KSCOPE_FCALL(chacha_encrypt_bytes)(ctx, in, out, len);
 }
 
-ITHARE_KSCOPE_DECLAREFUNC_WITHPARAMS_3xINT 
-void CRYPTO_chacha_20(uint8_t* out, const ITHARE_KSCOPE_DECLAREPARAM_INT(uint8_t)* in, size_t len,
-    const ITHARE_KSCOPE_DECLAREPARAM_INT2(uint8_t) key[32], const ITHARE_KSCOPE_DECLAREPARAM_INT3(uint8_t) iv[8], uint64_t counter)
+ITHARE_KSCOPE_DECLAREFUNC_WITHPARAMS_4xINT 
+void CRYPTO_chacha_20(ITHARE_KSCOPE_DECLAREPARAM_INT(uint8_t)* out, const ITHARE_KSCOPE_DECLAREPARAM_INT2(uint8_t)* in, size_t len,
+    const ITHARE_KSCOPE_DECLAREPARAM_INT3(uint8_t) key[32], const ITHARE_KSCOPE_DECLAREPARAM_INT4(uint8_t) iv[8], uint64_t counter)
 {
 	ITHARE_KSCOPE_KSCOPECLASS(ChaCha_ctx) ctx = {};
 
