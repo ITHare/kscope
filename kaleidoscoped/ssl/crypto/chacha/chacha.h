@@ -23,8 +23,8 @@ constexpr int CHACHA_BLOCKLEN = 64;
 
 ITHARE_KSCOPE_DECLARECLASS
 struct ChaCha_ctx {
-	uint32_t input[16];
-	uint8_t ks[CHACHA_BLOCKLEN];
+	ITHARE_KSCOPE_CINT(uint32_t) input[16];
+	ITHARE_KSCOPE_CINT(uint8_t) ks[CHACHA_BLOCKLEN];
 	ITHARE_KSCOPE_CINT(uint8_t) unused;
 };
 
@@ -59,23 +59,19 @@ struct ChaCha_ctx {
   a = ITHARE_KSCOPE_PLUS(a,b); d = ITHARE_KSCOPE_ROTATE(ITHARE_KSCOPE_XOR(d,a), 8); \
   c = ITHARE_KSCOPE_PLUS(c,d); b = ITHARE_KSCOPE_ROTATE(ITHARE_KSCOPE_XOR(b,c), 7);
 
-/* Initialise with "expand 32-byte k". */
-constexpr uint8_t chacha_sigma[16] = {
-	0x65, 0x78, 0x70, 0x61, 0x6e, 0x64, 0x20, 0x33,
-	0x32, 0x2d, 0x62, 0x79, 0x74, 0x65, 0x20, 0x6b,
-};//TODO: kaleidoscop
-
-/* Initialise with "expand 16-byte k". */
-constexpr uint8_t chacha_tau[16] = {
-	0x65, 0x78, 0x70, 0x61, 0x6e, 0x64, 0x20, 0x31,
-	0x36, 0x2d, 0x62, 0x79, 0x74, 0x65, 0x20, 0x6b,
-};//TODO: kaleidoscop
-
 ITHARE_KSCOPE_DECLAREFUNC_WITHPARAMS_CLASS_2xINT
 void chacha_keysetup(ITHARE_KSCOPE_DECLAREPARAM_CLASS(ChaCha_ctx) *x, const ITHARE_KSCOPE_DECLAREPARAM_INT(uint8_t) *k, ITHARE_KSCOPE_DECLAREPARAM_INT2(unsigned) kbits/*128 or 256*/)
 ITHARE_KSCOPE_BOUNDED_MINBYTES(2, CHACHA_MINKEYLEN)
 {
-	const uint8_t* constants = nullptr;
+	uint32_t constants32[4] = { 
+		ITHARE_KSCOPE_FINTLIT(UINT32_C(0x6170'7865)), 
+		ITHARE_KSCOPE_FINTLIT(UINT32_C(0x3320'646e)), 
+		ITHARE_KSCOPE_FINTLIT(UINT32_C(0x7962'2d32)), 
+		ITHARE_KSCOPE_FINTLIT(UINT32_C(0x6b20'6574)) };
+	/* sigma:
+			0x65, 0x78, 0x70, 0x61, 0x6e, 0x64, 0x20, 0x33,
+			0x32, 0x2d, 0x62, 0x79, 0x74, 0x65, 0x20, 0x6b,
+	*/
 
 	x->input[4] = ITHARE_KSCOPE_U8TO32_LITTLE(k + 0);
 	x->input[5] = ITHARE_KSCOPE_U8TO32_LITTLE(k + 4);
@@ -83,19 +79,27 @@ ITHARE_KSCOPE_BOUNDED_MINBYTES(2, CHACHA_MINKEYLEN)
 	x->input[7] = ITHARE_KSCOPE_U8TO32_LITTLE(k + 12);
 	if (kbits == 256) { /* recommended */
 		k += 16;
-		constants = chacha_sigma;
-	} else { /* kbits == 128 */
+	} else { /* kbits == 128; NOT TESTED(!) */
 		assert(kbits==128);
-		constants = chacha_tau;
+		constants32[1] -= ITHARE_KSCOPE_FINTLIT(UINT32_C(0x0200'0000));
+		constants32[2] += ITHARE_KSCOPE_FINTLIT(UINT32_C(0x0000'0004));
+		/* tau
+			0x65, 0x78, 0x70, 0x61, 0x6e, 0x64, 0x20, 0x31,
+			0x36, 0x2d, 0x62, 0x79, 0x74, 0x65, 0x20, 0x6b,
+		};*/
 	}
 	x->input[8] = ITHARE_KSCOPE_U8TO32_LITTLE(k + 0);
 	x->input[9] = ITHARE_KSCOPE_U8TO32_LITTLE(k + 4);
 	x->input[10] = ITHARE_KSCOPE_U8TO32_LITTLE(k + 8);
 	x->input[11] = ITHARE_KSCOPE_U8TO32_LITTLE(k + 12);
-	x->input[0] = ITHARE_KSCOPE_U8TO32_LITTLE(constants + 0);
-	x->input[1] = ITHARE_KSCOPE_U8TO32_LITTLE(constants + 4);
-	x->input[2] = ITHARE_KSCOPE_U8TO32_LITTLE(constants + 8);
-	x->input[3] = ITHARE_KSCOPE_U8TO32_LITTLE(constants + 12);
+	//x->input[0] = ITHARE_KSCOPE_U8TO32_LITTLE(constants + 0);
+	//x->input[1] = ITHARE_KSCOPE_U8TO32_LITTLE(constants + 4);
+	//x->input[2] = ITHARE_KSCOPE_U8TO32_LITTLE(constants + 8);
+	//x->input[3] = ITHARE_KSCOPE_U8TO32_LITTLE(constants + 12);
+	x->input[0] = constants32[0];
+	x->input[1] = constants32[1];
+	x->input[2] = constants32[2];
+	x->input[3] = constants32[3];
 }
 
 ITHARE_KSCOPE_DECLAREFUNC_WITHPARAMS_CLASS_2xINT
@@ -138,7 +142,7 @@ ITHARE_KSCOPE_BOUNDED_BUFFER(3, 4)
 		ITHARE_KSCOPE_PTR_OF_SAME_TYPE_AS(c) ctarget = nullptr;
 		ITHARE_KSCOPE_ARRAY_OF_SAME_TYPE_AS(m) tmpm[64] = {};
 		ITHARE_KSCOPE_ARRAY_OF_SAME_TYPE_AS(c) tmpc[64] = {};
-		if (bytes < 64) {
+		if (bytes < ITHARE_KSCOPE_FINTLIT(64)) {
 			for (size_t i = 0; i < bytes; ++i)
 				tmpm[i] = m[i];
 			m = tmpm;
@@ -188,7 +192,7 @@ ITHARE_KSCOPE_BOUNDED_BUFFER(3, 4)
 		x14 = ITHARE_KSCOPE_PLUS(x14, j14);
 		x15 = ITHARE_KSCOPE_PLUS(x15, j15);
 
-		if (bytes < 64) {
+		if (bytes < ITHARE_KSCOPE_FINTLIT(64)) {
 			ITHARE_KSCOPE_U32TO8_LITTLE(x->ks + 0, x0);
 			ITHARE_KSCOPE_U32TO8_LITTLE(x->ks + 4, x1);
 			ITHARE_KSCOPE_U32TO8_LITTLE(x->ks + 8, x2);
@@ -250,8 +254,8 @@ ITHARE_KSCOPE_BOUNDED_BUFFER(3, 4)
 		ITHARE_KSCOPE_U32TO8_LITTLE(c + 56, x14);
 		ITHARE_KSCOPE_U32TO8_LITTLE(c + 60, x15);
 
-		if (bytes <= 64) {
-			if (bytes < 64) {
+		if (bytes <= ITHARE_KSCOPE_FINTLIT(64)) {
+			if (bytes < ITHARE_KSCOPE_FINTLIT(64)) {
 				for (size_t i = 0; i < bytes; ++i)
 					ctarget[i] = c[i];
 			}
@@ -337,7 +341,7 @@ void ChaCha(ITHARE_KSCOPE_DECLAREPARAM_CLASS(ChaCha_ctx)* ctx, ITHARE_KSCOPE_DEC
 	ITHARE_KSCOPE_FINT(size_t) len = ITHARE_KSCOPE_USEPARAM_INT(len_);
 	/* Consume remaining keystream, if any exists. */
 	if (ctx->unused > 0) {
-		uint8_t* k = ctx->ks + 64 - ctx->unused;
+		auto k = ctx->ks + 64 - ctx->unused;
 		size_t l = (len > ctx->unused) ? ITHARE_KSCOPE_VALUE(ctx->unused) : ITHARE_KSCOPE_VALUE(len);
 		for (size_t i = 0; i < l; i++)
 			*(out++) = *(in++) ^ *(k++);
