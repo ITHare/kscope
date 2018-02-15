@@ -56,14 +56,14 @@ private:
 namespace ithare{ namespace kscope {
 
 ITHARE_KSCOPE_DECLAREFUNC_WITHPARAMS_INT
-ITHARE_KSCOPE_FINTP3(int64_t) factorial(ITHARE_KSCOPE_DECLAREPARAM_INT(int64_t) x_) {
+ITHARE_KSCOPE_FINTP3(uint64_t) factorial(ITHARE_KSCOPE_DECLAREPARAM_INT(int64_t) x_) {
 	//DBGPRINT(x_)
 	ITHARE_KSCOPE_FINTP3(int64_t) x = ITHARE_KSCOPE_USEPARAM_INT(x_);
 	if (x < 0) {
 		auto lit = ITHARE_KSCOPE_STRLIT3("Negative argument to factorial!"); ITHARE_KSCOPE_DBGPRINT(lit);
 		throw MyException(lit);
 	}
-	ITHARE_KSCOPE_FINTM1(int64_t) ret = 1;
+	ITHARE_KSCOPE_FINTM1(uint64_t) ret = 1;
 	//DBGPRINT(ret)
 	for (ITHARE_KSCOPE_FINTM1(int64_t) i = 1; i <= x; ++i) {
 		//DBGPRINT(i);
