@@ -68,7 +68,7 @@ namespace ithare {
 		ITHARE_KSCOPE_FORCEINLINE static constexpr T final_injection(T x) {
 			return x;
 		}
-		template<ITHARE_KSCOPE_SEEDTPARAM seed2>
+		template<ITHARE_KSCOPE_SEEDTPARAM seed2,KSCOPEFLAGS flags>
 		ITHARE_KSCOPE_FORCEINLINE static constexpr T final_surjection(T y) {
 			return y;
 		}
@@ -95,9 +95,12 @@ namespace ithare {
 		ITHARE_KSCOPE_FORCEINLINE static constexpr T final_injection(T x) {
 			return x + CC;
 		}
-		template<ITHARE_KSCOPE_SEEDTPARAM seed2>
-		ITHARE_KSCOPE_FORCEINLINE static T final_surjection(T y) {
-			return y - T(c);
+		template<ITHARE_KSCOPE_SEEDTPARAM seed2,KSCOPEFLAGS flags>
+		ITHARE_KSCOPE_FORCEINLINE static constexpr /* only if flags & kscope_flag_is_constexpr */ T final_surjection(T y) {
+			if constexpr(flags&kscope_flag_is_constexpr)
+				return y - CC;
+			else
+				return y - T(c);
 		}
 
 #ifdef ITHARE_KSCOPE_DBG_ENABLE_DBGPRINT

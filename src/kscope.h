@@ -106,17 +106,17 @@ namespace ithare {
 			ITHARE_KSCOPE_DECLAREPRNG_INFUNC seedc = ITHARE_KSCOPE_COMBINED_PRNG(seed,seed2);
 			return WhichType::template injection<seedc>(x);
 		}
-		template<ITHARE_KSCOPE_SEEDTPARAM seed2>
+		template<ITHARE_KSCOPE_SEEDTPARAM seed2,KSCOPEFLAGS flags>
 		ITHARE_KSCOPE_FORCEINLINE constexpr static T surjection(return_type y) {
 			ITHARE_KSCOPE_DECLAREPRNG_INFUNC seedc = ITHARE_KSCOPE_COMBINED_PRNG(seed,seed2);
-			return WhichType::template surjection<seedc>(y);
+			return WhichType::template surjection<seedc,flags>(y);
 		}
 
 	public:
 		static constexpr KSCOPEINJECTIONCAPS injection_caps = WhichType::injection_caps;
 		template<ITHARE_KSCOPE_SEEDTPARAM seed2>
 		ITHARE_KSCOPE_FORCEINLINE constexpr static return_type injected_add_mod_max_value_ex(return_type base, T x) {
-			return WhichType::template injected_add_mod_max_value_ex<seed2>(base,x);
+			return WhichType::template injected_add_mod_max_value_ex<seed2,0>(base,x);
 		}
 
 #ifdef ITHARE_KSCOPE_DBG_ENABLE_DBGPRINT
@@ -156,7 +156,7 @@ namespace ithare {
 		ITHARE_KSCOPE_FORCEINLINE constexpr KscopeLiteralCtx() : val(Injection::template injection<ITHARE_KSCOPE_NEW_PRNG(seed, 2)>(C)) {
 		}
 		ITHARE_KSCOPE_FORCEINLINE constexpr T value() const {
-			return Injection::template surjection<ITHARE_KSCOPE_NEW_PRNG(seed, 3)>(val);
+			return Injection::template surjection<ITHARE_KSCOPE_NEW_PRNG(seed, 3),0>(val);
 		}
 
 #ifdef ITHARE_KSCOPE_DBG_ENABLE_DBGPRINT
@@ -166,7 +166,7 @@ namespace ithare {
 		}
 		static void dbgCheck() {
 			typename Injection::return_type c = Injection::template injection<seed>(C);
-			T cc = Injection::template surjection<seed>(c);
+			T cc = Injection::template surjection<seed,0>(c);
 			assert(cc == C);
 		}
 #endif
@@ -197,7 +197,7 @@ namespace ithare {
 		ITHARE_KSCOPE_FORCEINLINE static constexpr T final_injection(T x) {
 			return x;
 		}
-		template<ITHARE_KSCOPE_SEEDTPARAM seed2>
+		template<ITHARE_KSCOPE_SEEDTPARAM seed2,KSCOPEFLAGS flags>
 		ITHARE_KSCOPE_FORCEINLINE static constexpr T final_surjection(T y) {
 			return y;
 		}
@@ -247,10 +247,10 @@ namespace ithare {
 			ITHARE_KSCOPE_DECLAREPRNG_INFUNC seedc = ITHARE_KSCOPE_COMBINED_PRNG(seed,seed2);
 			return WhichType::template final_injection<seedc>(x);
 		}
-		template<ITHARE_KSCOPE_SEEDTPARAM seed2>
-		ITHARE_KSCOPE_FORCEINLINE static /*non-constexpr*/ T final_surjection(T y) {
+		template<ITHARE_KSCOPE_SEEDTPARAM seed2,KSCOPEFLAGS flags>
+		ITHARE_KSCOPE_FORCEINLINE static constexpr /* only if flags & kscope_flag_is_constexpr */ T final_surjection(T y) {
 			ITHARE_KSCOPE_DECLAREPRNG_INFUNC seedc = ITHARE_KSCOPE_COMBINED_PRNG(seed,seed2);
-			return WhichType::template final_surjection<seedc>(y);
+			return WhichType::template final_surjection<seedc,flags>(y);
 		}
 
 
@@ -310,7 +310,7 @@ namespace ithare {
 			if constexpr(flags&kscope_flag_is_constexpr)
 				return C_;
 			else
-				return Injection::template surjection<ITHARE_KSCOPE_NEW_PRNG(seed, 4)>(val);
+				return Injection::template surjection<ITHARE_KSCOPE_NEW_PRNG(seed, 4),flags>(val);
 		}
 		constexpr ITHARE_KSCOPE_FORCEINLINE operator T_() const {
 			return value();
@@ -350,7 +350,7 @@ namespace ithare {
 		ITHARE_KSCOPE_FORCEINLINE static constexpr T final_injection(T x) {
 			return x;
 		}
-		template<ITHARE_KSCOPE_SEEDTPARAM seed2>
+		template<ITHARE_KSCOPE_SEEDTPARAM seed2,KSCOPEFLAGS flags>
 		ITHARE_KSCOPE_FORCEINLINE static constexpr T final_surjection(	T y) {
 			return y;
 		}
@@ -425,7 +425,7 @@ namespace ithare {
 			return *this;
 		}
 		ITHARE_KSCOPE_FORCEINLINE constexpr T_ value() const {
-			return T_(Injection::template surjection<ITHARE_KSCOPE_NEW_PRNG(seed, 5)>(val));
+			return T_(Injection::template surjection<ITHARE_KSCOPE_NEW_PRNG(seed, 5),0>(val));
 		}
 
 		ITHARE_KSCOPE_FORCEINLINE constexpr operator T_() const { return value(); }
@@ -433,7 +433,7 @@ namespace ithare {
 			constexpr bool has_shortcut = Injection::injection_caps & kscope_injection_has_add_mod_max_value_ex;
 			if constexpr(has_shortcut) {
 				typename Injection::return_type ret = Injection::template injected_add_mod_max_value_ex<ITHARE_KSCOPE_NEW_PRNG(seed, 6)>(val,1);
-				ITHARE_KSCOPE_DBG_CHECK_SHORTCUT("++",ret,Injection::template injection<seed>(Injection::template surjection<seed>(val)+1));
+				ITHARE_KSCOPE_DBG_CHECK_SHORTCUT("++",ret,Injection::template injection<seed>(Injection::template surjection<seed,0>(val)+1));
 				val = ret;
 			}
 			else {
@@ -732,24 +732,24 @@ namespace ithare {
 
 		static constexpr KscopeArrayWrapper<uint32_t, sz4> strC = str_kscoped();
 
-		static KscopeArrayWrapper<uint32_t, sz4> c;//TODO: volatile
+		static KscopeArrayWrapper<uint32_t, sz4> c;//TODO: different contexts?
 		ITHARE_KSCOPE_FORCEINLINE std::string value() const {
 			char buf[sz4 * 4];
-			*(uint32_t*)(buf + 0) = Injection0::template surjection<ITHARE_KSCOPE_NEW_PRNG(seed,11)>(c.arr[0]);
+			*(uint32_t*)(buf + 0) = Injection0::template surjection<ITHARE_KSCOPE_NEW_PRNG(seed,11),kscope_flag_is_constexpr>(c.arr[0]);
 			if constexpr(sz4 > 1)
-				*(uint32_t*)(buf + 4) = Injection1::template surjection<ITHARE_KSCOPE_NEW_PRNG(seed,12)>(c.arr[1]);
+				*(uint32_t*)(buf + 4) = Injection1::template surjection<ITHARE_KSCOPE_NEW_PRNG(seed,12),kscope_flag_is_constexpr>(c.arr[1]);
 			if constexpr(sz4 > 2)
-				*(uint32_t*)(buf + 8) = Injection2::template surjection<ITHARE_KSCOPE_NEW_PRNG(seed,13)>(c.arr[2]);
+				*(uint32_t*)(buf + 8) = Injection2::template surjection<ITHARE_KSCOPE_NEW_PRNG(seed,13),kscope_flag_is_constexpr>(c.arr[2]);
 			if constexpr(sz4 > 3)
-				*(uint32_t*)(buf + 12) = Injection3::template surjection<ITHARE_KSCOPE_NEW_PRNG(seed,14)>(c.arr[3]);
+				*(uint32_t*)(buf + 12) = Injection3::template surjection<ITHARE_KSCOPE_NEW_PRNG(seed,14),kscope_flag_is_constexpr>(c.arr[3]);
 			if constexpr(sz4 > 4)
-				*(uint32_t*)(buf + 16) = Injection4::template surjection<ITHARE_KSCOPE_NEW_PRNG(seed,15)>(c.arr[4]);
+				*(uint32_t*)(buf + 16) = Injection4::template surjection<ITHARE_KSCOPE_NEW_PRNG(seed,15),kscope_flag_is_constexpr>(c.arr[4]);
 			if constexpr(sz4 > 5)
-				*(uint32_t*)(buf + 20) = Injection5::template surjection<ITHARE_KSCOPE_NEW_PRNG(seed,16)>(c.arr[5]);
+				*(uint32_t*)(buf + 20) = Injection5::template surjection<ITHARE_KSCOPE_NEW_PRNG(seed,16),kscope_flag_is_constexpr>(c.arr[5]);
 			if constexpr(sz4 > 6)
-				*(uint32_t*)(buf + 24) = Injection6::template surjection<ITHARE_KSCOPE_NEW_PRNG(seed,17)>(c.arr[6]);
+				*(uint32_t*)(buf + 24) = Injection6::template surjection<ITHARE_KSCOPE_NEW_PRNG(seed,17),kscope_flag_is_constexpr>(c.arr[6]);
 			if constexpr(sz4 > 7)
-				*(uint32_t*)(buf + 28) = Injection7::template surjection<ITHARE_KSCOPE_NEW_PRNG(seed,18)>(c.arr[7]);
+				*(uint32_t*)(buf + 28) = Injection7::template surjection<ITHARE_KSCOPE_NEW_PRNG(seed,18),kscope_flag_is_constexpr>(c.arr[7]);
 			return std::string(buf,sz);
 		}
 		ITHARE_KSCOPE_FORCEINLINE operator std::string() const {
