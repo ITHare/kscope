@@ -299,11 +299,12 @@ namespace ithare {
 			static constexpr bool is_constexpr = true;
 			static constexpr bool only_bijections = false;
 			static constexpr bool no_substrate_size_increase = false;
-			static constexpr bool cross_platform_only = false;//currently there seems to be need to ensure cross-platform compatibility for literals
+			static constexpr bool cross_platform_only = false;//currently there seems to be no need to ensure cross-platform compatibility for literals
 		};
 		using Injection = KscopeInjection<T, Context, InjectionRequirements,ITHARE_KSCOPE_NEW_PRNG(seed, 2), cycles>;
+		static constexpr typename Injection::return_type C0 = Injection::template injection<ITHARE_KSCOPE_NEW_PRNG(seed, 3)>(C);
 	public:
-		ITHARE_KSCOPE_FORCEINLINE constexpr KscopeLiteral() : val(Injection::template injection<ITHARE_KSCOPE_NEW_PRNG(seed, 3)>(C)) {
+		ITHARE_KSCOPE_FORCEINLINE constexpr KscopeLiteral() : val(C0) {
 		}
 		constexpr ITHARE_KSCOPE_FORCEINLINE T_ value() const {
 			if constexpr(flags&kscope_flag_is_constexpr)
