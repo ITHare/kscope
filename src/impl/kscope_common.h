@@ -86,6 +86,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define ITHARE_KSCOPE_WORKAROUND_FOR_MSVC_BUG_195483 //workaround for https://developercommunity.visualstudio.com/content/problem/195483/continue-in-constexpr-function-causes-constexpr-fu.html
 #define ITHARE_KSCOPE_WORKAROUND_FOR_MSVC_BUG_196885 //workaround for https://developercommunity.visualstudio.com/content/problem/196885/c1001-in-fddvctoolscompilercxxfeslp1cwalkcpp-line.html
 #define ITHARE_KSCOPE_WORKAROUND_FOR_MSVC_BUG_196900 //workaround for https://developercommunity.visualstudio.com/content/problem/196900/c1001-in-file-msc1cpp-line-1507.html
+#define ITHARE_KSCOPE_WORKAROUND_FOR_MSVC_BUG_199554 //workaround for https://developercommunity.visualstudio.com/content/problem/199554/suspected-bad-code-generation-for-release-build.html
 
 #elif defined(__clang__)//As Clang also #defines __GNUC__, we MUST always check __clang__ first
 

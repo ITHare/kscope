@@ -26,6 +26,13 @@ struct ChaCha_ctx {
 	ITHARE_KSCOPE_CINT(uint32_t) input[16];
 	ITHARE_KSCOPE_CINT(uint8_t) ks[CHACHA_BLOCKLEN];
 	ITHARE_KSCOPE_CINT(uint8_t) unused;
+
+	constexpr ITHARE_KSCOPE_FORCEINLINE ChaCha_ctx() {//to enforce force-inline
+	}
+	constexpr ITHARE_KSCOPE_FORCEINLINE ChaCha_ctx(const ChaCha_ctx&) = delete;
+	constexpr ITHARE_KSCOPE_FORCEINLINE ChaCha_ctx& operator =(const ChaCha_ctx&) = delete;
+	constexpr ITHARE_KSCOPE_FORCEINLINE ChaCha_ctx(const ChaCha_ctx&&) = delete;
+	constexpr ITHARE_KSCOPE_FORCEINLINE ChaCha_ctx& operator =(const ChaCha_ctx&&) = delete;
 };
 
 #define ITHARE_KSCOPE_U8V(v) ((uint8_t)(v) & UINT8_C(0xFF))
@@ -77,8 +84,12 @@ ITHARE_KSCOPE_BOUNDED_MINBYTES(2, CHACHA_MINKEYLEN)
 	x->input[5] = ITHARE_KSCOPE_U8TO32_LITTLE(k + 4);
 	x->input[6] = ITHARE_KSCOPE_U8TO32_LITTLE(k + 8);
 	x->input[7] = ITHARE_KSCOPE_U8TO32_LITTLE(k + 12);
-	if (kbits == 256) { /* recommended */
+	if (kbits == ITHARE_KSCOPE_FINTLIT(256)) { /* recommended */
+#ifdef ITHARE_KSCOPE_WORKAROUND_FOR_MSVC_BUG_199554
 		k += 16;
+#else
+		k += ITHARE_KSCOPE_FINTLIT(16);
+#endif
 	} else { /* kbits == 128; NOT TESTED(!) */
 		assert(kbits==128);
 		constants32[1] -= ITHARE_KSCOPE_FINTLIT(UINT32_C(0x0200'0000));
@@ -143,7 +154,7 @@ ITHARE_KSCOPE_BOUNDED_BUFFER(3, 4)
 		ITHARE_KSCOPE_ARRAY_OF_SAME_TYPE_AS(m) tmpm[64] = {};
 		ITHARE_KSCOPE_ARRAY_OF_SAME_TYPE_AS(c) tmpc[64] = {};
 		if (bytes < ITHARE_KSCOPE_FINTLIT(64)) {
-			for (size_t i = 0; i < bytes; ++i)
+			for (ITHARE_KSCOPE_FINT(size_t) i = 0; i < bytes; ++i)
 				tmpm[i] = m[i];
 			m = tmpm;
 			ctarget = c;
@@ -256,7 +267,7 @@ ITHARE_KSCOPE_BOUNDED_BUFFER(3, 4)
 
 		if (bytes <= ITHARE_KSCOPE_FINTLIT(64)) {
 			if (bytes < ITHARE_KSCOPE_FINTLIT(64)) {
-				for (size_t i = 0; i < bytes; ++i)
+				for (ITHARE_KSCOPE_FINT(size_t) i = 0; i < bytes; ++i)
 					ctarget[i] = c[i];
 			}
 			x->input[12] = j12;
