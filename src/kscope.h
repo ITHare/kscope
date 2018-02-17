@@ -70,9 +70,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 namespace ithare {
 	namespace kscope {
 
-#define ITHARE_KSCOPE_FIRST_ADDITIONAL_INJECTION 7
-//TODO: split .h file here to enable extensions
-
 #ifndef ITHARE_KSCOPE_ADDITIONAL_INJECTION_DESCRIPTOR_LIST
 #define ITHARE_KSCOPE_ADDITIONAL_INJECTION_DESCRIPTOR_LIST
 #endif
@@ -188,8 +185,8 @@ namespace ithare {
 			using type = KscopeLiteralCtx<T2, C, KscopeZeroLiteralContext<T2>, seed, literal_cycles>;
 		};
 		template<class T2,ITHARE_KSCOPE_SEEDTPARAM seed2,KSCOPECONSTFLAGS flags2>
-		constexpr static T2 random_const() {
-			return kscope_random_const<T2,seed2,flags2>();
+		constexpr static T2 random_const(T2 upper_bound=0) {
+			return kscope_random_const<T2,seed2,flags2>(upper_bound);
 		}
 
 
@@ -232,8 +229,8 @@ namespace ithare {
 			return surj;//for literals, ONLY surjection costs apply in runtime (as injection applies in compile-time)
 		}
 		template<class T2,ITHARE_KSCOPE_SEEDTPARAM seed2,KSCOPECONSTFLAGS flags2>
-		constexpr static T2 random_const() {
-			return kscope_random_const<T2,seed2,flags2>();
+		constexpr static T2 random_const(T2 upper_bound=0) {
+			return kscope_random_const<T2,seed2,flags2>(upper_bound);
 		}
 
 		constexpr static KSCOPECYCLES literal_cycles = 0;
@@ -342,8 +339,8 @@ namespace ithare {
 			using type = KscopeLiteralCtx<T2, C, LiteralContext, seed2, literal_cycles>;
 		};
 		template<class T2,ITHARE_KSCOPE_SEEDTPARAM seed2,KSCOPECONSTFLAGS flags2>
-		constexpr static T2 random_const() {
-			return kscope_random_const<T2,seed2,flags2>();
+		constexpr static T2 random_const(T2 upper_bound=0) {
+			return kscope_random_const<T2,seed2,flags2>(upper_bound);
 		}
 
 		template<ITHARE_KSCOPE_SEEDTPARAM seed2>

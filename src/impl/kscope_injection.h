@@ -171,7 +171,7 @@ namespace ithare {
 		}
 		
 		template<class T,ITHARE_KSCOPE_SEEDTPARAM seed,KSCOPECONSTFLAGS flags>
-		constexpr static T kscope_random_const() {
+		constexpr static T kscope_random_const(T upper_bound=0) {
 			using TT = typename KscopeTraits<T>::construct_from_type;
 			for (uint32_t modifier = 1;;modifier+=2) {
 				uint64_t ret = 0;
@@ -179,6 +179,9 @@ namespace ithare {
 					ret = ITHARE_KSCOPE_RANDOM_UINT32(seed,modifier);
 				else
 					ret = (uint64_t(ITHARE_KSCOPE_RANDOM_UINT32(seed,modifier)) << 32) | ITHARE_KSCOPE_RANDOM_UINT32(seed,modifier+1);
+				if(upper_bound!= 0) {
+					ret %= upper_bound;
+				}
 				if constexpr( ( flags & kscope_const_odd_only ) != 0 )
 					ret |= 1;
 
@@ -992,6 +995,8 @@ namespace ithare {
 		}
 #endif
 	};
+	
+#define ITHARE_KSCOPE_LAST_STOCK_INJECTION 6	
 	
   }//namespace kscope
 }//namespace ithare

@@ -31,6 +31,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 #include "lest.hpp"
+#include "../src/kscope_sample_extension.h" //MUST go BEFORE ../src/kscope.h
 #include "../src/kscope.h"
 
 #ifndef ITHARE_KSCOPE_TEST_NO_NAMESPACE
