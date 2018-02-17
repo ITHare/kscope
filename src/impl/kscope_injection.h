@@ -281,13 +281,12 @@ namespace ithare {
 		using return_type = typename RecursiveInjection::return_type;
 		constexpr static T C = Context::template random_const<T,ITHARE_KSCOPE_NEW_PRNG(seed, 2),kscope_const_zero_ok|kscope_const_one_ok>();
 		static constexpr bool neg = C == 0 ? true : ITHARE_KSCOPE_RANDOM(seed, 3, 2) == 0;
-		using ST = typename Traits::signed_type;
+		//using ST = typename Traits::signed_type;
 
 		template<ITHARE_KSCOPE_SEEDTPARAM seedc>
 		ITHARE_KSCOPE_FORCEINLINE constexpr static T local_injection(T x) {
 			if constexpr(neg) {
-				ST sx = ST(x);
-				return T(-sx) + C;
+				return -x + C;//yes, unary minus to unsigned
 			}
 			else {
 				return x + C;
@@ -307,9 +306,7 @@ namespace ithare {
 		ITHARE_KSCOPE_FORCEINLINE constexpr static T local_surjection(T y) {
 			T yy = y - C;
 			if constexpr(neg) {
-				ST syy = ST(yy);
-				T ret = T(-syy);
-				return ret;
+				return -yy;
 			}
 			else {
 				return yy;
@@ -331,7 +328,7 @@ namespace ithare {
 			constexpr bool has_shortcut = RecursiveInjection::injection_caps & kscope_injection_has_add_mod_max_value_ex;
 			if constexpr(has_shortcut) {
 				if constexpr(neg) {
-					return_type ret = RecursiveInjection::template injected_add_mod_max_value_ex<seedc>(base, -ST(x));
+					return_type ret = RecursiveInjection::template injected_add_mod_max_value_ex<seedc>(base, -x);
 									//mutually exclusive with all the other non-CHECK calls to injection<> => no need to randomize seedc further 
 					ITHARE_KSCOPE_DBG_CHECK_SHORTCUT("<1>/-/r",ret,RecursiveInjection::template injection<seedc>(RecursiveInjection::template surjection<seedc,flags>(base) - x));
 					ITHARE_KSCOPE_DBG_CHECK_SHORTCUT("<1>/-/0", ret, injection<seedc>(surjection<seedc,flags>(base) + x));
