@@ -34,7 +34,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define ithare_kscope_kscope_sample_extension_h_included
 
 #ifdef ithare_kscope_kscope_h_included
-#error IF using kscope_extension, it MUST be included BEFORE kscope.h. See test/officialtest.cpp for usage example
+#error IF using kscope_sample_extension, it MUST be included BEFORE kscope.h. See test/officialtest.cpp for usage example
 #endif
 
 #include "impl/kscope_injection.h"
@@ -42,16 +42,17 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifdef ITHARE_KSCOPE_SEED
 
 namespace ithare { namespace kscope {
-	
-	//version last+1 (="additional1"): rotl intrinsic (or non-intrinsic)
+		
+	//version last+1 (="additional1"): rotl (using intrinsic, or asm, or non-intrinsic for surjection)
+	//is a 'simple' injection, which uses KscopeSimpleInjectionHelper for cycle arithmetics (for less trivial examples with multiple dependent injections - you may need to look into impl/kscope_injection.h)
 	template<class T, class Context>
 	struct KscopeInjectionAdditionalVersion1Descr {
 		using Traits = KscopeTraits<T>;
 		static constexpr KSCOPECYCLES own_min_injection_cycles = 1;//estimate in CPU cycles
 		static constexpr KSCOPECYCLES own_min_surjection_cycles = 1;//estimate in CPU cycles
-		static constexpr KSCOPECYCLES own_min_cycles = Context::context_cycles + Context::calc_cycles(own_min_injection_cycles, own_min_surjection_cycles);//a 'magical' formula to be used for usual injections (for less trivial examples with multiple dependent injections - you may need to look into impl/kscope_injection.h)
+		static constexpr KSCOPECYCLES own_min_cycles = KscopeSimpleInjectionHelper<Context>::descriptor_own_min_cycles(own_min_injection_cycles,own_min_surjection_cycles);
 		static constexpr KscopeDescriptor descr = Traits::is_bit_based // for this rotl injection, we DON'T want to deal with types-which-are-not-power-of-2; however, by requiring only Traits::is_bit_based we still have to deal with KscopeBitUint<> as our T; IF this is undesirable (and you want to restrict yourself only to uint8_t..uint64_t - check for Traits::is_built_in instead) 
-													&& Traits::nbits > 1 ? //single-bit ones are also not so interesting to rotate (and will cause trouble with naive random generation attempts)
+													&& Traits::nbits > 1 ? //single-bit ones are not so interesting to rotate (and will cause trouble with our naive random generation attempts)
 			KscopeDescriptor(true, own_min_cycles, 100)//'100' is a 'relative weight' of this injection; increase to use this injection more; kscope stock non-trivial injections have weight of '100'  
 			: KscopeDescriptor(false,0,0);//an indicator NOT to use this injection
 	};
@@ -60,19 +61,21 @@ namespace ithare { namespace kscope {
 	class KscopeInjectionVersion<ITHARE_KSCOPE_LAST_STOCK_INJECTION+1, T, Context, InjectionRequirements, seed, cycles> {
 								 //use '+2' etc. for subsequent injections
 		using Traits = KscopeTraits<T>;
+		static_assert(Traits::nbits>1);
 	public:
-		static constexpr KSCOPECYCLES availCycles = cycles - KscopeInjectionAdditionalVersion1Descr<T,Context>::own_min_cycles;//another 'magical' formula (counterpart to the one above)
-		static_assert(availCycles >= 0);
 
 		struct RecursiveInjectionRequirements : public InjectionRequirements {
 			static constexpr size_t exclude_version = ITHARE_KSCOPE_LAST_STOCK_INJECTION+1;//prevents _immediate_ RecursiveInjection from being ITHARE_KSCOPE_LAST_STOCK_INJECTION+1 (in practice - Good Thing(tm) unless you want long-chains-consisting-of-the-same-injection-over-and-over). If this is undesirable - assign size_t(-1) instead.
 		};
 
-		using RecursiveInjection = KscopeInjection<T, Context, RecursiveInjectionRequirements,ITHARE_KSCOPE_NEW_PRNG(seed, 1), availCycles+Context::context_cycles/* yet another 'magical' formula*/>;
+		constexpr static KSCOPECYCLES recursive_injection_cycles = KscopeSimpleInjectionHelper<Context>::recursive_injection_cycles(cycles,KscopeInjectionAdditionalVersion1Descr<T,Context>::own_min_cycles);
+		using RecursiveInjection = KscopeInjection<T, Context, RecursiveInjectionRequirements,ITHARE_KSCOPE_NEW_PRNG(seed, 1), recursive_injection_cycles>;
 		using return_type = typename RecursiveInjection::return_type;//does NOT have to coincide with T
-		constexpr static size_t SHIFT = Context::template random_const<uint16_t /*MUST be one of uint*_t types, OR T; having it as size_t will fail for those compilers where size_t is not 'the same' as _any_ of uint*_t (which MAY happen)*/
-			,ITHARE_KSCOPE_NEW_PRNG(seed, 2),kscope_const_one_ok>(Traits::nbits);
-			//having SHIFT as size_t helps to deal with shifts in KscopeBitUint<>
+		constexpr static size_t SHIFT = //having SHIFT as size_t helps to deal with shifts in KscopeBitUint<>
+			Context::template random_const<
+				typename kscope_normalized_unsigned_integral_type<size_t>::type /*MUST be one of uint*_t types, OR T; having it as non-normalized size_t will fail for those compilers where size_t is not 'the same' as _any_ of uint*_t (which MAY happen)*/
+				,ITHARE_KSCOPE_NEW_PRNG(seed, 2),kscope_const_one_ok>(Traits::nbits);
+			
 		static_assert(SHIFT > 0);
 		static_assert(SHIFT < Traits::nbits);
 
@@ -150,7 +153,7 @@ namespace ithare { namespace kscope {
 
 #ifdef ITHARE_KSCOPE_DBG_ENABLE_DBGPRINT
 		static void dbg_print(size_t offset = 0, const char* prefix = "") {
-			std::cout << std::string(offset, ' ') << prefix << "KscopeInjectionVersion<ITHARE_KSCOPE_LAST_STOCK_INJECTION+1/*rotl*/," << kscope_dbg_print_t<T>() << "," << kscope_dbg_print_seed<seed>() << "," << cycles << ">: SHIFT=" << SHIFT << std::endl;
+			std::cout << std::string(offset, ' ') << prefix << "KscopeInjectionVersion<ITHARE_KSCOPE_LAST_STOCK_INJECTION+1=" << ITHARE_KSCOPE_LAST_STOCK_INJECTION+1 << "/*rotl*/," << kscope_dbg_print_t<T>() << "," << kscope_dbg_print_seed<seed>() << "," << cycles << ">: SHIFT=" << SHIFT << std::endl;
 			RecursiveInjection::dbg_print(offset + 1);
 		}
 #endif

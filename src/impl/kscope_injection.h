@@ -33,18 +33,19 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef ithare_kscope_injection_h_included
 #define ithare_kscope_injection_h_included
 
-//NOT intended to be #included directly
+//NOT intended to be #included directly (except within extension)
 //  #include ../kscope.h instead
 
 #include "kscope_common.h"
 #include "kscope_prng.h"
 
 //IMPORTANT: principles for cross-platform kaleidoscopes:
-//  Any platform-specific injections MUST either:
-//    - have NON-platform specific calculations for probabilities across ALL the platforms 
+//  We DO want cross-platform kaleidoscopes to be IDENTICAL across the platforms (given the same ITHARE_KSCOPE_SEED)
+//  To achieve it, all platform-specific injections MUST:
+//    - EITHER have NON-platform specific calculations for probabilities across ALL the platforms 
 //        - this includes KscopeDescriptors in *_descr, AND all the calculations within the injection itself 
 //        - however, they MAY have different implementations  
-//    - be disabled whenever InjectionRequirements::cross_platform_only flag is set
+//    - OR be disabled whenever InjectionRequirements::cross_platform_only flag is set
 //  The same MUST stand for any 64-bit-specific injections
 
 #ifdef ITHARE_KSCOPE_SEED
@@ -215,6 +216,20 @@ namespace ithare {
 	//injection-with-constant - building block both for injections and for literals
 	template <size_t which, class T, class Context, class InjectionRequirements, ITHARE_KSCOPE_SEEDTPARAM seed, KSCOPECYCLES cycles>
 	class KscopeInjectionVersion;
+
+	//KscopeSimpleInjectionHelper
+	//currently used only in extensions, TODO: use where applicable in this file
+	template<class Context>
+	struct KscopeSimpleInjectionHelper {
+		static constexpr KSCOPECYCLES descriptor_own_min_cycles(KSCOPECYCLES own_min_injection_cycles,KSCOPECYCLES own_min_surjection_cycles) {
+			return Context::context_cycles + Context::calc_cycles(own_min_injection_cycles, own_min_surjection_cycles); 
+		}
+		static constexpr KSCOPECYCLES recursive_injection_cycles(KSCOPECYCLES cycles, KSCOPECYCLES own_min_cycles) {
+			KSCOPECYCLES availCycles = cycles - own_min_cycles;
+			assert(availCycles >= 0);
+			return availCycles+Context::context_cycles;
+		}
+	};
 
 	//version 0: identity
 	template<class Context>
