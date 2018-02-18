@@ -53,8 +53,8 @@ namespace ithare { namespace kscope {
 		static constexpr KSCOPECYCLES own_min_cycles = KscopeSimpleInjectionHelper<Context>::descriptor_own_min_cycles(own_min_injection_cycles,own_min_surjection_cycles);
 		static constexpr KscopeDescriptor descr = Traits::is_bit_based // for this rotl injection, we DON'T want to deal with types-which-are-not-power-of-2; however, by requiring only Traits::is_bit_based we still have to deal with KscopeBitUint<> as our T; IF this is undesirable (and you want to restrict yourself only to uint8_t..uint64_t - check for Traits::is_built_in instead) 
 													&& Traits::nbits > 1 ? //single-bit ones are not so interesting to rotate (and will cause trouble with our naive random generation attempts)
-			KscopeDescriptor(true, own_min_cycles, 100)//'100' is a 'relative weight' of this injection; increase to use this injection more; kscope stock non-trivial injections have weight of '100'  
-			: KscopeDescriptor(false,0,0);//an indicator NOT to use this injection
+			KscopeDescriptor(own_min_cycles, 100)//'100' is a 'relative weight' of this injection; increase to use this injection more; kscope stock non-trivial injections have weight of '100'  
+			: KscopeDescriptor(nullptr);//an indicator NOT to use this injection
 	};
 
 	template <class T, class Context, class InjectionRequirements, ITHARE_KSCOPE_SEEDTPARAM seed, KSCOPECYCLES cycles>
@@ -70,7 +70,7 @@ namespace ithare { namespace kscope {
 
 		constexpr static KSCOPECYCLES recursive_injection_cycles = KscopeSimpleInjectionHelper<Context>::recursive_injection_cycles(cycles,KscopeInjectionAdditionalVersion1Descr<T,Context>::own_min_cycles);
 		using RecursiveInjection = KscopeInjection<T, Context, RecursiveInjectionRequirements,ITHARE_KSCOPE_NEW_PRNG(seed, 1), recursive_injection_cycles>;
-		using return_type = typename RecursiveInjection::return_type;//does NOT have to coincide with T
+		using return_type = typename RecursiveInjection::return_type;//does NOT have to (but MAY) coincide with T
 		constexpr static size_t SHIFT = //having SHIFT as size_t helps to deal with shifts in KscopeBitUint<>
 			Context::template random_const<
 				typename kscope_normalized_unsigned_integral_type<size_t>::type /*MUST be one of uint*_t types, OR T; having it as non-normalized size_t will fail for those compilers where size_t is not 'the same' as _any_ of uint*_t (which MAY happen)*/

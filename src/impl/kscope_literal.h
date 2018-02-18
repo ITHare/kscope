@@ -56,7 +56,7 @@ namespace ithare {
 
 	//version 0: identity
 	struct KscopeLiteralContextVersion0Descr {
-		static constexpr KscopeDescriptor descr = KscopeDescriptor(false, 0, 1);
+		static constexpr KscopeDescriptor descr = KscopeDescriptor(0, 1,KscopeDescriptor::flag_is_last_resort);
 	};
 
 	template<class T, ITHARE_KSCOPE_SEEDTPARAM seed>
@@ -82,7 +82,7 @@ namespace ithare {
 
 	//version 1: global volatile constant
 	struct KscopeLiteralContextVersion1Descr {
-		static constexpr KscopeDescriptor descr = KscopeDescriptor(true, 6, 100);
+		static constexpr KscopeDescriptor descr = KscopeDescriptor(6, 100);
 	};
 
 	template<class T, ITHARE_KSCOPE_SEEDTPARAM seed>

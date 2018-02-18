@@ -111,39 +111,44 @@ namespace ithare {
 		}
 
 		struct KscopeDescriptor {
-			bool is_recursive;//recursive ones have priority
+			static constexpr uint32_t flag_is_last_resort = 0x01;
+			
 			KSCOPECYCLES min_cycles;
 			uint32_t weight;
+			uint32_t flags;
 
-			constexpr KscopeDescriptor(bool is_recursive_, KSCOPECYCLES min_cycles_, uint32_t weight_)
-				: is_recursive(is_recursive_), min_cycles(min_cycles_), weight(weight_) {
+			constexpr KscopeDescriptor(KSCOPECYCLES min_cycles_, uint32_t weight_,uint32_t flags_=0)
+				: min_cycles(min_cycles_), weight(weight_), flags(flags_) {
+			}
+			constexpr KscopeDescriptor(std::nullptr_t)
+				: min_cycles(0), weight(0), flags(0) {
 			}
 		};
 
 		template<ITHARE_KSCOPE_SEEDTPARAM seed, size_t N>
 		constexpr size_t kscope_random_choice_from_list(KSCOPECYCLES cycles, const KscopeDescriptor (&descr)[N], size_t exclude_version = size_t(-1)) {
 			//returns index in descr
-			size_t nr_weights[N] = {};
-			size_t r_weights[N] = {};
-			size_t sum_r = 0;
-			size_t sum_nr = 0;
+			size_t weights[N] = {};
+			size_t lr_weights[N] = {};
+			size_t sum = 0;
+			size_t lr_sum = 0;
 			for (size_t i = 0; i < N; ++i) {
 				if (i != exclude_version && cycles >= descr[i].min_cycles) {
-					if (descr[i].is_recursive) {
-						r_weights[i] = descr[i].weight;
-						sum_r += r_weights[i];
+					if ((descr[i].flags&KscopeDescriptor::flag_is_last_resort)==0) {
+						weights[i] = descr[i].weight;
+						sum += weights[i];
 					}
 					else {
-						nr_weights[i] = descr[i].weight;
-						sum_nr += nr_weights[i];
+						lr_weights[i] = descr[i].weight;
+						lr_sum += lr_weights[i];
 					}
 				}
 			}
-			if (sum_r)
-				return kscope_random_from_list<seed>(r_weights);
+			if (sum)
+				return kscope_random_from_list<seed>(weights);
 			else {
-				assert(sum_nr > 0);
-				return kscope_random_from_list<seed>(nr_weights);
+				assert(lr_sum > 0);
+				return kscope_random_from_list<seed>(lr_weights);
 			}
 		}
 
@@ -239,7 +244,7 @@ namespace ithare {
 		static constexpr KSCOPECYCLES own_min_injection_cycles = 0;
 		static constexpr KSCOPECYCLES own_min_surjection_cycles = 0;
 		static constexpr KSCOPECYCLES own_min_cycles = Context::context_cycles + Context::calc_cycles(own_min_injection_cycles, own_min_surjection_cycles);
-		static constexpr KscopeDescriptor descr = KscopeDescriptor(false, own_min_cycles, 1);
+		static constexpr KscopeDescriptor descr = KscopeDescriptor(own_min_cycles, 1,KscopeDescriptor::flag_is_last_resort);
 	};
 
 	template <class T, class Context, class InjectionRequirements, ITHARE_KSCOPE_SEEDTPARAM seed, KSCOPECYCLES cycles>
@@ -278,7 +283,7 @@ namespace ithare {
 		static constexpr KSCOPECYCLES own_min_injection_cycles = 1;
 		static constexpr KSCOPECYCLES own_min_surjection_cycles = 1;
 		static constexpr KSCOPECYCLES own_min_cycles = Context::context_cycles + Context::calc_cycles(own_min_injection_cycles, own_min_surjection_cycles);
-		static constexpr KscopeDescriptor descr = KscopeDescriptor(true, own_min_cycles, 100);
+		static constexpr KscopeDescriptor descr = KscopeDescriptor(own_min_cycles, 100);
 	};
 
 	template <class T, class Context, class InjectionRequirements, ITHARE_KSCOPE_SEEDTPARAM seed, KSCOPECYCLES cycles>
@@ -383,7 +388,7 @@ namespace ithare {
 	struct KscopeRandomizedNonReversibleFunctionVersion;
 
 	struct KscopeRandomizedNonReversibleFunctionVersion0Descr {
-		static constexpr KscopeDescriptor descr = KscopeDescriptor(false, 0, 100);
+		static constexpr KscopeDescriptor descr = KscopeDescriptor(0, 100,KscopeDescriptor::flag_is_last_resort);
 	};
 
 	template<class T, ITHARE_KSCOPE_SEEDTPARAM seed, KSCOPECYCLES cycles>
@@ -400,7 +405,7 @@ namespace ithare {
 	};
 
 	struct KscopeRandomizedNonReversibleFunctionVersion1Descr {
-		static constexpr KscopeDescriptor descr = KscopeDescriptor(true, 3, 100);
+		static constexpr KscopeDescriptor descr = KscopeDescriptor(3, 100);
 	};
 
 	template<class T, ITHARE_KSCOPE_SEEDTPARAM seed, KSCOPECYCLES cycles>
@@ -418,7 +423,7 @@ namespace ithare {
 	};
 
 	struct KscopeRandomizedNonReversibleFunctionVersion2Descr {
-		static constexpr KscopeDescriptor descr = KscopeDescriptor(true, 7, 100);
+		static constexpr KscopeDescriptor descr = KscopeDescriptor(7, 100);
 	};
 
 	template<class T, ITHARE_KSCOPE_SEEDTPARAM seed, KSCOPECYCLES cycles>
@@ -477,8 +482,8 @@ namespace ithare {
 		static constexpr KSCOPECYCLES own_min_cycles = Context::context_cycles + Context::calc_cycles(own_min_injection_cycles, own_min_surjection_cycles);
 		static constexpr KscopeDescriptor descr =
 			KscopeTraits<T>::has_half_type ?
-			KscopeDescriptor(true, own_min_cycles, 100) :
-			KscopeDescriptor(false, 0, 0);
+			KscopeDescriptor(own_min_cycles, 100) :
+			KscopeDescriptor(nullptr);
 	};
 
 	template <class T, class Context, class InjectionRequirements, ITHARE_KSCOPE_SEEDTPARAM seed, KSCOPECYCLES cycles>
@@ -570,8 +575,8 @@ namespace ithare {
 		static constexpr KSCOPECYCLES own_min_cycles = Context::context_cycles + Context::calc_cycles(own_min_injection_cycles, own_min_surjection_cycles);
 		static constexpr KscopeDescriptor descr =
 			KscopeTraits<T>::has_half_type ?
-			KscopeDescriptor(true, own_min_cycles, 100) :
-			KscopeDescriptor(false, 0, 0);
+			KscopeDescriptor(own_min_cycles, 100) :
+			KscopeDescriptor(nullptr);
 	};
 
 	template <class T, class Context, class InjectionRequirements, ITHARE_KSCOPE_SEEDTPARAM seed, KSCOPECYCLES cycles>
@@ -724,7 +729,7 @@ namespace ithare {
 		static constexpr KSCOPECYCLES own_min_injection_cycles = 3 + Context::literal_cycles;
 		static constexpr KSCOPECYCLES own_min_surjection_cycles = 3;
 		static constexpr KSCOPECYCLES own_min_cycles = Context::context_cycles + Context::calc_cycles(own_min_injection_cycles, own_min_surjection_cycles);
-		static constexpr KscopeDescriptor descr = KscopeDescriptor(true, own_min_cycles, 100);
+		static constexpr KscopeDescriptor descr = KscopeDescriptor(own_min_cycles, 100);
 	};
 
 	template <class T, class Context, class InjectionRequirements, ITHARE_KSCOPE_SEEDTPARAM seed, KSCOPECYCLES cycles>
@@ -818,8 +823,8 @@ namespace ithare {
 		static constexpr KSCOPECYCLES own_min_cycles = 2*Context::context_cycles /* have to allocate context_cycles for BOTH branches */ + Context::calc_cycles(own_min_injection_cycles, own_min_surjection_cycles);
 		static constexpr KscopeDescriptor descr =
 			KscopeTraits<T>::has_half_type ?
-			KscopeDescriptor(true, own_min_cycles, 100) :
-			KscopeDescriptor(false, 0, 0);
+			KscopeDescriptor(own_min_cycles, 100) :
+			KscopeDescriptor(nullptr);
 	};
 
 	template <class T, class Context, class InjectionRequirements, ITHARE_KSCOPE_SEEDTPARAM seed, KSCOPECYCLES cycles>
@@ -911,9 +916,9 @@ namespace ithare {
 		static constexpr KSCOPECYCLES own_min_cycles = 2 * Context::context_cycles /* have to allocate context_cycles for BOTH branches */ + Context::calc_cycles(own_min_injection_cycles, own_min_surjection_cycles);
 		static constexpr KscopeDescriptor descr =
 			!InjectionRequirements::only_bijections && !InjectionRequirements::no_substrate_size_increase && KscopeTraits<T>::nbits >= 2 ?
-			KscopeDescriptor(true, own_min_cycles, 100)
+			KscopeDescriptor(own_min_cycles, 100)
 			: 
-			KscopeDescriptor(false, 0, 0);
+			KscopeDescriptor(nullptr);
 	};
 
 	template <class T, class Context, class InjectionRequirements, ITHARE_KSCOPE_SEEDTPARAM seed, KSCOPECYCLES cycles>
