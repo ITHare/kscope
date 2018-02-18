@@ -108,24 +108,24 @@ namespace ithare { namespace kscope {
 			else {
 #ifdef __GNUC__ //including __clang__
 #if defined(__i386__) || defined(__x86_64__)
-			if constexpr(Traits::nbits == 32) {
-				return rotr32(y);
-			}
+				if constexpr(Traits::nbits == 32) {
+					return rotr32(y);
+				}
 #endif
 #ifdef __x86_64__
-			if constexpr(Traits::nbits == 64) {
-				return rotr64(y);
-			}
+				if constexpr(Traits::nbits == 64) {
+					return rotr64(y);
+				}
 #endif
 #elif defined (_MSC_VER)
-			if constexpr(Traits::nbits == 32) {
-				return _rotr(y,SHIFT);
-			}
-			if constexpr(Traits::nbits == 64) {
-				return _rotr64(y,SHIFT);
-			}
+				if constexpr(Traits::nbits == 32) {
+					return _rotr(y,SHIFT);
+				}
+				if constexpr(Traits::nbits == 64) {
+					return _rotr64(y,SHIFT);
+				}
 #endif
-			return (y >> SHIFT) | (y << (Traits::nbits - SHIFT));
+				return (y >> SHIFT) | (y << (Traits::nbits - SHIFT));
 			}
 		}
 
