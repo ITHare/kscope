@@ -31,6 +31,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 #include "lest.hpp"
+#include "../src/kscope_sample_extension.h" //MUST go BEFORE ../src/kscope.h
 #include "../src/kscope.h"
 
 #ifndef ITHARE_KSCOPE_TEST_NO_NAMESPACE
@@ -56,7 +57,7 @@ private:
 namespace ithare{ namespace kscope {
 
 ITHARE_KSCOPE_DECLAREFUNC_WITHPARAMS_INT
-ITHARE_KSCOPE_FINTP3(uint64_t) factorial(ITHARE_KSCOPE_DECLAREPARAM_INT(int64_t) x_) {
+ITHARE_KSCOPE_FINTP2(uint64_t) factorial(ITHARE_KSCOPE_DECLAREPARAM_INT(int64_t) x_) {
 	//DBGPRINT(x_)
 	ITHARE_KSCOPE_FINTP3(int64_t) x = ITHARE_KSCOPE_USEPARAM_INT(x_);
 	if (x < 0) {
@@ -120,7 +121,7 @@ static const lest::test module[] = {
 		EXPECT((ITKSCOPE kscope_integral_operator_literal_cast_is_safe<TT4,int,0x7fff'ffff>()==true));
 	},
 	CASE("factorial()") {
-		auto f = ITKSCOPE ITHARE_KSCOPE_CALL6(factorial)(ITHARE_KSCOPE_INTLIT3I(17)); ITHARE_KSCOPE_DBGPRINT(f);
+		auto f = ITKSCOPE ITHARE_KSCOPE_CALL4(factorial)(ITHARE_KSCOPE_INTLIT3I(17)); ITHARE_KSCOPE_DBGPRINT(f);
 		EXPECT(f==UINT64_C(355687428096000));
 		EXPECT( ITKSCOPE factorial(18) == UINT64_C(6402373705728000));
 		EXPECT( ITKSCOPE factorial(19) == UINT64_C(121645100408832000));

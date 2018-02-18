@@ -70,9 +70,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 namespace ithare {
 	namespace kscope {
 
-#define ITHARE_KSCOPE_FIRST_ADDITIONAL_INJECTION 7
-//TODO: split .h file here to enable extensions
-
 #ifndef ITHARE_KSCOPE_ADDITIONAL_INJECTION_DESCRIPTOR_LIST
 #define ITHARE_KSCOPE_ADDITIONAL_INJECTION_DESCRIPTOR_LIST
 #endif
@@ -188,8 +185,8 @@ namespace ithare {
 			using type = KscopeLiteralCtx<T2, C, KscopeZeroLiteralContext<T2>, seed, literal_cycles>;
 		};
 		template<class T2,ITHARE_KSCOPE_SEEDTPARAM seed2,KSCOPECONSTFLAGS flags2>
-		constexpr static T2 random_const() {
-			return kscope_random_const<T2,seed2,flags2>();
+		constexpr static T2 random_const(T2 upper_bound=0) {
+			return kscope_random_const<T2,seed2,flags2>(upper_bound);
 		}
 
 
@@ -232,8 +229,8 @@ namespace ithare {
 			return surj;//for literals, ONLY surjection costs apply in runtime (as injection applies in compile-time)
 		}
 		template<class T2,ITHARE_KSCOPE_SEEDTPARAM seed2,KSCOPECONSTFLAGS flags2>
-		constexpr static T2 random_const() {
-			return kscope_random_const<T2,seed2,flags2>();
+		constexpr static T2 random_const(T2 upper_bound=0) {
+			return kscope_random_const<T2,seed2,flags2>(upper_bound);
 		}
 
 		constexpr static KSCOPECYCLES literal_cycles = 0;
@@ -342,8 +339,8 @@ namespace ithare {
 			using type = KscopeLiteralCtx<T2, C, LiteralContext, seed2, literal_cycles>;
 		};
 		template<class T2,ITHARE_KSCOPE_SEEDTPARAM seed2,KSCOPECONSTFLAGS flags2>
-		constexpr static T2 random_const() {
-			return kscope_random_const<T2,seed2,flags2>();
+		constexpr static T2 random_const(T2 upper_bound=0) {
+			return kscope_random_const<T2,seed2,flags2>(upper_bound);
 		}
 
 		template<ITHARE_KSCOPE_SEEDTPARAM seed2>
@@ -829,8 +826,8 @@ namespace ithare {
 #define ITHARE_KSCOPE_FINTM1(type) ithare::kscope::KscopeInt<type,ITHARE_KSCOPE_INIT_COMBINED_PRNG(kscopeseed,__FILE__,ITHARE_KSCOPE_LINE,__COUNTER__),ithare::kscope::kscope_exp_cycles(ithare::kscope::kscope_addlevel(kscopelevel,-1)),kscopeflags>
 #define ITHARE_KSCOPE_FINT(type) ithare::kscope::KscopeInt<type,ITHARE_KSCOPE_INIT_COMBINED_PRNG(kscopeseed,__FILE__,ITHARE_KSCOPE_LINE,__COUNTER__),ithare::kscope::kscope_exp_cycles(kscopelevel),kscopeflags>
 #define ITHARE_KSCOPE_FINTP1(type) ithare::kscope::KscopeInt<type,ITHARE_KSCOPE_INIT_COMBINED_PRNG(kscopeseed,__FILE__,ITHARE_KSCOPE_LINE,__COUNTER__),ithare::kscope::kscope_exp_cycles(ithare::kscope::kscope_addlevel(kscopelevel,1)),kscopeflags>
-#define ITHARE_KSCOPE_FINTP2(type) ithare::kscope::KscopeInt<type,ITHARE_KSCOPE_INIT_COMBINED_PRNG(kscopeseed,__FILE__,ITHARE_KSCOPE_LINE,__COUNTER__),ithare::kscope::kscope_exp_cycles(ithare::kscope::kscope_addlevel(kscopelevel,1)),kscopeflags>
-#define ITHARE_KSCOPE_FINTP3(type) ithare::kscope::KscopeInt<type,ITHARE_KSCOPE_INIT_COMBINED_PRNG(kscopeseed,__FILE__,ITHARE_KSCOPE_LINE,__COUNTER__),ithare::kscope::kscope_exp_cycles(ithare::kscope::kscope_addlevel(kscopelevel,1)),kscopeflags>
+#define ITHARE_KSCOPE_FINTP2(type) ithare::kscope::KscopeInt<type,ITHARE_KSCOPE_INIT_COMBINED_PRNG(kscopeseed,__FILE__,ITHARE_KSCOPE_LINE,__COUNTER__),ithare::kscope::kscope_exp_cycles(ithare::kscope::kscope_addlevel(kscopelevel,2)),kscopeflags>
+#define ITHARE_KSCOPE_FINTP3(type) ithare::kscope::KscopeInt<type,ITHARE_KSCOPE_INIT_COMBINED_PRNG(kscopeseed,__FILE__,ITHARE_KSCOPE_LINE,__COUNTER__),ithare::kscope::kscope_exp_cycles(ithare::kscope::kscope_addlevel(kscopelevel,3)),kscopeflags>
 
 #define ITHARE_KSCOPE_CINT(type) ithare::kscope::KscopeInt<type,ITHARE_KSCOPE_COMBINED_PRNG(kscopeclsseed,ITHARE_KSCOPE_INIT_PRNG(__FILE__,ITHARE_KSCOPE_LINE,__COUNTER__)),ithare::kscope::kscope_exp_cycles(kscopeclslevel),kscopeclsflags>
 //TODO!: M3..P3

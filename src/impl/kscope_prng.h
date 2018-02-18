@@ -124,10 +124,17 @@ namespace ithare {
 			uint64_t v = kscope_ranhash(u);
 			return v % maxn;
 		}
+		static constexpr size_t kscope_const_nrandom0 = sizeof(kscope_const_random0) / sizeof(uint64_t);
 		constexpr uint32_t kscope_random_uint32(uint64_t seed, int32_t modifier) {
+			uint64_t init = 0;
 			assert(modifier >= 0);
-			assert(modifier < sizeof(kscope_const_random0) / sizeof(uint64_t));//if necessary - add more random data to kscope_const_random0
-			uint64_t u = kscope_const_random0[modifier] ^ seed;
+			if(modifier >= kscope_const_nrandom0) {
+				init ^= kscope_const_random0[kscope_const_nrandom0-1];
+				modifier -= kscope_const_nrandom0;
+				assert(modifier<kscope_const_nrandom0-1);//if necessary - add another round of xor-ing (with kscope_const_nrandom0-2)
+			}
+			assert(modifier<kscope_const_nrandom0);
+			uint64_t u = init ^ kscope_const_random0[modifier] ^ seed;
 			uint64_t v = kscope_ranhash(u);
 			return uint32_t(v);
 		}

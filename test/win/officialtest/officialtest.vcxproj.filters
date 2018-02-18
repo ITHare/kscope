@@ -41,5 +41,8 @@
     <ClInclude Include="..\..\..\kaleidoscoped\ssl\crypto\chacha\chacha.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\src\kscope_sample_extension.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
