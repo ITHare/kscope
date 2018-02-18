@@ -105,6 +105,7 @@ namespace ithare { namespace kscope {
 		ITHARE_KSCOPE_FORCEINLINE constexpr static T local_surjection(T y) {
 			if constexpr(flags&kscope_flag_is_constexpr)
 				return (y >> SHIFT) | (y << (Traits::nbits - SHIFT));
+			else {
 #ifdef __GNUC__ //including __clang__
 #if defined(__i386__) || defined(__x86_64__)
 			if constexpr(Traits::nbits == 32) {
@@ -125,6 +126,7 @@ namespace ithare { namespace kscope {
 			}
 #endif
 			return (y >> SHIFT) | (y << (Traits::nbits - SHIFT));
+			}
 		}
 
 		//some boilerplate stuff (NB: it is boilerplate only for trivial cases like our one)
