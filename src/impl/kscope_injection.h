@@ -181,9 +181,9 @@ namespace ithare {
 			using TT = typename KscopeTraits<T>::construct_from_type;
 			for (uint32_t modifier = 1;;modifier+=2) {
 				uint64_t ret = 0;
-				if constexpr(KscopeTraits<T>::nbits <= 32)
-					ret = ITHARE_KSCOPE_RANDOM_UINT32(seed,modifier);
-				else
+				//if constexpr(KscopeTraits<T>::nbits <= 32)
+				//	ret = ITHARE_KSCOPE_RANDOM_UINT32(seed,modifier);
+				//else
 					ret = (uint64_t(ITHARE_KSCOPE_RANDOM_UINT32(seed,modifier)) << 32) | ITHARE_KSCOPE_RANDOM_UINT32(seed,modifier+1);
 				if(upper_bound!= 0) {
 					ret %= upper_bound;

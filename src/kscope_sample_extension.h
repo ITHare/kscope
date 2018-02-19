@@ -153,7 +153,7 @@ namespace ithare { namespace kscope {
 
 #ifdef ITHARE_KSCOPE_DBG_ENABLE_DBGPRINT
 		static void dbg_print(size_t offset = 0, const char* prefix = "") {
-			std::cout << std::string(offset, ' ') << prefix << "KscopeInjectionVersion<ITHARE_KSCOPE_LAST_STOCK_INJECTION+1=" << ITHARE_KSCOPE_LAST_STOCK_INJECTION+1 << "/*rotl*/," << kscope_dbg_print_t<T>() << "," << kscope_dbg_print_seed<seed>() << "," << cycles << ">: SHIFT=" << SHIFT << std::endl;
+			std::cout << std::string(offset, ' ') << prefix << "KscopeInjectionVersion<ITHARE_KSCOPE_LAST_STOCK_INJECTION+1=" << ITHARE_KSCOPE_LAST_STOCK_INJECTION+1 << "/*rotl*/," << kscope_dbg_print_t<T>() << "," << kscope_dbg_print_seed<seed>() << "," << cycles << ">: nbits=" << Traits::nbits << " SHIFT=" << SHIFT << std::endl;
 			RecursiveInjection::dbg_print(offset + 1);
 		}
 #endif
