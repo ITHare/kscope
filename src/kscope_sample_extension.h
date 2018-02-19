@@ -80,8 +80,8 @@ namespace ithare { namespace kscope {
 		static_assert(SHIFT < Traits::nbits);
 
 		//this is the REAL essence of our injection
-		template<ITHARE_KSCOPE_SEEDTPARAM seedc>
-		ITHARE_KSCOPE_FORCEINLINE constexpr static T local_injection(T x) {//at least ATM, local_injection MUST be constexpr-friendly ALL THE TIME  
+		template<ITHARE_KSCOPE_SEEDTPARAM seedc,KSCOPEFLAGS flags>
+		ITHARE_KSCOPE_FORCEINLINE constexpr static T local_injection(T x) {  
 			return (x << SHIFT) | (x >> (Traits::nbits - SHIFT));
 		}
 #ifdef __GNUC__ //including __clang__
@@ -133,13 +133,13 @@ namespace ithare { namespace kscope {
 		}
 
 		//some boilerplate stuff (NB: it is boilerplate only for trivial cases like our one)
-		template<ITHARE_KSCOPE_SEEDTPARAM seed2>
+		template<ITHARE_KSCOPE_SEEDTPARAM seed2,KSCOPEFLAGS flags>
 		ITHARE_KSCOPE_FORCEINLINE constexpr static return_type injection(T x) {
 			ITHARE_KSCOPE_DECLAREPRNG_INFUNC seedc = ITHARE_KSCOPE_COMBINED_PRNG(seed, seed2);
-			T y = local_injection<seedc>(x);
+			T y = local_injection<seedc,flags>(x);
 			ITHARE_KSCOPE_DBG_ASSERT_SURJECTION_LOCAL("<1>", x, y);
 
-			return_type ret = RecursiveInjection::template injection<seedc>(y);
+			return_type ret = RecursiveInjection::template injection<seedc,flags>(y);
 			return ret;
 		}
 		template<ITHARE_KSCOPE_SEEDTPARAM seed2,KSCOPEFLAGS flags>

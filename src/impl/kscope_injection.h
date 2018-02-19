@@ -55,15 +55,15 @@ namespace ithare {
 
 #ifdef ITHARE_KSCOPE_DBG_RUNTIME_CHECKS
 #define ITHARE_KSCOPE_DBG_ASSERT_SURJECTION_RECURSIVE(where,x,y) do {\
-			if (surjection<seed,kscope_flag_is_constexpr>(y) != x) {\
-				std::cout << "DBG_ASSERT_SURJECTION_RECURSIVE FAILED @" << where << ": injection(" << x << ")=" << y << " but surjection(" << y << ") = " << surjection<seed,kscope_flag_is_constexpr>(y) << " != " << x << std::endl; \
+			if (surjection<seed,flags>(y) != x) {\
+				std::cout << "DBG_ASSERT_SURJECTION_RECURSIVE FAILED @" << where << ": injection(" << x << ")=" << y << " but surjection(" << y << ") = " << surjection<seed,flags>(y) << " != " << x << std::endl; \
 				dbg_print(); \
 				abort(); \
 			}\
 		} while(false)
 #define ITHARE_KSCOPE_DBG_ASSERT_SURJECTION_LOCAL(where,x,y) do {\
-			if (local_surjection<seed,kscope_flag_is_constexpr>(y) != x) {\
-				std::cout << "DBG_ASSERT_SURJECTION_LOCAL FAILED @" << where << ": local_injection(" << x << ")=" << y << " but local_surjection(" << y << ") = " << local_surjection<seed,kscope_flag_is_constexpr>(y) << " != " << x << std::endl; \
+			if (local_surjection<seed,flags>(y) != x) {\
+				std::cout << "DBG_ASSERT_SURJECTION_LOCAL FAILED @" << where << ": local_injection(" << x << ")=" << y << " but local_surjection(" << y << ") = " << local_surjection<seed,flags>(y) << " != " << x << std::endl; \
 				dbg_print(); \
 				abort(); \
 			}\
@@ -256,9 +256,9 @@ namespace ithare {
 
 	public:
 		using return_type = T;
-		template<ITHARE_KSCOPE_SEEDTPARAM seed2>
+		template<ITHARE_KSCOPE_SEEDTPARAM seed2,KSCOPEFLAGS flags>
 		ITHARE_KSCOPE_FORCEINLINE constexpr static return_type injection(T x) {
-			return_type ret = Context::template final_injection<seed2>(x);
+			return_type ret = Context::template final_injection<seed2,flags>(x);
 			//ITHARE_KSCOPE_DBG_ASSERT_SURJECTION_RECURSIVE("<0>", x, ret);
 			return ret;
 		}
@@ -303,7 +303,7 @@ namespace ithare {
 		static constexpr bool neg = C == 0 ? true : ITHARE_KSCOPE_RANDOM(seed, 3, 2) == 0;
 		//using ST = typename Traits::signed_type;
 
-		template<ITHARE_KSCOPE_SEEDTPARAM seedc>
+		template<ITHARE_KSCOPE_SEEDTPARAM seedc,KSCOPEFLAGS flags>
 		ITHARE_KSCOPE_FORCEINLINE constexpr static T local_injection(T x) {
 			if constexpr(neg) {
 				return -x + C;//yes, unary minus to unsigned
@@ -312,13 +312,13 @@ namespace ithare {
 				return x + C;
 			}
 		}
-		template<ITHARE_KSCOPE_SEEDTPARAM seed2>
+		template<ITHARE_KSCOPE_SEEDTPARAM seed2,KSCOPEFLAGS flags>
 		ITHARE_KSCOPE_FORCEINLINE constexpr static return_type injection(T x) {
 			ITHARE_KSCOPE_DECLAREPRNG_INFUNC seedc = ITHARE_KSCOPE_COMBINED_PRNG(seed, seed2);
-			T y = local_injection<seedc>(x);
+			T y = local_injection<seedc,flags>(x);
 			ITHARE_KSCOPE_DBG_ASSERT_SURJECTION_LOCAL("<1>", x, y);
 
-			return_type ret = RecursiveInjection::template injection<seedc>(y);
+			return_type ret = RecursiveInjection::template injection<seedc,flags>(y);
 			//ITHARE_KSCOPE_DBG_ASSERT_SURJECTION_RECURSIVE("<1>/a", x, ret);
 			return ret;
 		}
@@ -350,26 +350,26 @@ namespace ithare {
 				if constexpr(neg) {
 					return_type ret = RecursiveInjection::template injected_add_mod_max_value_ex<seedc>(base, -x);
 									//mutually exclusive with all the other non-CHECK calls to injection<> => no need to randomize seedc further 
-					ITHARE_KSCOPE_DBG_CHECK_SHORTCUT("<1>/-/r",ret,RecursiveInjection::template injection<seedc>(RecursiveInjection::template surjection<seedc,flags>(base) - x));
-					ITHARE_KSCOPE_DBG_CHECK_SHORTCUT("<1>/-/0", ret, injection<seedc>(surjection<seedc,flags>(base) + x));
+					ITHARE_KSCOPE_DBG_CHECK_SHORTCUT("<1>/-/r",ret,(RecursiveInjection::template injection<seedc,flags>(RecursiveInjection::template surjection<seedc,flags>(base) - x)));
+					ITHARE_KSCOPE_DBG_CHECK_SHORTCUT("<1>/-/0", ret, (injection<seedc,flags>(surjection<seedc,flags>(base) + x)));
 					return ret;
 				}
 				else {
 					return_type ret = RecursiveInjection::template injected_add_mod_max_value_ex<seedc>(base, x);
-					ITHARE_KSCOPE_DBG_CHECK_SHORTCUT("<1>/+/r",ret,RecursiveInjection::template injection<seedc>(RecursiveInjection::template surjection<seedc,flags>(base) + x));
-					ITHARE_KSCOPE_DBG_CHECK_SHORTCUT("<1>/+/0", ret, injection<seedc>(surjection<seedc,flags>(base) + x));
+					ITHARE_KSCOPE_DBG_CHECK_SHORTCUT("<1>/+/r",ret,(RecursiveInjection::template injection<seedc,flags>(RecursiveInjection::template surjection<seedc,flags>(base) + x)));
+					ITHARE_KSCOPE_DBG_CHECK_SHORTCUT("<1>/+/0", ret, (injection<seedc,flags>(surjection<seedc,flags>(base) + x)));
 					return ret;
 				}
 			}
 			else {
 				if constexpr(neg) {
-					return_type ret = RecursiveInjection::template injection<seedc>(RecursiveInjection::template surjection<seedc,flags>(base) - x);
-					ITHARE_KSCOPE_DBG_CHECK_SHORTCUT("<1>/-/1", ret, injection<seedc>(surjection<seedc,flags>(base) + x));
+					return_type ret = RecursiveInjection::template injection<seedc,flags>(RecursiveInjection::template surjection<seedc,flags>(base) - x);
+					ITHARE_KSCOPE_DBG_CHECK_SHORTCUT("<1>/-/1", ret, (injection<seedc,flags>(surjection<seedc,flags>(base) + x)));
 					return ret;
 				}
 				else {
-					return_type ret = RecursiveInjection::template injection<seedc>(RecursiveInjection::template surjection<seedc,flags>(base) + x);
-					ITHARE_KSCOPE_DBG_CHECK_SHORTCUT("<1>/+/1", ret, injection<seedc>(surjection<seedc,flags>(base)+x));
+					return_type ret = RecursiveInjection::template injection<seedc,flags>(RecursiveInjection::template surjection<seedc,flags>(base) + x);
+					ITHARE_KSCOPE_DBG_CHECK_SHORTCUT("<1>/+/1", ret, (injection<seedc,flags>(surjection<seedc,flags>(base)+x)));
 					return ret;
 				}
 			}
@@ -518,19 +518,19 @@ namespace ithare {
 
 		constexpr static int halfTBits = sizeof(halfT) * 8;
 
-		template<ITHARE_KSCOPE_SEEDTPARAM seedc>
+		template<ITHARE_KSCOPE_SEEDTPARAM seedc,KSCOPEFLAGS flags>
 		ITHARE_KSCOPE_FORCEINLINE constexpr static T local_injection(T x) {
 			T lo = x >> halfTBits;
 			//T hi = (x & mask) + f((halfT)lo);
 			T hi = x + f((halfT)lo);
 			return (hi << halfTBits) + lo;
 		}
-		template<ITHARE_KSCOPE_SEEDTPARAM seed2>
+		template<ITHARE_KSCOPE_SEEDTPARAM seed2,KSCOPEFLAGS flags>
 		ITHARE_KSCOPE_FORCEINLINE constexpr static return_type injection(T x) {
 			ITHARE_KSCOPE_DECLAREPRNG_INFUNC seedc = ITHARE_KSCOPE_COMBINED_PRNG(seed, seed2);
-			T y = local_injection<seedc>(x);
+			T y = local_injection<seedc,flags>(x);
 			ITHARE_KSCOPE_DBG_ASSERT_SURJECTION_LOCAL("<2>", x, y);
-			return_type ret = RecursiveInjection::template injection<seedc>(y);
+			return_type ret = RecursiveInjection::template injection<seedc,flags>(y);
 			//ITHARE_KSCOPE_DBG_ASSERT_SURJECTION_RECURSIVE("<2>", x, ret);
 			return ret;
 		}
@@ -627,22 +627,22 @@ namespace ithare {
 		using HiInjection = KscopeInjection<halfT, HiContext, LoHiInjectionRequirements,ITHARE_KSCOPE_NEW_PRNG(seed, 7), cycles_hiInj+HiContext::context_cycles>;
 		static_assert(sizeof(typename HiInjection::return_type) == sizeof(halfT));//bijections ONLY
 
-		template<ITHARE_KSCOPE_SEEDTPARAM seedc>
+		template<ITHARE_KSCOPE_SEEDTPARAM seedc,KSCOPEFLAGS flags>
 		ITHARE_KSCOPE_FORCEINLINE constexpr static T local_injection(T x) {
 			halfT lo = x >> halfTBits;
-			typename LoInjection::return_type lo1 = LoInjection::template injection<ITHARE_KSCOPE_NEW_PRNG(seedc,1)>(lo);
+			typename LoInjection::return_type lo1 = LoInjection::template injection<ITHARE_KSCOPE_NEW_PRNG(seedc,1),flags>(lo);
 			lo = halfT(lo1);// *reinterpret_cast<halfT*>(&lo1);//relies on static_assert(sizeof(return_type)==sizeof(halfT)) above
 			halfT hi = (halfT)x;
-			typename HiInjection::return_type hi1 = HiInjection::template injection<ITHARE_KSCOPE_NEW_PRNG(seedc,2)>(hi);
+			typename HiInjection::return_type hi1 = HiInjection::template injection<ITHARE_KSCOPE_NEW_PRNG(seedc,2),flags>(hi);
 			hi = halfT(hi1);// *reinterpret_cast<halfT*>(&hi1);//relies on static_assert(sizeof(return_type)==sizeof(halfT)) above
 			return (T(hi) << halfTBits) + T(lo);
 		}
-		template<ITHARE_KSCOPE_SEEDTPARAM seed2>
+		template<ITHARE_KSCOPE_SEEDTPARAM seed2,KSCOPEFLAGS flags>
 		ITHARE_KSCOPE_FORCEINLINE constexpr static return_type injection(T x) {
 			ITHARE_KSCOPE_DECLAREPRNG_INFUNC seedc = ITHARE_KSCOPE_COMBINED_PRNG(seed, seed2);
-			T y = local_injection<seedc>(x);
+			T y = local_injection<seedc,flags>(x);
 			ITHARE_KSCOPE_DBG_ASSERT_SURJECTION_LOCAL("<3>", x, y);
-			return_type ret = RecursiveInjection::template injection<ITHARE_KSCOPE_NEW_PRNG(seedc, 3)>(y);
+			return_type ret = RecursiveInjection::template injection<ITHARE_KSCOPE_NEW_PRNG(seedc, 3),flags>(y);
 			//ITHARE_KSCOPE_DBG_ASSERT_SURJECTION_RECURSIVE("<3>", x, ret);
 			return ret;
 		}
@@ -754,19 +754,19 @@ namespace ithare {
 		using literal = typename Context::template literal<typename Traits::literal_type, CINV, ITHARE_KSCOPE_NEW_PRNG(seed, 3)>::type;
 			//using CINV in injection to hide literals a bit better...
 
-		template<ITHARE_KSCOPE_SEEDTPARAM seedc>
+		template<ITHARE_KSCOPE_SEEDTPARAM seedc,KSCOPEFLAGS flags>
 		ITHARE_KSCOPE_FORCEINLINE constexpr static T local_injection(T x) {
 			auto lit = literal();
 			ITHARE_KSCOPE_DBG_CHECK_LITERAL("<4>", lit, CINV0);
 			T y = typename Traits::UintT(x) * typename Traits::UintT(lit.value());
 			return y;
 		}
-		template<ITHARE_KSCOPE_SEEDTPARAM seed2>
+		template<ITHARE_KSCOPE_SEEDTPARAM seed2,KSCOPEFLAGS flags>
 		ITHARE_KSCOPE_FORCEINLINE constexpr static return_type injection(T x) {
 			ITHARE_KSCOPE_DECLAREPRNG_INFUNC seedc = ITHARE_KSCOPE_COMBINED_PRNG(seed, seed2);
-			T y = local_injection<seedc>(x);
+			T y = local_injection<seedc,flags>(x);
 			ITHARE_KSCOPE_DBG_ASSERT_SURJECTION_LOCAL("<4>", x, y);
-			return_type ret = RecursiveInjection::template injection<seedc>(y);
+			return_type ret = RecursiveInjection::template injection<seedc,flags>(y);
 			//ITHARE_KSCOPE_DBG_ASSERT_SURJECTION_RECURSIVE("<4>", x, ret);
 			return ret;
 		}
@@ -791,15 +791,15 @@ namespace ithare {
 				auto lit = literal();
 				ITHARE_KSCOPE_DBG_CHECK_LITERAL("<4>/0", lit, CINV0);
 				return_type ret = RecursiveInjection::template injected_add_mod_max_value_ex<seedc>(base, x*lit.value());
-				ITHARE_KSCOPE_DBG_CHECK_SHORTCUT("<4>/r", ret, RecursiveInjection::template injection<seedc>(RecursiveInjection::template surjection<seedc,flags>(base) + CINV0*x));
-				ITHARE_KSCOPE_DBG_CHECK_SHORTCUT("<4>/0", ret, injection<seedc>(surjection<seedc,flags>(base) + x));
+				ITHARE_KSCOPE_DBG_CHECK_SHORTCUT("<4>/r", ret, (RecursiveInjection::template injection<seedc,flags>(RecursiveInjection::template surjection<seedc,flags>(base) + CINV0*x)));
+				ITHARE_KSCOPE_DBG_CHECK_SHORTCUT("<4>/0", ret, (injection<seedc,flags>(surjection<seedc,flags>(base) + x)));
 				return ret;
 			}
 			else {
 				auto lit = literal();
 				ITHARE_KSCOPE_DBG_CHECK_LITERAL("<4>/1", lit, CINV0);
-				return_type ret = RecursiveInjection::template injection<seedc>(RecursiveInjection::template surjection<seedc,flags>(base) + lit.value()*x);
-				ITHARE_KSCOPE_DBG_CHECK_SHORTCUT("<4>/1", ret, injection<seedc>(surjection<seedc,flags>(base) + x));
+				return_type ret = (RecursiveInjection::template injection<seedc,flags>(RecursiveInjection::template surjection<seedc,flags>(base) + lit.value()*x));
+				ITHARE_KSCOPE_DBG_CHECK_SHORTCUT("<4>/1", ret, (injection<seedc,flags>(surjection<seedc,flags>(base) + x)));
 				return ret;
 			}
 		}
@@ -880,10 +880,10 @@ namespace ithare {
 				return ( T(hi1) << halfTBits ) + T(lo1);
 			}
 		};
-		template<ITHARE_KSCOPE_SEEDTPARAM seed2>
+		template<ITHARE_KSCOPE_SEEDTPARAM seed2,KSCOPEFLAGS flags>
 		ITHARE_KSCOPE_FORCEINLINE constexpr static return_type injection(T x) {
 			ITHARE_KSCOPE_DECLAREPRNG_INFUNC seedc = ITHARE_KSCOPE_COMBINED_PRNG(seed,seed2);
-			return_type ret{ RecursiveInjectionLo::template injection<ITHARE_KSCOPE_NEW_PRNG(seedc,1)>((halfT)x), RecursiveInjectionHi::template injection<ITHARE_KSCOPE_NEW_PRNG(seedc,2)>(x >> halfTBits) };
+			return_type ret{ RecursiveInjectionLo::template injection<ITHARE_KSCOPE_NEW_PRNG(seedc,1),flags>((halfT)x), RecursiveInjectionHi::template injection<ITHARE_KSCOPE_NEW_PRNG(seedc,2),flags>(x >> halfTBits) };
 			ITHARE_KSCOPE_DBG_ASSERT_SURJECTION_RECURSIVE("<5>", x, ret);//sic! - _ASSERTION_RECURSIVE for version<5,...> (moving to local_injection would be too cumbersome)
 			return ret;
 		}
@@ -979,13 +979,13 @@ namespace ithare {
 			}
 		};
 
-		template<ITHARE_KSCOPE_SEEDTPARAM seed2>
+		template<ITHARE_KSCOPE_SEEDTPARAM seed2,KSCOPEFLAGS flags>
 		ITHARE_KSCOPE_FORCEINLINE constexpr static return_type injection(T x) {
 			ITHARE_KSCOPE_DECLAREPRNG_INFUNC seedc = ITHARE_KSCOPE_COMBINED_PRNG(seed,seed2);
 			TypeLo lo = TypeLo(typename TypeLo::T(x));
 			TypeHi hi = TypeHi(typename TypeHi::T(x >> loBits));
-			return_type ret{ RecursiveInjectionLo::template injection<ITHARE_KSCOPE_NEW_PRNG(seedc,1)>(lo),
-				RecursiveInjectionHi::template injection<ITHARE_KSCOPE_NEW_PRNG(seedc,2)>(hi) };
+			return_type ret{ RecursiveInjectionLo::template injection<ITHARE_KSCOPE_NEW_PRNG(seedc,1),flags>(lo),
+				RecursiveInjectionHi::template injection<ITHARE_KSCOPE_NEW_PRNG(seedc,2),flags>(hi) };
 			ITHARE_KSCOPE_DBG_ASSERT_SURJECTION_RECURSIVE("<6>", x, ret);//sic! - _ASSERTION_RECURSIVE for version<6,...> (moving to local_injection would be too cumbersome)
 			return ret;
 		}

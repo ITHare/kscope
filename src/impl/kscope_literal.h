@@ -64,7 +64,7 @@ namespace ithare {
 		using Traits = KscopeTraits<T>;
 		constexpr static KSCOPECYCLES context_cycles = KscopeLiteralContextVersion0Descr::descr.min_cycles;
 
-		template<ITHARE_KSCOPE_SEEDTPARAM seed2>
+		template<ITHARE_KSCOPE_SEEDTPARAM seed2,KSCOPEFLAGS flags>
 		ITHARE_KSCOPE_FORCEINLINE static constexpr T final_injection(T x) {
 			return x;
 		}
@@ -91,7 +91,7 @@ namespace ithare {
 		constexpr static KSCOPECYCLES context_cycles = KscopeLiteralContextVersion1Descr::descr.min_cycles;
 
 		constexpr static T CC = kscope_random_const<T,ITHARE_KSCOPE_NEW_PRNG(seed, 1),0>();
-		template<ITHARE_KSCOPE_SEEDTPARAM seed2>
+		template<ITHARE_KSCOPE_SEEDTPARAM seed2,KSCOPEFLAGS flags>
 		ITHARE_KSCOPE_FORCEINLINE static constexpr T final_injection(T x) {
 			return x + CC;
 		}
