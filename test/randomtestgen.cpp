@@ -210,7 +210,7 @@ class KscopeTestEnvironment {
 		return "";
 	}
 	virtual std::string cmpFiles(std::string f1, std::string f2) {
-		return std::string("fc ") + f1 + " " + f2 + " 2>&1 >nul";
+		return std::string("fc ") + f1 + " " + f2 + " >nul";
 	}
 	virtual std::string cleanup() {
 		return std::string("del officialtest.exe");
