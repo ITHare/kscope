@@ -109,6 +109,9 @@ class KscopeTestEnvironment {
 	virtual std::string checkExe(Flags flags) {
 		return "";
 	}
+	virtual std::string cmpFiles(std::string f1, std::string f2) {
+		return std::string("diff ") + f1 + " " + f2 + " 2>&1 >/dev/null";
+	}
 	virtual std::string setup() {
 		return std::string("#!/bin/sh") 
 		+ "\nCXX=\"${CXX:=g++}\""
@@ -206,6 +209,9 @@ class KscopeTestEnvironment {
 	virtual std::string checkExe(Flags) {
 		return "";
 	}
+	virtual std::string cmpFiles(std::string f1, std::string f2) {
+		return std::string("fc ") + f1 + " " + f2 + " 2>&1 >nul";
+	}
 	virtual std::string cleanup() {
 		return std::string("del officialtest.exe");
 	}
@@ -221,7 +227,7 @@ class KscopeTestGenerator {
 	KscopeTestEnvironment* kenv;
 
 	public:
-	enum class write_output { none, stable, random };
+	enum class write_output { none, stable, random, stable_first, stable_next };
 	enum class config { debug, release };
 	bool add32tests = false;
 
@@ -253,16 +259,26 @@ class KscopeTestGenerator {
 		switch (wo) {
 		case write_output::none:
 			break;
-		case write_output::stable:
+		case write_output::stable_first:
 			tofile = kenv->rootTestFolder() + "kscope.txt";
+			break;
+		case write_output::stable_next:
+			tofile = kenv->rootTestFolder() + "kscope2.txt";
 			break;
 		case write_output::random:
 			tofile = "local_kscope.txt";
 			break;
+		default:
+			assert(false);
 		}
 		std::string cmdrun = kenv->run(tofile);
 		issueCommand(cmdrun);
 		std::cout << kenv->exitCheck(cmdrun) << std::endl;
+		if(wo==write_output::stable_next) {
+			std::string cmpfiles = kenv->cmpFiles(kenv->rootTestFolder() + "kscope.txt", kenv->rootTestFolder() + "kscope2.txt");
+			issueCommand(cmpfiles);
+			std::cout << kenv->exitCheck(cmpfiles) << std::endl;
+		}
 	}
 
 	virtual std::string seedsByNum(int nseeds) {
@@ -290,24 +306,28 @@ class KscopeTestGenerator {
 
 	virtual void buildCheckRunCheckx2(config cfg,std::string defs,int nseeds, KscopeTestEnvironment::Flags flags=0,write_output wo=write_output::none) {
 		assert(nseeds >= -1 && nseeds <= 2);
+		write_output wox = wo;
 		if(wo==write_output::stable){
 			assert(nseeds<0);
+			wox = write_output::stable_first;
 		}
 		else {
 			assert(nseeds>=0);
 		}
 		
 		std::string cmd1 = buildCmd(cfg, defs + seedsByNum(nseeds));
-		buildCheckRunCheck(cmd1,flags,wo);
+		buildCheckRunCheck(cmd1,flags,wox);
+		if(wox==write_output::stable_first)
+			wox = write_output::stable_next;
 		std::string cmd2 = buildCmd(cfg, defs + seedsByNum(nseeds) + " -DITHARE_KSCOPE_TEST_NO_NAMESPACE");
-		buildCheckRunCheck(cmd2,flags,wo);
+		buildCheckRunCheck(cmd2,flags,wox);
 		
 		if(add32tests) {
 			std::string m32 = kenv->build32option();
 			std::string cmd1 = buildCmd(cfg, defs + m32 + seedsByNum(nseeds));
-			buildCheckRunCheck(cmd1,flags,wo);
+			buildCheckRunCheck(cmd1,flags,wox);
 			std::string cmd2 = buildCmd(cfg, defs + m32 + seedsByNum(nseeds) + " -DITHARE_KSCOPE_TEST_NO_NAMESPACE");
-			buildCheckRunCheck(cmd2,flags,wo);
+			buildCheckRunCheck(cmd2,flags,wox);
 		}
 	}
 	
