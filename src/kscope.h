@@ -973,33 +973,33 @@ namespace ithare {
 		public:
 			ITHARE_KSCOPE_FORCEINLINE constexpr KscopeIntDbg() : val(0) {
 			}
-			constexpr KscopeIntDbg(T t) : val(t) {
+			constexpr KscopeIntDbg(T_ t) : val(T(t)) {
 			}
 			template<class T2>
-			constexpr KscopeIntDbg(KscopeIntDbg<T2> t) : val(T(t.value())) {
+			constexpr KscopeIntDbg(KscopeIntDbg<T2> t) : val(T(T_(t.value()))) {
 			}
 			template<class T2,T2 C2>
-			constexpr KscopeIntDbg(KscopeLiteralDbg<T2,C2> t) : val(T(t.value())) {
+			constexpr KscopeIntDbg(KscopeLiteralDbg<T2,C2> t) : val(T(T_(t.value()))) {
 			}
-			constexpr KscopeIntDbg& operator =(T t) {
-				val = t;
+			constexpr KscopeIntDbg& operator =(T_ t) {
+				val = T(t);
 				return *this;
 			}
 			template<class T2>
 			constexpr KscopeIntDbg& operator =(KscopeIntDbg<T2> t) {
-				val = T(t.value());
+				val = T(T_(t.value()));
 				return *this;
 			}
 			template<class T2, T2 C2>
 			constexpr KscopeIntDbg& operator =(KscopeLiteralDbg<T2,C2> t) {
-				val = T(t.value());
+				val = T(T_(t.value()));
 				return *this;
 			}
 
-			constexpr T value() const {
-				return val;
+			constexpr T_ value() const {
+				return T_(val);
 			}
-			constexpr operator T() const { return value(); }
+			constexpr operator T_() const { return value(); }
 			
 			constexpr KscopeIntDbg& operator ++() { *this = value() + 1; return *this; }
 			constexpr KscopeIntDbg& operator --() { *this = value() - 1; return *this; }
