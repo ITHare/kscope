@@ -353,12 +353,20 @@ const lest::test module[] = {
     CASE( "compile-time: KSCOPE_CT_Chacha(); RECOMMENDED way to use compile-time crypto" ) 
     {
 			constexpr const chacha_tv* tv = &chacha_test_vectors[0];
+#ifdef ITHARE_KSCOPE_WORKAROUND_FOR_GCC_BUG_84463
+			constexpr ChaCha_ctx<> ctx1 = KSCOPE_CT_Chacha_set_key_iv(chacha_test_vectors[0].key,256,chacha_test_vectors[0].iv,nullptr);
+#else
 			constexpr ChaCha_ctx<> ctx1 = KSCOPE_CT_Chacha_set_key_iv(tv->key,256,tv->iv,nullptr);
+#endif
 			constexpr uint8_t in[64] = {};
 			static_assert(tv->len <= sizeof(in));
 			constexpr auto encrypted1 = KSCOPE_CT_Chacha(ctx1,in);
 			constexpr ithare::kscope::KscopeArrayWrapper<uint8_t,64> out = encrypted1.second;
+#ifdef ITHARE_KSCOPE_WORKAROUND_FOR_GCC_BUG_84463
+			static_assert(ithare::kscope::kscope_cmparr(out.arr,chacha_test_vectors[0].out,tv->len) == 0);
+#else
 			static_assert(ithare::kscope::kscope_cmparr(out.arr,tv->out,tv->len) == 0);
+#endif
 			constexpr ChaCha_ctx<> ctx2 = encrypted1.first;
 	},
     CASE( "crypto_chacha_20_test()" ) 

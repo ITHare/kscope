@@ -114,6 +114,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endif
 
 #define ITHARE_KSCOPE_WORKAROUND_FOR_GCC_BUG_47488 //workaround for https://gcc.gnu.org/bugzilla/show_bug.cgi?id=47488
+#define ITHARE_KSCOPE_WORKAROUND_FOR_GCC_BUG_84463 //workaround for https://gcc.gnu.org/bugzilla/show_bug.cgi?id=84463
 
 #define ITHARE_KSCOPE_FORCEINLINE __attribute__((always_inline)) inline
 #define ITHARE_KSCOPE_NOINLINE __attribute__((noinline))
