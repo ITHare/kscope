@@ -81,6 +81,7 @@ namespace ithare {
 	template<class T, class Context, class InjectionRequirements,ITHARE_KSCOPE_SEEDTPARAM seed, KSCOPECYCLES cycles>
 	class KscopeInjection {
 		static_assert(std::is_same<T, typename Context::Type>::value);
+		static_assert(cycles>=0);
 		using Traits = KscopeTraits<T>;
 		constexpr static KscopeDescriptor descr[] = {
 			KscopeInjectionVersion0Descr<Context>::descr,
@@ -98,10 +99,10 @@ namespace ithare {
 
 	public:
 		using return_type = typename WhichType::return_type;
-		template<ITHARE_KSCOPE_SEEDTPARAM seed2>
+		template<ITHARE_KSCOPE_SEEDTPARAM seed2,KSCOPEFLAGS flags>
 		ITHARE_KSCOPE_FORCEINLINE constexpr static return_type injection(T x) {
 			ITHARE_KSCOPE_DECLAREPRNG_INFUNC seedc = ITHARE_KSCOPE_COMBINED_PRNG(seed,seed2);
-			return WhichType::template injection<seedc>(x);
+			return WhichType::template injection<seedc,flags>(x);
 		}
 		template<ITHARE_KSCOPE_SEEDTPARAM seed2,KSCOPEFLAGS flags>
 		ITHARE_KSCOPE_FORCEINLINE constexpr static T surjection(return_type y) {
@@ -150,10 +151,10 @@ namespace ithare {
 		};
 		using Injection = KscopeInjection<T, Context, InjectionRequirements,ITHARE_KSCOPE_NEW_PRNG(seed, 1), cycles>;
 	public:
-		ITHARE_KSCOPE_FORCEINLINE constexpr KscopeLiteralCtx() : val(Injection::template injection<ITHARE_KSCOPE_NEW_PRNG(seed, 2)>(C)) {
+		ITHARE_KSCOPE_FORCEINLINE constexpr KscopeLiteralCtx() : val(Injection::template injection<ITHARE_KSCOPE_NEW_PRNG(seed, 2),kscope_flag_is_constexpr>(C)) {
 		}
 		ITHARE_KSCOPE_FORCEINLINE constexpr T value() const {
-			return Injection::template surjection<ITHARE_KSCOPE_NEW_PRNG(seed, 3),0>(val);
+			return Injection::template surjection<ITHARE_KSCOPE_NEW_PRNG(seed, 3),kscope_flag_is_constexpr>(val);
 		}
 
 #ifdef ITHARE_KSCOPE_DBG_ENABLE_DBGPRINT
@@ -162,7 +163,7 @@ namespace ithare {
 			Injection::dbg_print(offset + 1);
 		}
 		static void dbgCheck() {
-			typename Injection::return_type c = Injection::template injection<seed>(C);
+			typename Injection::return_type c = Injection::template injection<seed,0>(C);
 			T cc = Injection::template surjection<seed,0>(c);
 			assert(cc == C);
 		}
@@ -190,7 +191,7 @@ namespace ithare {
 		}
 
 
-		template<ITHARE_KSCOPE_SEEDTPARAM seed2>
+		template<ITHARE_KSCOPE_SEEDTPARAM seed2,KSCOPEFLAGS flags>
 		ITHARE_KSCOPE_FORCEINLINE static constexpr T final_injection(T x) {
 			return x;
 		}
@@ -239,10 +240,10 @@ namespace ithare {
 			using type = KscopeLiteralCtx<T2, C, KscopeZeroLiteralContext<T2>, seed2, literal_cycles>;
 		};
 
-		template<ITHARE_KSCOPE_SEEDTPARAM seed2>
-		ITHARE_KSCOPE_FORCEINLINE static constexpr T final_injection(T x) {
+		template<ITHARE_KSCOPE_SEEDTPARAM seed2,KSCOPEFLAGS flags>
+		ITHARE_KSCOPE_FORCEINLINE static constexpr /* only if flags & kscope_flag_is_constexpr */ T final_injection(T x) {
 			ITHARE_KSCOPE_DECLAREPRNG_INFUNC seedc = ITHARE_KSCOPE_COMBINED_PRNG(seed,seed2);
-			return WhichType::template final_injection<seedc>(x);
+			return WhichType::template final_injection<seedc,flags>(x);
 		}
 		template<ITHARE_KSCOPE_SEEDTPARAM seed2,KSCOPEFLAGS flags>
 		ITHARE_KSCOPE_FORCEINLINE static constexpr /* only if flags & kscope_flag_is_constexpr */ T final_surjection(T y) {
@@ -299,11 +300,11 @@ namespace ithare {
 			static constexpr bool cross_platform_only = false;//currently there seems to be no need to ensure cross-platform compatibility for literals
 		};
 		using Injection = KscopeInjection<T, Context, InjectionRequirements,ITHARE_KSCOPE_NEW_PRNG(seed, 2), cycles>;
-		static constexpr typename Injection::return_type C0 = Injection::template injection<ITHARE_KSCOPE_NEW_PRNG(seed, 3)>(C);
+		static constexpr typename Injection::return_type C0 = Injection::template injection<ITHARE_KSCOPE_NEW_PRNG(seed, 3),kscope_flag_is_constexpr>(C);
 	public:
 		ITHARE_KSCOPE_FORCEINLINE constexpr KscopeLiteral() : val(C0) {
 		}
-		constexpr ITHARE_KSCOPE_FORCEINLINE T_ value() const {
+		ITHARE_KSCOPE_FORCEINLINE constexpr T_ value() const {
 			if constexpr(flags&kscope_flag_is_constexpr)
 				return C_;
 			else
@@ -343,7 +344,7 @@ namespace ithare {
 			return kscope_random_const<T2,seed2,flags2>(upper_bound);
 		}
 
-		template<ITHARE_KSCOPE_SEEDTPARAM seed2>
+		template<ITHARE_KSCOPE_SEEDTPARAM seed2,KSCOPEFLAGS flags>
 		ITHARE_KSCOPE_FORCEINLINE static constexpr T final_injection(T x) {
 			return x;
 		}
@@ -364,16 +365,16 @@ namespace ithare {
 		using intermediate_context_type = KscopeVarContext<T,seed,cycles>;
 	};
 	
-	template<bool constexpr_friendly, class T, class Context, class InjectionRequirements,ITHARE_KSCOPE_SEEDTPARAM seed, KSCOPECYCLES cycles>
-	struct kscope_var_injection;
+	template<bool is_real, class T, class Context, class InjectionRequirements,ITHARE_KSCOPE_SEEDTPARAM seed, KSCOPECYCLES cycles>
+	struct KscopeCondInjection;
 	
 	template<class T, class Context, class InjectionRequirements,ITHARE_KSCOPE_SEEDTPARAM seed, KSCOPECYCLES cycles>
-	struct kscope_var_injection<false,T,Context,InjectionRequirements,seed,cycles> {
+	struct KscopeCondInjection<true,T,Context,InjectionRequirements,seed,cycles> {
 		using Injection = KscopeInjection<T, Context, InjectionRequirements,seed, cycles>;
 	};
 	template<class T, class Context, class InjectionRequirements,ITHARE_KSCOPE_SEEDTPARAM seed, KSCOPECYCLES cycles>
-	struct kscope_var_injection<true,T,Context,InjectionRequirements,seed,cycles> {
-		using Injection = KscopeInjectionVersion<0,T, Context, InjectionRequirements, seed, cycles>;
+	struct KscopeCondInjection<false,T,Context,InjectionRequirements,seed,cycles> {
+		using Injection = KscopeInjectionVersion<0,T, Context, InjectionRequirements, seed, 0>;
 	};
 
 	//KscopeInt
@@ -381,6 +382,7 @@ namespace ithare {
 	template<class T_, ITHARE_KSCOPE_SEEDTPARAM seed, KSCOPECYCLES cycles,KSCOPEFLAGS flags=0>
 	class KscopeInt {
 		static_assert(std::is_integral<T_>::value);
+		//using SimulatedT = T_;//to use externally
 		using T = typename kscope_normalized_unsigned_integral_type<T_>::type;//from this point on, uint8_t..uint64_t only; simple std::make_unsigned<> didn't do as some compilers tried to treat unsigned long distinct from both uint32_t and uint64_t
 		//using TTraits = KscopeTraits<T>;
 
@@ -392,37 +394,37 @@ namespace ithare {
 			static constexpr bool no_substrate_size_increase = false;
 			static constexpr bool cross_platform_only = flags & kscope_flag_cross_platform_only;
 		};
-		static constexpr bool constexpr_friendly = (flags&kscope_flag_is_constexpr) != 0;
-		using Injection = typename kscope_var_injection<constexpr_friendly,T, Context, InjectionRequirements,ITHARE_KSCOPE_NEW_PRNG(seed, 2), cycles>::Injection;
+		using Injection = typename KscopeCondInjection<cycles >= 0,T, Context, InjectionRequirements,ITHARE_KSCOPE_NEW_PRNG(seed, 2), cycles>::Injection;
+		//using Injection = KscopeInjection<T, Context, InjectionRequirements,seed, cycles>;
 
 	public:
 		ITHARE_KSCOPE_FORCEINLINE constexpr KscopeInt() : val(0) {
 		}
-		ITHARE_KSCOPE_FORCEINLINE constexpr KscopeInt(T_ t) : val(Injection::template injection<ITHARE_KSCOPE_NEW_PRNG(seed, 2)>(T(t))) {
+		ITHARE_KSCOPE_FORCEINLINE constexpr KscopeInt(T_ t) : val(Injection::template injection<ITHARE_KSCOPE_NEW_PRNG(seed, 2),flags>(T(t))) {
 		}
 		template<class T2, ITHARE_KSCOPE_SEEDTPARAM seed2, KSCOPECYCLES cycles2,KSCOPEFLAGS flags2>
-		ITHARE_KSCOPE_FORCEINLINE constexpr KscopeInt(KscopeInt<T2, seed2, cycles2,flags2> t) : val(Injection::template injection<ITHARE_KSCOPE_COMBINED_PRNG(seed,seed2)>(T(T_(t.value())))) {//TODO: randomized injection implementation
+		ITHARE_KSCOPE_FORCEINLINE constexpr KscopeInt(KscopeInt<T2, seed2, cycles2,flags2> t) : val(Injection::template injection<ITHARE_KSCOPE_COMBINED_PRNG(seed,seed2),flags2>(T(T_(t.value())))) {//TODO: randomized injection implementation
 		}
 		template<class T2, T2 C2, ITHARE_KSCOPE_SEEDTPARAM seed2, KSCOPECYCLES cycles2,KSCOPEFLAGS flags2>
-		ITHARE_KSCOPE_FORCEINLINE constexpr KscopeInt(KscopeLiteral<T2, C2, seed2, cycles2,flags2> t) : val(Injection::template injection<ITHARE_KSCOPE_COMBINED_PRNG(seed,seed2)>(T(T_(t.value())))) {//TODO: randomized injection implementation
+		ITHARE_KSCOPE_FORCEINLINE constexpr KscopeInt(KscopeLiteral<T2, C2, seed2, cycles2,flags2> t) : val(Injection::template injection<ITHARE_KSCOPE_COMBINED_PRNG(seed,seed2),flags2>(T(T_(t.value())))) {//TODO: randomized injection implementation
 		}
 		ITHARE_KSCOPE_FORCEINLINE constexpr KscopeInt& operator =(T_ t) {
-			val = Injection::template injection<ITHARE_KSCOPE_NEW_PRNG(seed, 3)>(T(t));//TODO: different implementations of the same injection in different contexts
+			val = Injection::template injection<ITHARE_KSCOPE_NEW_PRNG(seed, 3),flags>(T(t));//TODO: different implementations of the same injection in different contexts
 			return *this;
 		}
 		template<class T2, ITHARE_KSCOPE_SEEDTPARAM seed2, KSCOPECYCLES cycles2,KSCOPEFLAGS flags2>
 		ITHARE_KSCOPE_FORCEINLINE constexpr KscopeInt& operator =(KscopeInt<T2, seed2, cycles2,flags2> t) {
-			val = Injection::template injection<ITHARE_KSCOPE_NEW_PRNG(seed, 4)>(T(T_(t.value())));//TODO: different implementations of the same injection in different contexts
+			val = Injection::template injection<ITHARE_KSCOPE_NEW_PRNG(seed, 4),flags2>(T(T_(t.value())));//TODO: different implementations of the same injection in different contexts
 			return *this;
 		}
 		template<class T2, T2 C2, ITHARE_KSCOPE_SEEDTPARAM seed2, KSCOPECYCLES cycles2,KSCOPEFLAGS flags2>
 		ITHARE_KSCOPE_FORCEINLINE constexpr KscopeInt& operator =(KscopeLiteral<T2, C2, seed2, cycles2,flags2> t) {
 			ITHARE_KSCOPE_DECLAREPRNG_INFUNC seedc = ITHARE_KSCOPE_COMBINED_PRNG(seed,seed2);
-			val = Injection::template injection<seedc>(T(T_(t.value())));//TODO: different implementations of the same injection in different contexts
+			val = Injection::template injection<seedc,flags2>(T(T_(t.value())));//TODO: different implementations of the same injection in different contexts
 			return *this;
 		}
-		ITHARE_KSCOPE_FORCEINLINE constexpr T_ value() const {
-			return T_(Injection::template surjection<ITHARE_KSCOPE_NEW_PRNG(seed, 5),0>(val));
+		ITHARE_KSCOPE_FORCEINLINE constexpr /* depending on flags */ T_ value() const {
+			return T_(Injection::template surjection<ITHARE_KSCOPE_NEW_PRNG(seed, 5),flags>(val));
 		}
 
 		ITHARE_KSCOPE_FORCEINLINE constexpr operator T_() const { return value(); }
@@ -430,7 +432,7 @@ namespace ithare {
 			constexpr bool has_shortcut = Injection::injection_caps & kscope_injection_has_add_mod_max_value_ex;
 			if constexpr(has_shortcut) {
 				typename Injection::return_type ret = Injection::template injected_add_mod_max_value_ex<ITHARE_KSCOPE_NEW_PRNG(seed, 6)>(val,1);
-				ITHARE_KSCOPE_DBG_CHECK_SHORTCUT("++",ret,Injection::template injection<seed>(Injection::template surjection<seed,0>(val)+1));
+				ITHARE_KSCOPE_DBG_CHECK_SHORTCUT("++",ret,(Injection::template injection<seed,flags>(Injection::template surjection<seed,flags>(val)+1)));
 				val = ret;
 			}
 			else {
@@ -709,21 +711,21 @@ namespace ithare {
 		}
 		ITHARE_KSCOPE_FORCEINLINE static constexpr KscopeArrayWrapper<uint32_t, sz4> str_kscoped() {
 			KscopeArrayWrapper<uint32_t, sz4> ret = {{}};
-			ret.arr[0] = Injection0::template injection<ITHARE_KSCOPE_NEW_PRNG(seed,3)>(get4(str,0));
+			ret.arr[0] = Injection0::template injection<ITHARE_KSCOPE_NEW_PRNG(seed,3),kscope_flag_is_constexpr>(get4(str,0));
 			if constexpr(sz4 > 1)
-				ret.arr[1] = Injection1::template injection<ITHARE_KSCOPE_NEW_PRNG(seed,4)>(get4(str, 4));
+				ret.arr[1] = Injection1::template injection<ITHARE_KSCOPE_NEW_PRNG(seed,4),kscope_flag_is_constexpr>(get4(str, 4));
 			if constexpr(sz4 > 2)
-				ret.arr[2] = Injection2::template injection<ITHARE_KSCOPE_NEW_PRNG(seed,5)>(get4(str, 8));
+				ret.arr[2] = Injection2::template injection<ITHARE_KSCOPE_NEW_PRNG(seed,5),kscope_flag_is_constexpr>(get4(str, 8));
 			if constexpr(sz4 > 3)
-				ret.arr[3] = Injection3::template injection<ITHARE_KSCOPE_NEW_PRNG(seed,6)>(get4(str, 12));
+				ret.arr[3] = Injection3::template injection<ITHARE_KSCOPE_NEW_PRNG(seed,6),kscope_flag_is_constexpr>(get4(str, 12));
 			if constexpr(sz4 > 4)
-				ret.arr[4] = Injection4::template injection<ITHARE_KSCOPE_NEW_PRNG(seed,7)>(get4(str, 16));
+				ret.arr[4] = Injection4::template injection<ITHARE_KSCOPE_NEW_PRNG(seed,7),kscope_flag_is_constexpr>(get4(str, 16));
 			if constexpr(sz4 > 5)
-				ret.arr[5] = Injection5::template injection<ITHARE_KSCOPE_NEW_PRNG(seed,8)>(get4(str, 20));
+				ret.arr[5] = Injection5::template injection<ITHARE_KSCOPE_NEW_PRNG(seed,8),kscope_flag_is_constexpr>(get4(str, 20));
 			if constexpr(sz4 > 6)
-				ret.arr[6] = Injection6::template injection<ITHARE_KSCOPE_NEW_PRNG(seed,9)>(get4(str, 24));
+				ret.arr[6] = Injection6::template injection<ITHARE_KSCOPE_NEW_PRNG(seed,9),kscope_flag_is_constexpr>(get4(str, 24));
 			if constexpr(sz4 > 7)
-				ret.arr[7] = Injection7::template injection<ITHARE_KSCOPE_NEW_PRNG(seed,10)>(get4(str, 28));
+				ret.arr[7] = Injection7::template injection<ITHARE_KSCOPE_NEW_PRNG(seed,10),kscope_flag_is_constexpr>(get4(str, 28));
 			return ret;
 		}
 
@@ -861,6 +863,14 @@ namespace ithare {
 #define ITHARE_KSCOPE_INT5(type) ithare::kscope::KscopeInt<type,ITHARE_KSCOPE_INIT_PRNG(__FILE__,ITHARE_KSCOPE_LINE,__COUNTER__),ithare::kscope::kscope_exp_cycles(5),0>
 #define ITHARE_KSCOPE_INT6(type) ithare::kscope::KscopeInt<type,ITHARE_KSCOPE_INIT_PRNG(__FILE__,ITHARE_KSCOPE_LINE,__COUNTER__),ithare::kscope::kscope_exp_cycles(6),0>
 
+#define ITHARE_KSCOPE_INT0C(type) ithare::kscope::KscopeInt<type,ITHARE_KSCOPE_INIT_PRNG(__FILE__,ITHARE_KSCOPE_LINE,__COUNTER__),ithare::kscope::kscope_exp_cycles(0),ithare::kscope::kscope_flag_is_constexpr>
+#define ITHARE_KSCOPE_INT1C(type) ithare::kscope::KscopeInt<type,ITHARE_KSCOPE_INIT_PRNG(__FILE__,ITHARE_KSCOPE_LINE,__COUNTER__),ithare::kscope::kscope_exp_cycles(1),ithare::kscope::kscope_flag_is_constexpr>
+#define ITHARE_KSCOPE_INT2C(type) ithare::kscope::KscopeInt<type,ITHARE_KSCOPE_INIT_PRNG(__FILE__,ITHARE_KSCOPE_LINE,__COUNTER__),ithare::kscope::kscope_exp_cycles(2),ithare::kscope::kscope_flag_is_constexpr>
+#define ITHARE_KSCOPE_INT3C(type) ithare::kscope::KscopeInt<type,ITHARE_KSCOPE_INIT_PRNG(__FILE__,ITHARE_KSCOPE_LINE,__COUNTER__),ithare::kscope::kscope_exp_cycles(3),ithare::kscope::kscope_flag_is_constexpr>
+#define ITHARE_KSCOPE_INT4C(type) ithare::kscope::KscopeInt<type,ITHARE_KSCOPE_INIT_PRNG(__FILE__,ITHARE_KSCOPE_LINE,__COUNTER__),ithare::kscope::kscope_exp_cycles(4),ithare::kscope::kscope_flag_is_constexpr>
+#define ITHARE_KSCOPE_INT5C(type) ithare::kscope::KscopeInt<type,ITHARE_KSCOPE_INIT_PRNG(__FILE__,ITHARE_KSCOPE_LINE,__COUNTER__),ithare::kscope::kscope_exp_cycles(5),ithare::kscope::kscope_flag_is_constexpr>
+#define ITHARE_KSCOPE_INT6C(type) ithare::kscope::KscopeInt<type,ITHARE_KSCOPE_INIT_PRNG(__FILE__,ITHARE_KSCOPE_LINE,__COUNTER__),ithare::kscope::kscope_exp_cycles(6),ithare::kscope::kscope_flag_is_constexpr>
+
 #define ITHARE_KSCOPE_INTNULLPTR ((ithare::kscope::KscopeInt<int,ITHARE_KSCOPE_DUMMYSEED,0,0>*)nullptr)
 
 //INTLIT: constructing KscopeInt to be compatible with ITHARE_KSCOPE_DECLAREFUNC* functions
@@ -910,8 +920,8 @@ namespace ithare {
 #define ITHARE_KSCOPE_CALL_AS_CONSTEXPR(fname) fname<ITHARE_KSCOPE_INIT_PRNG(__FILE__,ITHARE_KSCOPE_LINE,__COUNTER__),-1,ithare::kscope::kscope_flag_is_constexpr>
 
 #define ITHARE_KSCOPE_VALUE(x) x.value()
-#define ITHARE_KSCOPE_ARRAY_OF_SAME_TYPE_AS(arr) typename std::remove_cv<typename std::remove_reference<decltype(*arr)>::type>::type
-#define ITHARE_KSCOPE_PTR_OF_SAME_TYPE_AS(arr) typename std::remove_cv<typename std::remove_reference<decltype(*arr)>::type>::type*
+#define ITHARE_KSCOPE_ARRAY_OF_SAME_TYPE_AS(arr) typename std::remove_cv<typename std::remove_reference<decltype(*(arr))>::type>::type
+#define ITHARE_KSCOPE_PTR_OF_SAME_TYPE_AS(arr) typename std::remove_cv<typename std::remove_reference<decltype(*(arr))>::type>::type*
 
 #else//ITHARE_KSCOPE_SEED
 namespace ithare {
@@ -955,40 +965,41 @@ namespace ithare {
 
 		//KscopeIntDbg
 		//IMPORTANT: ANY API CHANGES MUST BE MIRRORED in KscopeInt<>
-		template<class T>
+		template<class T_>
 		class KscopeIntDbg {
-			static_assert(std::is_integral<T>::value);
+			static_assert(std::is_integral<T_>::value);
+			using T = typename kscope_normalized_unsigned_integral_type<T_>::type;
 
 		public:
 			ITHARE_KSCOPE_FORCEINLINE constexpr KscopeIntDbg() : val(0) {
 			}
-			constexpr KscopeIntDbg(T t) : val(t) {
+			constexpr KscopeIntDbg(T_ t) : val(T(t)) {
 			}
 			template<class T2>
-			constexpr KscopeIntDbg(KscopeIntDbg<T2> t) : val(T(t.value())) {
+			constexpr KscopeIntDbg(KscopeIntDbg<T2> t) : val(T(T_(t.value()))) {
 			}
 			template<class T2,T2 C2>
-			constexpr KscopeIntDbg(KscopeLiteralDbg<T2,C2> t) : val(T(t.value())) {
+			constexpr KscopeIntDbg(KscopeLiteralDbg<T2,C2> t) : val(T(T_(t.value()))) {
 			}
-			constexpr KscopeIntDbg& operator =(T t) {
-				val = t;
+			constexpr KscopeIntDbg& operator =(T_ t) {
+				val = T(t);
 				return *this;
 			}
 			template<class T2>
 			constexpr KscopeIntDbg& operator =(KscopeIntDbg<T2> t) {
-				val = T(t.value());
+				val = T(T_(t.value()));
 				return *this;
 			}
 			template<class T2, T2 C2>
 			constexpr KscopeIntDbg& operator =(KscopeLiteralDbg<T2,C2> t) {
-				val = T(t.value());
+				val = T(T_(t.value()));
 				return *this;
 			}
 
-			constexpr T value() const {
-				return val;
+			constexpr T_ value() const {
+				return T_(val);
 			}
-			constexpr operator T() const { return value(); }
+			constexpr operator T_() const { return value(); }
 			
 			constexpr KscopeIntDbg& operator ++() { *this = value() + 1; return *this; }
 			constexpr KscopeIntDbg& operator --() { *this = value() - 1; return *this; }
@@ -1267,6 +1278,14 @@ namespace ithare {
 #define ITHARE_KSCOPE_INT4(type) ithare::kscope::KscopeIntDbg<type>
 #define ITHARE_KSCOPE_INT5(type) ithare::kscope::KscopeIntDbg<type>
 #define ITHARE_KSCOPE_INT6(type) ithare::kscope::KscopeIntDbg<type>
+
+#define ITHARE_KSCOPE_INT0C(type) ithare::kscope::KscopeIntDbg<type>
+#define ITHARE_KSCOPE_INT1C(type) ithare::kscope::KscopeIntDbg<type>
+#define ITHARE_KSCOPE_INT2C(type) ithare::kscope::KscopeIntDbg<type>
+#define ITHARE_KSCOPE_INT3C(type) ithare::kscope::KscopeIntDbg<type>
+#define ITHARE_KSCOPE_INT4C(type) ithare::kscope::KscopeIntDbg<type>
+#define ITHARE_KSCOPE_INT5C(type) ithare::kscope::KscopeIntDbg<type>
+#define ITHARE_KSCOPE_INT6C(type) ithare::kscope::KscopeIntDbg<type>
 
 #define ITHARE_KSCOPE_INTNULLPTR ((ithare::kscope::KscopeIntDbg<int>*)nullptr)
 

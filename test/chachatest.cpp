@@ -5,6 +5,7 @@
 #include "../src/kscope_sample_extension.h" //MUST go BEFORE ../src/kscope.h
 #include "../src/kscope.h"
 #include "../kaleidoscoped/ssl/crypto/chacha/chacha.h"
+#include "../kaleidoscoped/nostd.h"
 
 /*
  * Copyright (c) 2014 Joel Sing <jsing@openbsd.org>
@@ -24,9 +25,9 @@
 
 struct chacha_tv {
 	const char *desc;
-	const ITHARE_KSCOPE_INT3(uint8_t) key[32];
-	const ITHARE_KSCOPE_INT3(uint8_t) iv[8];
-	const ITHARE_KSCOPE_INT3(size_t) len;
+	const uint8_t key[32];
+	const uint8_t iv[8];
+	const size_t len;
 	const unsigned char out[512];
 };
 
@@ -34,7 +35,7 @@ struct chacha_tv {
  * Test vectors from:
  *   http://tools.ietf.org/html/draft-strombergson-chacha-test-vectors-01
  */
-static struct chacha_tv chacha_test_vectors[] = {
+constexpr chacha_tv chacha_test_vectors[] = {
 	{
 		"TC1: All zero key and IV",
 		{
@@ -230,13 +231,34 @@ static void
 crypto_chacha_20_test(const chacha_tv* tv, uint8_t* out0, uint8_t* in0)
 {
 	assert(tv->len <= 64);
-	ITHARE_KSCOPE_INT3(uint8_t) in[64];
+	auto in = ITHARE_KSCOPE_INT_ARR_TO_KSCOPE_INT3X(64,in0,tv->len);
+	/*ITHARE_KSCOPE_INT3(uint8_t) in[64];
 	for (size_t i = 0; i < tv->len; ++i)
-		in[i] = in0[i];
+		in[i] = in0[i];*/
 	ITHARE_KSCOPE_INT3(uint8_t) out[64];
-	ITHARE_KSCOPE_CALL3(CRYPTO_chacha_20)(out, in, tv->len, tv->key, tv->iv, 0);
+	auto key = ITHARE_KSCOPE_INT_ARR_TO_KSCOPE_INT3(tv->key);
+	auto iv = ITHARE_KSCOPE_INT_ARR_TO_KSCOPE_INT3(tv->iv);
+	ITHARE_KSCOPE_CALL3(CRYPTO_chacha_20)(out, in.arr, ITHARE_KSCOPE_INT3(size_t)(tv->len), key.arr, iv.arr, 0);
+	/*for (size_t i = 0; i < tv->len; ++i)
+		out0[i] = out[i];*/
+	ithare::kscope::kscope_copyarr(out0,out,tv->len);
+}
+
+static void
+constexpr crypto_chacha_20_test_compile_time(const chacha_tv* tv, const uint8_t* expected_out, const uint8_t* in0)
+{
+	assert(tv->len <= 64);
+	/*ITHARE_KSCOPE_INT0C(uint8_t) in[64];
 	for (size_t i = 0; i < tv->len; ++i)
-		out0[i] = out[i];
+		in[i] = in0[i];*/
+	auto in = ithare::kscope::kscope_int_arr_to_ct_kscope_int<64 /*maximum value*/>(in0,tv->len /*actual value*/);		
+	ITHARE_KSCOPE_INT0C(uint8_t) out[64];
+	auto key = ithare::kscope::kscope_int_arr_to_ct_kscope_int(tv->key);
+	auto iv = ithare::kscope::kscope_int_arr_to_ct_kscope_int(tv->iv);
+	ITHARE_KSCOPE_CALL_AS_CONSTEXPR(CRYPTO_chacha_20)(out, in.arr, ITHARE_KSCOPE_INT3(size_t)(tv->len), key.arr, iv.arr, 0);
+	/*for (size_t i = 0; i < tv->len; ++i)
+		assert(expected_out[i] == out[i]);*/
+	assert(ithare::kscope::kscope_cmparr(out,expected_out,tv->len) == 0);	
 }
 
 /* Single-shot ChaCha20 using the ChaCha interface. */
@@ -245,16 +267,20 @@ chacha_ctx_full_test(const chacha_tv* tv, uint8_t *out0, uint8_t* in0)
 {
 	ITHARE_KSCOPE_KSCOPECLASS(ChaCha_ctx) ctx;
 
-	ITHARE_KSCOPE_CALL3(ChaCha_set_key)(&ctx, tv->key, ITHARE_KSCOPE_INTLIT3I(256));
-	ITHARE_KSCOPE_CALL3(ChaCha_set_iv)(&ctx, tv->iv, ITHARE_KSCOPE_INTNULLPTR);
+	auto key = ITHARE_KSCOPE_INT_ARR_TO_KSCOPE_INT3(tv->key);
+	auto iv = ITHARE_KSCOPE_INT_ARR_TO_KSCOPE_INT3(tv->iv);
+	ITHARE_KSCOPE_CALL3(ChaCha_set_key)(&ctx, key.arr, ITHARE_KSCOPE_INTLIT3I(256));
+	ITHARE_KSCOPE_CALL3(ChaCha_set_iv)(&ctx, iv.arr, ITHARE_KSCOPE_INTNULLPTR);
 	assert(tv->len <= 64);
-	ITHARE_KSCOPE_INT3(uint8_t) in[64];
+	/*ITHARE_KSCOPE_INT3(uint8_t) in[64];
 	for (size_t i = 0; i < tv->len; ++i)
-		in[i] = in0[i];
+		in[i] = in0[i];*/
+	auto in = ITHARE_KSCOPE_INT_ARR_TO_KSCOPE_INT3X(64,in0,tv->len);
 	ITHARE_KSCOPE_INT3(uint8_t) out[64];
-	ITHARE_KSCOPE_CALL3(ChaCha)(&ctx, out, in, tv->len);
-	for (size_t i = 0; i < tv->len; ++i)
-		out0[i] = out[i];
+	ITHARE_KSCOPE_CALL3(ChaCha)(&ctx, out, in.arr, ITHARE_KSCOPE_INT3(size_t)(tv->len));
+	/*for (size_t i = 0; i < tv->len; ++i)
+		out0[i] = out[i];*/
+	ithare::kscope::kscope_copyarr(out0,out,tv->len);
 }
 
 /* ChaCha20 with partial writes using the Chacha interface. */
@@ -264,15 +290,18 @@ chacha_ctx_partial_test(const chacha_tv* tv, uint8_t* out0, uint8_t* in0)
 	ITHARE_KSCOPE_KSCOPECLASS(ChaCha_ctx) ctx;
 	size_t len, size = 0;
 	assert(tv->len <= 64);
-	ITHARE_KSCOPE_INT3(uint8_t) in1[64];
+	/*ITHARE_KSCOPE_INT3(uint8_t) in1[64];
 	for (size_t i = 0; i < tv->len; ++i)
-		in1[i] = in0[i];
-	ITHARE_KSCOPE_PTR_OF_SAME_TYPE_AS(in1) in = in1;
+		in1[i] = in0[i];*/
+	auto in1 = ITHARE_KSCOPE_INT_ARR_TO_KSCOPE_INT3X(64,in0,tv->len);
+	ITHARE_KSCOPE_PTR_OF_SAME_TYPE_AS(in1.arr) in = in1.arr;
 	ITHARE_KSCOPE_INT3(uint8_t) out1[64];
 	ITHARE_KSCOPE_PTR_OF_SAME_TYPE_AS(out1) out = out1;
 
-	ITHARE_KSCOPE_CALL3(ChaCha_set_key)(&ctx, tv->key, ITHARE_KSCOPE_INTLIT3I(256));
-	ITHARE_KSCOPE_CALL3(ChaCha_set_iv)(&ctx, tv->iv, ITHARE_KSCOPE_INTNULLPTR);
+	auto key = ITHARE_KSCOPE_INT_ARR_TO_KSCOPE_INT3(tv->key);
+	auto iv = ITHARE_KSCOPE_INT_ARR_TO_KSCOPE_INT3(tv->iv);
+	ITHARE_KSCOPE_CALL3(ChaCha_set_key)(&ctx, key.arr, ITHARE_KSCOPE_INTLIT3I(256));
+	ITHARE_KSCOPE_CALL3(ChaCha_set_iv)(&ctx, iv.arr, ITHARE_KSCOPE_INTNULLPTR);
 	assert(tv->len > 0);
 	len = tv->len - 1;
 	while (len > 1) {
@@ -283,8 +312,9 @@ chacha_ctx_partial_test(const chacha_tv* tv, uint8_t* out0, uint8_t* in0)
 		len -= size;
 	}
 	ITHARE_KSCOPE_CALL3(ChaCha)(&ctx, out, in, ITHARE_KSCOPE_INT3(size_t)(len + 1));
-	for (size_t i = 0; i < tv->len; ++i)
-		out0[i] = out1[i];
+	/*for (size_t i = 0; i < tv->len; ++i)
+		out0[i] = out1[i];*/
+	ithare::kscope::kscope_copyarr(out0,out1,tv->len);
 }
 
 /* ChaCha20 with single byte writes using the Chacha interface. */
@@ -293,20 +323,52 @@ chacha_ctx_single_test(const chacha_tv *tv, uint8_t* out0, uint8_t* in0)
 {
 	ITHARE_KSCOPE_KSCOPECLASS(ChaCha_ctx) ctx;
 	assert(tv->len <= 64);
-	ITHARE_KSCOPE_INT3(uint8_t) in[64];
+	/*ITHARE_KSCOPE_INT3(uint8_t) in[64];
 	for (size_t i = 0; i < tv->len; ++i)
-		in[i] = in0[i];
+		in[i] = in0[i];*/
+	auto in = ITHARE_KSCOPE_INT_ARR_TO_KSCOPE_INT3X(64,in0,tv->len);
 
-	ITHARE_KSCOPE_CALL3(ChaCha_set_key)(&ctx, tv->key, ITHARE_KSCOPE_INTLIT3I(256));
-	ITHARE_KSCOPE_CALL3(ChaCha_set_iv)(&ctx, tv->iv, ITHARE_KSCOPE_INTNULLPTR);
+	auto key = ITHARE_KSCOPE_INT_ARR_TO_KSCOPE_INT3(tv->key);
+	auto iv = ITHARE_KSCOPE_INT_ARR_TO_KSCOPE_INT3(tv->iv);
+	ITHARE_KSCOPE_CALL3(ChaCha_set_key)(&ctx, key.arr, ITHARE_KSCOPE_INTLIT3I(256));
+	ITHARE_KSCOPE_CALL3(ChaCha_set_iv)(&ctx, iv.arr, ITHARE_KSCOPE_INTNULLPTR);
 	ITHARE_KSCOPE_INT3(uint8_t) out[64];
 	for (size_t i = 0; i < tv->len; i++)
-		ITHARE_KSCOPE_CALL3(ChaCha)(&ctx, &out[i], &in[i], ITHARE_KSCOPE_INTLIT3I(1));
-	for (size_t i = 0; i < tv->len; ++i)
-		out0[i] = out[i];
+		ITHARE_KSCOPE_CALL3(ChaCha)(&ctx, &out[i], &in.arr[i], ITHARE_KSCOPE_INTLIT3I(1));
+	/*for (size_t i = 0; i < tv->len; ++i)
+		out0[i] = out[i];*/
+	ithare::kscope::kscope_copyarr(out0,out,tv->len);
 }
 
 const lest::test module[] = {
+    CASE( "compile-time: crypto_chacha_20_test_compile_time()" ) 
+    {//pretty ugly; NOT recommended for practical usage (see KSCOPE_CT_* wrappers below for recommended usage of constexpr crypto)
+			constexpr uint8_t in[64] = {};
+			constexpr uint8_t out[64] = {};
+			constexpr const chacha_tv* tv = &chacha_test_vectors[0];
+			static_assert(tv->len <= sizeof(in));
+			static_assert(tv->len <= sizeof(out));
+			crypto_chacha_20_test_compile_time(tv,tv->out,in);
+	},
+    CASE( "compile-time: KSCOPE_CT_Chacha(); RECOMMENDED way to use compile-time crypto" ) 
+    {
+			constexpr const chacha_tv* tv = &chacha_test_vectors[0];
+#ifdef ITHARE_KSCOPE_WORKAROUND_FOR_GCC_BUG_84463
+			constexpr ChaCha_ctx<> ctx1 = KSCOPE_CT_Chacha_set_key_iv(chacha_test_vectors[0].key,256,chacha_test_vectors[0].iv,nullptr);
+#else
+			constexpr ChaCha_ctx<> ctx1 = KSCOPE_CT_Chacha_set_key_iv(tv->key,256,tv->iv,nullptr);
+#endif
+			constexpr uint8_t in[64] = {};
+			static_assert(tv->len <= sizeof(in));
+			constexpr auto encrypted1 = KSCOPE_CT_Chacha(ctx1,in);
+			constexpr ithare::kscope::KscopeArrayWrapper<uint8_t,64> out = encrypted1.second;
+#ifdef ITHARE_KSCOPE_WORKAROUND_FOR_GCC_BUG_84463
+			static_assert(ithare::kscope::kscope_cmparr(out.arr,chacha_test_vectors[0].out,tv->len) == 0);
+#else
+			static_assert(ithare::kscope::kscope_cmparr(out.arr,tv->out,tv->len) == 0);
+#endif
+			constexpr ChaCha_ctx<> ctx2 = encrypted1.first;
+	},
     CASE( "crypto_chacha_20_test()" ) 
     {
 		for (size_t i = 0; i < N_VECTORS; i++) {

@@ -38,6 +38,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define ithare_kscope_kaleidoscoped_ssl_crypto_chacha_h_included
 
 #include "../../../../src/kscope.h"
+#include "../../../kindastd.h"
+#include "../../../nostd.h"
 
 namespace ithare { namespace kscope { namespace ssl {
 
@@ -60,11 +62,20 @@ struct ChaCha_ctx {
 	ITHARE_KSCOPE_CINT(uint8_t) ks[CHACHA_BLOCKLEN];
 	ITHARE_KSCOPE_CINT(uint8_t) unused;
 
-	constexpr ITHARE_KSCOPE_FORCEINLINE ChaCha_ctx() {//to enforce force-inline
+	constexpr ITHARE_KSCOPE_FORCEINLINE ChaCha_ctx() 
+		: input{}, ks{}, unused{} {//more-or-less equivalent to default, declared to enforce force-inline
 	}
-	constexpr ITHARE_KSCOPE_FORCEINLINE ChaCha_ctx(const ChaCha_ctx&) = delete;
+	constexpr ITHARE_KSCOPE_FORCEINLINE ChaCha_ctx(const ChaCha_ctx& other) { //equivalent to default, declared to enforce force-inline 
+		kscope_copy(other.input,other.input+16,input);
+		kscope_copy(other.ks,other.ks+CHACHA_BLOCKLEN,ks);
+		unused = other.unused;
+	}
 	constexpr ITHARE_KSCOPE_FORCEINLINE ChaCha_ctx& operator =(const ChaCha_ctx&) = delete;
-	constexpr ITHARE_KSCOPE_FORCEINLINE ChaCha_ctx(const ChaCha_ctx&&) = delete;
+	constexpr ITHARE_KSCOPE_FORCEINLINE ChaCha_ctx(const ChaCha_ctx&& other) { //equivalent to default, declared to enforce force-inline 
+		kscope_copy(other.input, other.input + 16, input);
+		kscope_copy(other.ks, other.ks + CHACHA_BLOCKLEN, ks);
+		unused = other.unused;
+	}
 	constexpr ITHARE_KSCOPE_FORCEINLINE ChaCha_ctx& operator =(const ChaCha_ctx&&) = delete;
 };
 
@@ -418,6 +429,33 @@ void CRYPTO_chacha_20(ITHARE_KSCOPE_DECLAREPARAM_INT(uint8_t)* out, const ITHARE
 	ITHARE_KSCOPE_FCALL(chacha_encrypt_bytes)(&ctx, in, out, len);
 }
 
+//wrappers for compile-time crypto; feel free to add more along the same lines as necessary
+constexpr ChaCha_ctx<>
+KSCOPE_CT_Chacha_set_key_iv(const uint8_t* key0, int keybits /*128 or 256*/, const uint8_t iv0[8], const uint8_t counter0[8]) {//combining Chacha_set_key() and Chacha_set_iv() to reduce number of constexpr vars for the user. If necessary - can be split back.
+	ChaCha_ctx<> ctx = {};
+	assert(keybits==128||keybits==256);
+	auto key = kscope_int_arr_to_ct_kscope_int<64 /*maximum value*/>(key0,keybits/8 /*actual value*/);
+	auto iv = kscope_int_arr_to_ct_kscope_int<8>(iv0);
+	ITHARE_KSCOPE_CALL_AS_CONSTEXPR(ChaCha_set_key)(&ctx,key.arr, ITHARE_KSCOPE_INT0C(int)(keybits));
+	if(counter0==nullptr)
+		ITHARE_KSCOPE_CALL_AS_CONSTEXPR(ChaCha_set_iv)(&ctx,iv.arr,ITHARE_KSCOPE_INTNULLPTR);
+	else {
+		auto counter = kscope_int_arr_to_ct_kscope_int<8>(counter0);
+		ITHARE_KSCOPE_CALL_AS_CONSTEXPR(ChaCha_set_iv)(&ctx,iv.arr,counter.arr);
+	}
+	return ctx;
+}
+
+template<size_t N>
+constexpr std::pair<ChaCha_ctx<>,KscopeArrayWrapper<uint8_t,N>>
+KSCOPE_CT_Chacha(ChaCha_ctx<> ctx, const uint8_t (&in0)[N]) {
+	auto in = kscope_int_arr_to_ct_kscope_int(in0);
+	ITHARE_KSCOPE_INT0C(uint8_t) out[N];
+	ITHARE_KSCOPE_CALL_AS_CONSTEXPR(ChaCha)(&ctx, out, in.arr, ITHARE_KSCOPE_INT0C(size_t)(N));
+	KscopeArrayWrapper<uint8_t,N> ret = {};
+	ithare::kscope::kscope_copyarr(ret.arr,out,N);
+	return std::pair<ChaCha_ctx<>,KscopeArrayWrapper<uint8_t,N>>(ctx,ret);
+}
 
 }}} // namespace ithare::kscope::ssl
 

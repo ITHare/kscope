@@ -33,18 +33,19 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef ithare_kscope_injection_h_included
 #define ithare_kscope_injection_h_included
 
-//NOT intended to be #included directly
+//NOT intended to be #included directly (except within extension)
 //  #include ../kscope.h instead
 
 #include "kscope_common.h"
 #include "kscope_prng.h"
 
 //IMPORTANT: principles for cross-platform kaleidoscopes:
-//  Any platform-specific injections MUST either:
-//    - have NON-platform specific calculations for probabilities across ALL the platforms 
+//  We DO want cross-platform kaleidoscopes to be IDENTICAL across the platforms (given the same ITHARE_KSCOPE_SEED)
+//  To achieve it, all platform-specific injections MUST:
+//    - EITHER have NON-platform specific calculations for probabilities across ALL the platforms 
 //        - this includes KscopeDescriptors in *_descr, AND all the calculations within the injection itself 
 //        - however, they MAY have different implementations  
-//    - be disabled whenever InjectionRequirements::cross_platform_only flag is set
+//    - OR be disabled whenever InjectionRequirements::cross_platform_only flag is set
 //  The same MUST stand for any 64-bit-specific injections
 
 #ifdef ITHARE_KSCOPE_SEED
@@ -54,15 +55,15 @@ namespace ithare {
 
 #ifdef ITHARE_KSCOPE_DBG_RUNTIME_CHECKS
 #define ITHARE_KSCOPE_DBG_ASSERT_SURJECTION_RECURSIVE(where,x,y) do {\
-			if (surjection<seed,kscope_flag_is_constexpr>(y) != x) {\
-				std::cout << "DBG_ASSERT_SURJECTION_RECURSIVE FAILED @" << where << ": injection(" << x << ")=" << y << " but surjection(" << y << ") = " << surjection<seed,kscope_flag_is_constexpr>(y) << " != " << x << std::endl; \
+			if (surjection<seed,flags>(y) != x) {\
+				std::cout << "DBG_ASSERT_SURJECTION_RECURSIVE FAILED @" << where << ": injection(" << x << ")=" << y << " but surjection(" << y << ") = " << surjection<seed,flags>(y) << " != " << x << std::endl; \
 				dbg_print(); \
 				abort(); \
 			}\
 		} while(false)
 #define ITHARE_KSCOPE_DBG_ASSERT_SURJECTION_LOCAL(where,x,y) do {\
-			if (local_surjection<seed,kscope_flag_is_constexpr>(y) != x) {\
-				std::cout << "DBG_ASSERT_SURJECTION_LOCAL FAILED @" << where << ": local_injection(" << x << ")=" << y << " but local_surjection(" << y << ") = " << local_surjection<seed,kscope_flag_is_constexpr>(y) << " != " << x << std::endl; \
+			if (local_surjection<seed,flags>(y) != x) {\
+				std::cout << "DBG_ASSERT_SURJECTION_LOCAL FAILED @" << where << ": local_injection(" << x << ")=" << y << " but local_surjection(" << y << ") = " << local_surjection<seed,flags>(y) << " != " << x << std::endl; \
 				dbg_print(); \
 				abort(); \
 			}\
@@ -110,39 +111,44 @@ namespace ithare {
 		}
 
 		struct KscopeDescriptor {
-			bool is_recursive;//recursive ones have priority
+			static constexpr uint32_t flag_is_last_resort = 0x01;
+			
 			KSCOPECYCLES min_cycles;
 			uint32_t weight;
+			uint32_t flags;
 
-			constexpr KscopeDescriptor(bool is_recursive_, KSCOPECYCLES min_cycles_, uint32_t weight_)
-				: is_recursive(is_recursive_), min_cycles(min_cycles_), weight(weight_) {
+			constexpr KscopeDescriptor(KSCOPECYCLES min_cycles_, uint32_t weight_,uint32_t flags_=0)
+				: min_cycles(min_cycles_), weight(weight_), flags(flags_) {
+			}
+			constexpr KscopeDescriptor(std::nullptr_t)
+				: min_cycles(0), weight(0), flags(0) {
 			}
 		};
 
 		template<ITHARE_KSCOPE_SEEDTPARAM seed, size_t N>
 		constexpr size_t kscope_random_choice_from_list(KSCOPECYCLES cycles, const KscopeDescriptor (&descr)[N], size_t exclude_version = size_t(-1)) {
 			//returns index in descr
-			size_t nr_weights[N] = {};
-			size_t r_weights[N] = {};
-			size_t sum_r = 0;
-			size_t sum_nr = 0;
+			size_t weights[N] = {};
+			size_t lr_weights[N] = {};
+			size_t sum = 0;
+			size_t lr_sum = 0;
 			for (size_t i = 0; i < N; ++i) {
 				if (i != exclude_version && cycles >= descr[i].min_cycles) {
-					if (descr[i].is_recursive) {
-						r_weights[i] = descr[i].weight;
-						sum_r += r_weights[i];
+					if ((descr[i].flags&KscopeDescriptor::flag_is_last_resort)==0) {
+						weights[i] = descr[i].weight;
+						sum += weights[i];
 					}
 					else {
-						nr_weights[i] = descr[i].weight;
-						sum_nr += nr_weights[i];
+						lr_weights[i] = descr[i].weight;
+						lr_sum += lr_weights[i];
 					}
 				}
 			}
-			if (sum_r)
-				return kscope_random_from_list<seed>(r_weights);
+			if (sum)
+				return kscope_random_from_list<seed>(weights);
 			else {
-				assert(sum_nr > 0);
-				return kscope_random_from_list<seed>(nr_weights);
+				assert(lr_sum > 0);
+				return kscope_random_from_list<seed>(lr_weights);
 			}
 		}
 
@@ -175,9 +181,9 @@ namespace ithare {
 			using TT = typename KscopeTraits<T>::construct_from_type;
 			for (uint32_t modifier = 1;;modifier+=2) {
 				uint64_t ret = 0;
-				if constexpr(KscopeTraits<T>::nbits <= 32)
-					ret = ITHARE_KSCOPE_RANDOM_UINT32(seed,modifier);
-				else
+				//if constexpr(KscopeTraits<T>::nbits <= 32)
+				//	ret = ITHARE_KSCOPE_RANDOM_UINT32(seed,modifier);
+				//else
 					ret = (uint64_t(ITHARE_KSCOPE_RANDOM_UINT32(seed,modifier)) << 32) | ITHARE_KSCOPE_RANDOM_UINT32(seed,modifier+1);
 				if(upper_bound!= 0) {
 					ret %= upper_bound;
@@ -216,6 +222,20 @@ namespace ithare {
 	template <size_t which, class T, class Context, class InjectionRequirements, ITHARE_KSCOPE_SEEDTPARAM seed, KSCOPECYCLES cycles>
 	class KscopeInjectionVersion;
 
+	//KscopeSimpleInjectionHelper
+	//currently used only in extensions, TODO: use where applicable in this file
+	template<class Context>
+	struct KscopeSimpleInjectionHelper {
+		static constexpr KSCOPECYCLES descriptor_own_min_cycles(KSCOPECYCLES own_min_injection_cycles,KSCOPECYCLES own_min_surjection_cycles) {
+			return Context::context_cycles + Context::calc_cycles(own_min_injection_cycles, own_min_surjection_cycles); 
+		}
+		static constexpr KSCOPECYCLES recursive_injection_cycles(KSCOPECYCLES cycles, KSCOPECYCLES own_min_cycles) {
+			KSCOPECYCLES availCycles = cycles - own_min_cycles;
+			assert(availCycles >= 0);
+			return availCycles+Context::context_cycles;
+		}
+	};
+
 	//version 0: identity
 	template<class Context>
 	struct KscopeInjectionVersion0Descr {
@@ -224,7 +244,7 @@ namespace ithare {
 		static constexpr KSCOPECYCLES own_min_injection_cycles = 0;
 		static constexpr KSCOPECYCLES own_min_surjection_cycles = 0;
 		static constexpr KSCOPECYCLES own_min_cycles = Context::context_cycles + Context::calc_cycles(own_min_injection_cycles, own_min_surjection_cycles);
-		static constexpr KscopeDescriptor descr = KscopeDescriptor(false, own_min_cycles, 1);
+		static constexpr KscopeDescriptor descr = KscopeDescriptor(own_min_cycles, 1,KscopeDescriptor::flag_is_last_resort);
 	};
 
 	template <class T, class Context, class InjectionRequirements, ITHARE_KSCOPE_SEEDTPARAM seed, KSCOPECYCLES cycles>
@@ -236,9 +256,9 @@ namespace ithare {
 
 	public:
 		using return_type = T;
-		template<ITHARE_KSCOPE_SEEDTPARAM seed2>
+		template<ITHARE_KSCOPE_SEEDTPARAM seed2,KSCOPEFLAGS flags>
 		ITHARE_KSCOPE_FORCEINLINE constexpr static return_type injection(T x) {
-			return_type ret = Context::template final_injection<seed2>(x);
+			return_type ret = Context::template final_injection<seed2,flags>(x);
 			//ITHARE_KSCOPE_DBG_ASSERT_SURJECTION_RECURSIVE("<0>", x, ret);
 			return ret;
 		}
@@ -263,7 +283,7 @@ namespace ithare {
 		static constexpr KSCOPECYCLES own_min_injection_cycles = 1;
 		static constexpr KSCOPECYCLES own_min_surjection_cycles = 1;
 		static constexpr KSCOPECYCLES own_min_cycles = Context::context_cycles + Context::calc_cycles(own_min_injection_cycles, own_min_surjection_cycles);
-		static constexpr KscopeDescriptor descr = KscopeDescriptor(true, own_min_cycles, 100);
+		static constexpr KscopeDescriptor descr = KscopeDescriptor(own_min_cycles, 100);
 	};
 
 	template <class T, class Context, class InjectionRequirements, ITHARE_KSCOPE_SEEDTPARAM seed, KSCOPECYCLES cycles>
@@ -283,7 +303,7 @@ namespace ithare {
 		static constexpr bool neg = C == 0 ? true : ITHARE_KSCOPE_RANDOM(seed, 3, 2) == 0;
 		//using ST = typename Traits::signed_type;
 
-		template<ITHARE_KSCOPE_SEEDTPARAM seedc>
+		template<ITHARE_KSCOPE_SEEDTPARAM seedc,KSCOPEFLAGS flags>
 		ITHARE_KSCOPE_FORCEINLINE constexpr static T local_injection(T x) {
 			if constexpr(neg) {
 				return -x + C;//yes, unary minus to unsigned
@@ -292,13 +312,13 @@ namespace ithare {
 				return x + C;
 			}
 		}
-		template<ITHARE_KSCOPE_SEEDTPARAM seed2>
+		template<ITHARE_KSCOPE_SEEDTPARAM seed2,KSCOPEFLAGS flags>
 		ITHARE_KSCOPE_FORCEINLINE constexpr static return_type injection(T x) {
 			ITHARE_KSCOPE_DECLAREPRNG_INFUNC seedc = ITHARE_KSCOPE_COMBINED_PRNG(seed, seed2);
-			T y = local_injection<seedc>(x);
+			T y = local_injection<seedc,flags>(x);
 			ITHARE_KSCOPE_DBG_ASSERT_SURJECTION_LOCAL("<1>", x, y);
 
-			return_type ret = RecursiveInjection::template injection<seedc>(y);
+			return_type ret = RecursiveInjection::template injection<seedc,flags>(y);
 			//ITHARE_KSCOPE_DBG_ASSERT_SURJECTION_RECURSIVE("<1>/a", x, ret);
 			return ret;
 		}
@@ -330,26 +350,26 @@ namespace ithare {
 				if constexpr(neg) {
 					return_type ret = RecursiveInjection::template injected_add_mod_max_value_ex<seedc>(base, -x);
 									//mutually exclusive with all the other non-CHECK calls to injection<> => no need to randomize seedc further 
-					ITHARE_KSCOPE_DBG_CHECK_SHORTCUT("<1>/-/r",ret,RecursiveInjection::template injection<seedc>(RecursiveInjection::template surjection<seedc,flags>(base) - x));
-					ITHARE_KSCOPE_DBG_CHECK_SHORTCUT("<1>/-/0", ret, injection<seedc>(surjection<seedc,flags>(base) + x));
+					ITHARE_KSCOPE_DBG_CHECK_SHORTCUT("<1>/-/r",ret,(RecursiveInjection::template injection<seedc,flags>(RecursiveInjection::template surjection<seedc,flags>(base) - x)));
+					ITHARE_KSCOPE_DBG_CHECK_SHORTCUT("<1>/-/0", ret, (injection<seedc,flags>(surjection<seedc,flags>(base) + x)));
 					return ret;
 				}
 				else {
 					return_type ret = RecursiveInjection::template injected_add_mod_max_value_ex<seedc>(base, x);
-					ITHARE_KSCOPE_DBG_CHECK_SHORTCUT("<1>/+/r",ret,RecursiveInjection::template injection<seedc>(RecursiveInjection::template surjection<seedc,flags>(base) + x));
-					ITHARE_KSCOPE_DBG_CHECK_SHORTCUT("<1>/+/0", ret, injection<seedc>(surjection<seedc,flags>(base) + x));
+					ITHARE_KSCOPE_DBG_CHECK_SHORTCUT("<1>/+/r",ret,(RecursiveInjection::template injection<seedc,flags>(RecursiveInjection::template surjection<seedc,flags>(base) + x)));
+					ITHARE_KSCOPE_DBG_CHECK_SHORTCUT("<1>/+/0", ret, (injection<seedc,flags>(surjection<seedc,flags>(base) + x)));
 					return ret;
 				}
 			}
 			else {
 				if constexpr(neg) {
-					return_type ret = RecursiveInjection::template injection<seedc>(RecursiveInjection::template surjection<seedc,flags>(base) - x);
-					ITHARE_KSCOPE_DBG_CHECK_SHORTCUT("<1>/-/1", ret, injection<seedc>(surjection<seedc,flags>(base) + x));
+					return_type ret = RecursiveInjection::template injection<seedc,flags>(RecursiveInjection::template surjection<seedc,flags>(base) - x);
+					ITHARE_KSCOPE_DBG_CHECK_SHORTCUT("<1>/-/1", ret, (injection<seedc,flags>(surjection<seedc,flags>(base) + x)));
 					return ret;
 				}
 				else {
-					return_type ret = RecursiveInjection::template injection<seedc>(RecursiveInjection::template surjection<seedc,flags>(base) + x);
-					ITHARE_KSCOPE_DBG_CHECK_SHORTCUT("<1>/+/1", ret, injection<seedc>(surjection<seedc,flags>(base)+x));
+					return_type ret = RecursiveInjection::template injection<seedc,flags>(RecursiveInjection::template surjection<seedc,flags>(base) + x);
+					ITHARE_KSCOPE_DBG_CHECK_SHORTCUT("<1>/+/1", ret, (injection<seedc,flags>(surjection<seedc,flags>(base)+x)));
 					return ret;
 				}
 			}
@@ -368,7 +388,7 @@ namespace ithare {
 	struct KscopeRandomizedNonReversibleFunctionVersion;
 
 	struct KscopeRandomizedNonReversibleFunctionVersion0Descr {
-		static constexpr KscopeDescriptor descr = KscopeDescriptor(false, 0, 100);
+		static constexpr KscopeDescriptor descr = KscopeDescriptor(0, 100,KscopeDescriptor::flag_is_last_resort);
 	};
 
 	template<class T, ITHARE_KSCOPE_SEEDTPARAM seed, KSCOPECYCLES cycles>
@@ -385,7 +405,7 @@ namespace ithare {
 	};
 
 	struct KscopeRandomizedNonReversibleFunctionVersion1Descr {
-		static constexpr KscopeDescriptor descr = KscopeDescriptor(true, 3, 100);
+		static constexpr KscopeDescriptor descr = KscopeDescriptor(3, 100);
 	};
 
 	template<class T, ITHARE_KSCOPE_SEEDTPARAM seed, KSCOPECYCLES cycles>
@@ -403,7 +423,7 @@ namespace ithare {
 	};
 
 	struct KscopeRandomizedNonReversibleFunctionVersion2Descr {
-		static constexpr KscopeDescriptor descr = KscopeDescriptor(true, 7, 100);
+		static constexpr KscopeDescriptor descr = KscopeDescriptor(7, 100);
 	};
 
 	template<class T, ITHARE_KSCOPE_SEEDTPARAM seed, KSCOPECYCLES cycles>
@@ -462,8 +482,8 @@ namespace ithare {
 		static constexpr KSCOPECYCLES own_min_cycles = Context::context_cycles + Context::calc_cycles(own_min_injection_cycles, own_min_surjection_cycles);
 		static constexpr KscopeDescriptor descr =
 			KscopeTraits<T>::has_half_type ?
-			KscopeDescriptor(true, own_min_cycles, 100) :
-			KscopeDescriptor(false, 0, 0);
+			KscopeDescriptor(own_min_cycles, 100) :
+			KscopeDescriptor(nullptr);
 	};
 
 	template <class T, class Context, class InjectionRequirements, ITHARE_KSCOPE_SEEDTPARAM seed, KSCOPECYCLES cycles>
@@ -498,19 +518,19 @@ namespace ithare {
 
 		constexpr static int halfTBits = sizeof(halfT) * 8;
 
-		template<ITHARE_KSCOPE_SEEDTPARAM seedc>
+		template<ITHARE_KSCOPE_SEEDTPARAM seedc,KSCOPEFLAGS flags>
 		ITHARE_KSCOPE_FORCEINLINE constexpr static T local_injection(T x) {
 			T lo = x >> halfTBits;
 			//T hi = (x & mask) + f((halfT)lo);
 			T hi = x + f((halfT)lo);
 			return (hi << halfTBits) + lo;
 		}
-		template<ITHARE_KSCOPE_SEEDTPARAM seed2>
+		template<ITHARE_KSCOPE_SEEDTPARAM seed2,KSCOPEFLAGS flags>
 		ITHARE_KSCOPE_FORCEINLINE constexpr static return_type injection(T x) {
 			ITHARE_KSCOPE_DECLAREPRNG_INFUNC seedc = ITHARE_KSCOPE_COMBINED_PRNG(seed, seed2);
-			T y = local_injection<seedc>(x);
+			T y = local_injection<seedc,flags>(x);
 			ITHARE_KSCOPE_DBG_ASSERT_SURJECTION_LOCAL("<2>", x, y);
-			return_type ret = RecursiveInjection::template injection<seedc>(y);
+			return_type ret = RecursiveInjection::template injection<seedc,flags>(y);
 			//ITHARE_KSCOPE_DBG_ASSERT_SURJECTION_RECURSIVE("<2>", x, ret);
 			return ret;
 		}
@@ -555,8 +575,8 @@ namespace ithare {
 		static constexpr KSCOPECYCLES own_min_cycles = Context::context_cycles + Context::calc_cycles(own_min_injection_cycles, own_min_surjection_cycles);
 		static constexpr KscopeDescriptor descr =
 			KscopeTraits<T>::has_half_type ?
-			KscopeDescriptor(true, own_min_cycles, 100) :
-			KscopeDescriptor(false, 0, 0);
+			KscopeDescriptor(own_min_cycles, 100) :
+			KscopeDescriptor(nullptr);
 	};
 
 	template <class T, class Context, class InjectionRequirements, ITHARE_KSCOPE_SEEDTPARAM seed, KSCOPECYCLES cycles>
@@ -607,22 +627,22 @@ namespace ithare {
 		using HiInjection = KscopeInjection<halfT, HiContext, LoHiInjectionRequirements,ITHARE_KSCOPE_NEW_PRNG(seed, 7), cycles_hiInj+HiContext::context_cycles>;
 		static_assert(sizeof(typename HiInjection::return_type) == sizeof(halfT));//bijections ONLY
 
-		template<ITHARE_KSCOPE_SEEDTPARAM seedc>
+		template<ITHARE_KSCOPE_SEEDTPARAM seedc,KSCOPEFLAGS flags>
 		ITHARE_KSCOPE_FORCEINLINE constexpr static T local_injection(T x) {
 			halfT lo = x >> halfTBits;
-			typename LoInjection::return_type lo1 = LoInjection::template injection<ITHARE_KSCOPE_NEW_PRNG(seedc,1)>(lo);
+			typename LoInjection::return_type lo1 = LoInjection::template injection<ITHARE_KSCOPE_NEW_PRNG(seedc,1),flags>(lo);
 			lo = halfT(lo1);// *reinterpret_cast<halfT*>(&lo1);//relies on static_assert(sizeof(return_type)==sizeof(halfT)) above
 			halfT hi = (halfT)x;
-			typename HiInjection::return_type hi1 = HiInjection::template injection<ITHARE_KSCOPE_NEW_PRNG(seedc,2)>(hi);
+			typename HiInjection::return_type hi1 = HiInjection::template injection<ITHARE_KSCOPE_NEW_PRNG(seedc,2),flags>(hi);
 			hi = halfT(hi1);// *reinterpret_cast<halfT*>(&hi1);//relies on static_assert(sizeof(return_type)==sizeof(halfT)) above
 			return (T(hi) << halfTBits) + T(lo);
 		}
-		template<ITHARE_KSCOPE_SEEDTPARAM seed2>
+		template<ITHARE_KSCOPE_SEEDTPARAM seed2,KSCOPEFLAGS flags>
 		ITHARE_KSCOPE_FORCEINLINE constexpr static return_type injection(T x) {
 			ITHARE_KSCOPE_DECLAREPRNG_INFUNC seedc = ITHARE_KSCOPE_COMBINED_PRNG(seed, seed2);
-			T y = local_injection<seedc>(x);
+			T y = local_injection<seedc,flags>(x);
 			ITHARE_KSCOPE_DBG_ASSERT_SURJECTION_LOCAL("<3>", x, y);
-			return_type ret = RecursiveInjection::template injection<ITHARE_KSCOPE_NEW_PRNG(seedc, 3)>(y);
+			return_type ret = RecursiveInjection::template injection<ITHARE_KSCOPE_NEW_PRNG(seedc, 3),flags>(y);
 			//ITHARE_KSCOPE_DBG_ASSERT_SURJECTION_RECURSIVE("<3>", x, ret);
 			return ret;
 		}
@@ -709,7 +729,7 @@ namespace ithare {
 		static constexpr KSCOPECYCLES own_min_injection_cycles = 3 + Context::literal_cycles;
 		static constexpr KSCOPECYCLES own_min_surjection_cycles = 3;
 		static constexpr KSCOPECYCLES own_min_cycles = Context::context_cycles + Context::calc_cycles(own_min_injection_cycles, own_min_surjection_cycles);
-		static constexpr KscopeDescriptor descr = KscopeDescriptor(true, own_min_cycles, 100);
+		static constexpr KscopeDescriptor descr = KscopeDescriptor(own_min_cycles, 100);
 	};
 
 	template <class T, class Context, class InjectionRequirements, ITHARE_KSCOPE_SEEDTPARAM seed, KSCOPECYCLES cycles>
@@ -734,19 +754,19 @@ namespace ithare {
 		using literal = typename Context::template literal<typename Traits::literal_type, CINV, ITHARE_KSCOPE_NEW_PRNG(seed, 3)>::type;
 			//using CINV in injection to hide literals a bit better...
 
-		template<ITHARE_KSCOPE_SEEDTPARAM seedc>
+		template<ITHARE_KSCOPE_SEEDTPARAM seedc,KSCOPEFLAGS flags>
 		ITHARE_KSCOPE_FORCEINLINE constexpr static T local_injection(T x) {
 			auto lit = literal();
 			ITHARE_KSCOPE_DBG_CHECK_LITERAL("<4>", lit, CINV0);
 			T y = typename Traits::UintT(x) * typename Traits::UintT(lit.value());
 			return y;
 		}
-		template<ITHARE_KSCOPE_SEEDTPARAM seed2>
+		template<ITHARE_KSCOPE_SEEDTPARAM seed2,KSCOPEFLAGS flags>
 		ITHARE_KSCOPE_FORCEINLINE constexpr static return_type injection(T x) {
 			ITHARE_KSCOPE_DECLAREPRNG_INFUNC seedc = ITHARE_KSCOPE_COMBINED_PRNG(seed, seed2);
-			T y = local_injection<seedc>(x);
+			T y = local_injection<seedc,flags>(x);
 			ITHARE_KSCOPE_DBG_ASSERT_SURJECTION_LOCAL("<4>", x, y);
-			return_type ret = RecursiveInjection::template injection<seedc>(y);
+			return_type ret = RecursiveInjection::template injection<seedc,flags>(y);
 			//ITHARE_KSCOPE_DBG_ASSERT_SURJECTION_RECURSIVE("<4>", x, ret);
 			return ret;
 		}
@@ -771,15 +791,15 @@ namespace ithare {
 				auto lit = literal();
 				ITHARE_KSCOPE_DBG_CHECK_LITERAL("<4>/0", lit, CINV0);
 				return_type ret = RecursiveInjection::template injected_add_mod_max_value_ex<seedc>(base, x*lit.value());
-				ITHARE_KSCOPE_DBG_CHECK_SHORTCUT("<4>/r", ret, RecursiveInjection::template injection<seedc>(RecursiveInjection::template surjection<seedc,flags>(base) + CINV0*x));
-				ITHARE_KSCOPE_DBG_CHECK_SHORTCUT("<4>/0", ret, injection<seedc>(surjection<seedc,flags>(base) + x));
+				ITHARE_KSCOPE_DBG_CHECK_SHORTCUT("<4>/r", ret, (RecursiveInjection::template injection<seedc,flags>(RecursiveInjection::template surjection<seedc,flags>(base) + CINV0*x)));
+				ITHARE_KSCOPE_DBG_CHECK_SHORTCUT("<4>/0", ret, (injection<seedc,flags>(surjection<seedc,flags>(base) + x)));
 				return ret;
 			}
 			else {
 				auto lit = literal();
 				ITHARE_KSCOPE_DBG_CHECK_LITERAL("<4>/1", lit, CINV0);
-				return_type ret = RecursiveInjection::template injection<seedc>(RecursiveInjection::template surjection<seedc,flags>(base) + lit.value()*x);
-				ITHARE_KSCOPE_DBG_CHECK_SHORTCUT("<4>/1", ret, injection<seedc>(surjection<seedc,flags>(base) + x));
+				return_type ret = (RecursiveInjection::template injection<seedc,flags>(RecursiveInjection::template surjection<seedc,flags>(base) + lit.value()*x));
+				ITHARE_KSCOPE_DBG_CHECK_SHORTCUT("<4>/1", ret, (injection<seedc,flags>(surjection<seedc,flags>(base) + x)));
 				return ret;
 			}
 		}
@@ -803,8 +823,8 @@ namespace ithare {
 		static constexpr KSCOPECYCLES own_min_cycles = 2*Context::context_cycles /* have to allocate context_cycles for BOTH branches */ + Context::calc_cycles(own_min_injection_cycles, own_min_surjection_cycles);
 		static constexpr KscopeDescriptor descr =
 			KscopeTraits<T>::has_half_type ?
-			KscopeDescriptor(true, own_min_cycles, 100) :
-			KscopeDescriptor(false, 0, 0);
+			KscopeDescriptor(own_min_cycles, 100) :
+			KscopeDescriptor(nullptr);
 	};
 
 	template <class T, class Context, class InjectionRequirements, ITHARE_KSCOPE_SEEDTPARAM seed, KSCOPECYCLES cycles>
@@ -860,10 +880,10 @@ namespace ithare {
 				return ( T(hi1) << halfTBits ) + T(lo1);
 			}
 		};
-		template<ITHARE_KSCOPE_SEEDTPARAM seed2>
+		template<ITHARE_KSCOPE_SEEDTPARAM seed2,KSCOPEFLAGS flags>
 		ITHARE_KSCOPE_FORCEINLINE constexpr static return_type injection(T x) {
 			ITHARE_KSCOPE_DECLAREPRNG_INFUNC seedc = ITHARE_KSCOPE_COMBINED_PRNG(seed,seed2);
-			return_type ret{ RecursiveInjectionLo::template injection<ITHARE_KSCOPE_NEW_PRNG(seedc,1)>((halfT)x), RecursiveInjectionHi::template injection<ITHARE_KSCOPE_NEW_PRNG(seedc,2)>(x >> halfTBits) };
+			return_type ret{ RecursiveInjectionLo::template injection<ITHARE_KSCOPE_NEW_PRNG(seedc,1),flags>((halfT)x), RecursiveInjectionHi::template injection<ITHARE_KSCOPE_NEW_PRNG(seedc,2),flags>(x >> halfTBits) };
 			ITHARE_KSCOPE_DBG_ASSERT_SURJECTION_RECURSIVE("<5>", x, ret);//sic! - _ASSERTION_RECURSIVE for version<5,...> (moving to local_injection would be too cumbersome)
 			return ret;
 		}
@@ -896,9 +916,9 @@ namespace ithare {
 		static constexpr KSCOPECYCLES own_min_cycles = 2 * Context::context_cycles /* have to allocate context_cycles for BOTH branches */ + Context::calc_cycles(own_min_injection_cycles, own_min_surjection_cycles);
 		static constexpr KscopeDescriptor descr =
 			!InjectionRequirements::only_bijections && !InjectionRequirements::no_substrate_size_increase && KscopeTraits<T>::nbits >= 2 ?
-			KscopeDescriptor(true, own_min_cycles, 100)
+			KscopeDescriptor(own_min_cycles, 100)
 			: 
-			KscopeDescriptor(false, 0, 0);
+			KscopeDescriptor(nullptr);
 	};
 
 	template <class T, class Context, class InjectionRequirements, ITHARE_KSCOPE_SEEDTPARAM seed, KSCOPECYCLES cycles>
@@ -959,13 +979,13 @@ namespace ithare {
 			}
 		};
 
-		template<ITHARE_KSCOPE_SEEDTPARAM seed2>
+		template<ITHARE_KSCOPE_SEEDTPARAM seed2,KSCOPEFLAGS flags>
 		ITHARE_KSCOPE_FORCEINLINE constexpr static return_type injection(T x) {
 			ITHARE_KSCOPE_DECLAREPRNG_INFUNC seedc = ITHARE_KSCOPE_COMBINED_PRNG(seed,seed2);
 			TypeLo lo = TypeLo(typename TypeLo::T(x));
 			TypeHi hi = TypeHi(typename TypeHi::T(x >> loBits));
-			return_type ret{ RecursiveInjectionLo::template injection<ITHARE_KSCOPE_NEW_PRNG(seedc,1)>(lo),
-				RecursiveInjectionHi::template injection<ITHARE_KSCOPE_NEW_PRNG(seedc,2)>(hi) };
+			return_type ret{ RecursiveInjectionLo::template injection<ITHARE_KSCOPE_NEW_PRNG(seedc,1),flags>(lo),
+				RecursiveInjectionHi::template injection<ITHARE_KSCOPE_NEW_PRNG(seedc,2),flags>(hi) };
 			ITHARE_KSCOPE_DBG_ASSERT_SURJECTION_RECURSIVE("<6>", x, ret);//sic! - _ASSERTION_RECURSIVE for version<6,...> (moving to local_injection would be too cumbersome)
 			return ret;
 		}
