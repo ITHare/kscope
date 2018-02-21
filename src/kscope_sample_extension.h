@@ -159,6 +159,9 @@ namespace ithare { namespace kscope {
 #endif
 	};
 	
+//More injections can go here (numbered ITHARE_KSCOPE_LAST_STOCK_INJECTION+2, ITHARE_KSCOPE_LAST_STOCK_INJECTION+3, ...)
+// DON'T forget to add their descriptors to ITHARE_KSCOPE_ADDITIONAL_INJECTION_DESCRIPTOR_LIST below
+	
 }} //namespace ithare::kscope
 	
 #define ITHARE_KSCOPE_ADDITIONAL_INJECTION_DESCRIPTOR_LIST \
