@@ -2,7 +2,7 @@ Towards our noble goal of making C++17 compilers less buggy using kscope-provide
 the following fields look the most interesting (feel free to make your own suggestions too, below is just a list of 
 the-most-obvious-ideas):
 
-* **running existing .sh/.bat tests in /test/ folder – and be ready to report bugs to respective compiler writers too**. 
+* **running existing randomtest.sh/randomtest.bat tests in /test/ folder – and be ready to report bugs to respective compiler writers too**. 
 To do it – find a box which is not-too-shabby in terms of RAM (at least 4G RAM+4G swap is recommended), 
 then clone the latest master branch of kscope there, and you should be good to go. 
 Running existing tests might help to reveal bugs under:
