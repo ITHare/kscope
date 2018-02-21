@@ -1,8 +1,7 @@
 # kscope
 kscope is a short for kaleidoscope. Essentially - a library which recursively generates randomized code while keeping it 100% equivalent to the original one. Can be used for compiler torture-testing and optimisation testing, and for a few other things too :-).
 
-**The Big Idea(tm) behind kscope project is to make C++17 compilers less buggy (via providing reproducible bug reports).**
-An unusual part of specifically kscope, is that we're using C++17 itself to generate very different (but supposedly-equivalent) code depending on compile-time define -DITHARE_KSCOPE_SEED . A bit of further motivation and some explanations can be found at http://ithare.com/c17-compiler-bug-hunt-very-first-results-12-bugs-reported-3-already-fixed/ .
+**The Big Idea(tm) behind kscope project is to make C++17 compilers less buggy (via providing reproducible bug reports, and pushing respective compiler teams to fix them).** An unusual part of specifically kscope, is that we're using C++17 itself to generate very different (but supposedly-equivalent) code depending on compile-time define -DITHARE_KSCOPE_SEED . A bit of further motivation and some explanations can be found at http://ithare.com/c17-compiler-bug-hunt-very-first-results-12-bugs-reported-3-already-fixed/ .
 
 # List of already-reported bugs
 
