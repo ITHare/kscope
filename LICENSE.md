@@ -5,6 +5,7 @@ any warranties, the list of the licenses for the code adapted from other
 projects, currently includes:
 * public domain
 * 2-Clause BSD License
+* Boost Software License, Version 1.0
 * OpenSSL License
 * SSLeay License
 
