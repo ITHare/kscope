@@ -1,4 +1,4 @@
-Towards our noble goal of making C++17 compilers less buggy using kscope-provided testing, 
+Towards our noble goal of making C++17 compilers less buggy using kscope-provided testing, contributions in 
 the following fields look the most interesting (feel free to make your own suggestions too, below is just a list of 
 the-most-obvious-ideas):
 
