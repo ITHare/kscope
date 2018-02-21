@@ -1,8 +1,8 @@
 IMPORTANT: portions of ithare::kscope project (in particular, those in 
 /kaleidoscoped folder and in /test folder) may include source code licensed 
-under other licenses. Without providing any warranties, to the best of 
-our knowledge, the list of the licenses adapted from other projects, 
-currently includes:
+under other licenses. To the best of our knowledge, and without providing 
+any warranties, the list of the licenses for the code adapted from other 
+projects, currently includes:
 * public domain
 * 2-Clause BSD License
 * OpenSSL License
