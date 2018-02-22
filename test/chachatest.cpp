@@ -2,7 +2,9 @@
 //  adapted from tests/chachatest.c from LibreSSL 2.6.4
 
 #include "lest.hpp"
-#include "../src/kscope_sample_extension.h" //MUST go BEFORE ../src/kscope.h
+#ifdef ITHARE_KSCOPE_EXTENSION
+#include ITHARE_KSCOPE_EXTENSION //MUST go BEFORE ../src/kscope.h
+#endif
 #include "../src/kscope.h"
 #include "../kaleidoscoped/ssl/crypto/chacha/chacha.h"
 #include "../kaleidoscoped/nostd.h"

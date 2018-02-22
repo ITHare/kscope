@@ -50,6 +50,16 @@ std::string file_list(std::string srcDir)  {
 	return ret;
 }
 
+std::string replace_string(std::string subject, std::string search,//adapted from https://stackoverflow.com/a/14678964
+	std::string replace) {
+	size_t pos = 0;
+	while ((pos = subject.find(search, pos)) != std::string::npos) {
+		subject.replace(pos, search.length(), replace);
+		pos += replace.length();
+	}
+	return subject;
+}
+
 #if defined(__APPLE_CC__) || defined(__linux__)
 
 class KscopeTestEnvironment {
@@ -59,11 +69,14 @@ class KscopeTestEnvironment {
 	
 	virtual std::string rootTestFolder() { return  srcDirPrefix + "../"; }
 
+	virtual std::string alwaysDefine() {
+		return "-DITHARE_KSCOPE_EXTENSION=\"../src/kscope_sample_extension.h\"";
+	}
 	virtual std::string buildRelease(std::string defines) {
-		return std::string("$CXX -O3 -DNDEBUG ") + defines + " -o testapp -std=c++1z -lstdc++ -Werror" + file_list(srcDirPrefix + "../");
+		return std::string("$CXX -O3 -DNDEBUG ") + alwaysDefine() + " " + defines + " -o testapp -std=c++1z -lstdc++ -Werror" + file_list(srcDirPrefix + "../");
 	}
 	virtual std::string buildDebug(std::string defines) {
-		return std::string("$CXX ") + defines + " -o testapp -std=c++1z -lstdc++ -Werror" + file_list(srcDirPrefix + "../");
+		return std::string("$CXX ") + alwaysDefine() + " " + defines + " -o testapp -std=c++1z -lstdc++ -Werror" + file_list(srcDirPrefix + "../");
 	}
 	virtual std::string build32option() {
 		return " -m32";
@@ -88,13 +101,18 @@ class KscopeTestEnvironment {
 		}
 		return std::string(buf2);
 	}
-	virtual std::string exitCheck(std::string cmd, bool expectok = true) {
+	virtual std::string exitCheck(std::string cmd_, bool expectok = true) {
+		std::string cmd = replace_string(cmd_,"\"", "\\\"");
 		if( expectok )
 			return std::string("if [ ! $? -eq 0 ]; then\n  echo \"") + cmd + ( "\">failedrandomtest.sh\n  exit 1\nfi");
 		else
 			return std::string("if [ ! $? -ne 0 ]; then\n  echo \"") + cmd + ( "\">failedrandomtest.sh\n  exit 1\nfi");
 	}
-	virtual std::string echo(std::string s,bool highlight=false) {
+	virtual std::string command(std::string cmd) {
+		return replace_string(cmd,"\"", "\\\"");
+	}
+	virtual std::string echo(std::string s_,bool highlight=false) {
+		std::string s = replace_string(s_,"\"", "\\\"");
 		if(highlight)
 			return std::string("echo \"${HIGHLIGHT}")+s+"${NOHIGHLIGHT}\"";	
 		else
@@ -132,23 +150,17 @@ class KscopeTestEnvironment {
 	
 	virtual std::string rootTestFolder() { return  srcDirPrefix + "..\\"; }
 
-	virtual std::string replace_string(std::string subject, std::string search,//adapted from https://stackoverflow.com/a/14678964
-		std::string replace) {
-		size_t pos = 0;
-		while ((pos = subject.find(search, pos)) != std::string::npos) {
-			subject.replace(pos, search.length(), replace);
-			pos += replace.length();
-		}
-		return subject;
+	virtual std::string alwaysDefine() {
+		return "/DITHARE_KSCOPE_EXTENSION=../src/kscope_sample_extension.h";
 	}
 	virtual std::string buildRelease(std::string defines_) {
 		std::string defines = replace_string(defines_, " -D", " /D");
-		return std::string("cl /permissive- /GS /GL /W3 /Gy /Zc:wchar_t /Gm- /O2 /sdl /Zc:inline /fp:precise /DNDEBUG /D_CONSOLE /D_UNICODE /DUNICODE /errorReport:prompt /WX /Zc:forScope /GR- /Gd /Oi /MT /EHsc /nologo /diagnostics:classic /std:c++17 /cgthreads1 /INCREMENTAL:NO") + defines + file_list(srcDirPrefix + "..\\");
+		return std::string("cl /permissive- /GS /GL /W3 /Gy /Zc:wchar_t /Gm- /O2 /sdl /Zc:inline /fp:precise /DNDEBUG /D_CONSOLE /D_UNICODE /DUNICODE /errorReport:prompt /WX /Zc:forScope /GR- /Gd /Oi /MT /EHsc /nologo /diagnostics:classic /std:c++17 /cgthreads1 /INCREMENTAL:NO") + defines + " " + alwaysDefine() + file_list(srcDirPrefix + "..\\");
 			//string is copy-pasted from Rel-NoPDB config with manually-added /cgthreads1 /INCREMENTAL:NO, and /WX- replaced with /WX
 	}
 	virtual std::string buildDebug(std::string defines_) {
 		std::string defines = replace_string(defines_, " -D", " /D");
-		return std::string("cl /permissive- /GS /W3 /Zc:wchar_t /ZI /Gm /Od /sdl /Zc:inline /fp:precise /D_DEBUG /D_CONSOLE /D_UNICODE /DUNICODE /errorReport:prompt /WX /Zc:forScope /RTC1 /Gd /MDd /EHsc /nologo /diagnostics:classic /std:c++17 /cgthreads1 /INCREMENTAL:NO /bigobj") + defines + file_list(srcDirPrefix + "..\\");
+		return std::string("cl /permissive- /GS /W3 /Zc:wchar_t /ZI /Gm /Od /sdl /Zc:inline /fp:precise /D_DEBUG /D_CONSOLE /D_UNICODE /DUNICODE /errorReport:prompt /WX /Zc:forScope /RTC1 /Gd /MDd /EHsc /nologo /diagnostics:classic /std:c++17 /cgthreads1 /INCREMENTAL:NO /bigobj") + defines + " " + alwaysDefine() + file_list(srcDirPrefix + "..\\");
 			//string is copy-pasted from Debug config with manually-added /cgthreads1 /INCREMENTAL:NO /bigobj, and /WX- replaced with /WX
 	}
 	virtual std::string build32option() {
@@ -179,7 +191,8 @@ class KscopeTestEnvironment {
 		}
 		return std::string(buf2);
 	}
-	virtual std::string exitCheck(std::string cmd,bool expectok = true) {
+	virtual std::string exitCheck(std::string cmd_,bool expectok = true) {
+		std::string cmd = replace_string(cmd_,"\"", "\\\"");
 		static int nextlabel = 1;
 		if (expectok) {
 
@@ -197,7 +210,11 @@ class KscopeTestEnvironment {
 			return ret;
 		}
 	}
-	virtual std::string echo(std::string s,bool highlight=false) {
+	virtual std::string command(std::string cmd) {
+		return replace_string(cmd,"\"", "\\\"");
+	}
+	virtual std::string echo(std::string s_,bool highlight=false) {
+		std::string s = replace_string(s_,"\"", "\\\"");
 		return std::string("ECHO ") + replace_string(s, ">", "^>");
 	}
 	virtual std::string run(std::string redirect) {
@@ -247,7 +264,7 @@ class KscopeTestGenerator {
 
 	virtual void issueCommand(std::string cmd) {
 		std::cout << kenv->echo(cmd) << std::endl;
-		std::cout << cmd << std::endl;
+		std::cout << kenv->command(cmd) << std::endl;
 	}
 
 	virtual void buildCheckRunCheck(std::string cmd,KscopeTestEnvironment::Flags flags,write_output wo) {
