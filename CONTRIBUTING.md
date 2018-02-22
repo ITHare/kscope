@@ -12,6 +12,8 @@ Running existing tests might help to reveal bugs under:
     support such other-compilers; such patches are ESPECIALLY welcome
   * *versions* of compilers other-than-{Clang5,GCC7.2,MSVC from VS 15.5.5) (while newer versions are supposed to work, in practice you never know)
     * of special interest are regressions in top-of-the-trunk compilers
+  * compiler options different from those currently used
+    * will require hacking test/randomtestgen.cpp - and such patches are ESPECIALLY welcome.
   * platforms other x86/x64 (in theory, should be ok – but the less common the platform is, the more 
     chance that subtle codegen bugs in it are sitting there for ages :-( ).
   * operating systems other than Linux/Mac OS X/Windows
