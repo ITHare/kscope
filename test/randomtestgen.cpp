@@ -151,7 +151,7 @@ class KscopeTestEnvironment {
 	virtual std::string rootTestFolder() { return  srcDirPrefix + "..\\"; }
 
 	virtual std::string alwaysDefine() {
-		return "/DITHARE_KSCOPE_EXTENSION=../src/kscope_sample_extension.h";
+		return "/DITHARE_KSCOPE_EXTENSION=\"../src/kscope_sample_extension.h\"";
 	}
 	virtual std::string buildRelease(std::string defines_) {
 		std::string defines = replace_string(defines_, " -D", " /D");
