@@ -103,7 +103,7 @@ class KscopeTestEnvironment {
 		return std::string(buf2);
 	}
 	virtual std::string exitCheck(std::string cmd_, bool expectok = true) {
-		std::string cmd = replace_string(cmd_,"\"", "\\\"");
+		std::string cmd = replace_string(cmd_,"\"", "\\\\\\\"");//yes, it is this many backslashes required to get through 3 levels of de-escaping (C++ compiler, 'echo', and failedrandomtest.sh)
 		if( expectok )
 			return std::string("if [ ! $? -eq 0 ]; then\n  echo \"") + cmd + ( "\">failedrandomtest.sh\n  exit 1\nfi");
 		else
