@@ -118,6 +118,8 @@ namespace ithare {
   } //namespace kscope
 } //namespace ithare
 
+#define ITHARE_KSCOPE_LAST_STOCK_LITERAL 1	
+
 #endif //ITHARE_KSCOPE_SEED
 
 #endif //ithare_kscope_literal_h_included
