@@ -109,11 +109,11 @@ namespace ithare {
 		}
 #endif
 	private:
-		static /*volatile*/ T c;//TODO! - reinstate volatile
+		static volatile T c;
 	};
 
 	template<class T, ITHARE_KSCOPE_SEEDTPARAM seed>
-	/*volatile*/ T KscopeLiteralContextVersion<1, T, seed>::c = CC;
+	volatile T KscopeLiteralContextVersion<1, T, seed>::c = CC;
 	
   } //namespace kscope
 } //namespace ithare

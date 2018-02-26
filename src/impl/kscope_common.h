@@ -636,8 +636,8 @@ namespace ithare {
 		public:
 			constexpr ITHARE_KSCOPE_FORCEINLINE KscopeBitUint() : val(0) {}
 			constexpr ITHARE_KSCOPE_FORCEINLINE KscopeBitUint(T x) : val(x & mask) {}
-			//constexpr KscopeBitUint(const KscopeBitUint& other) : val(other.val) {}
-			//constexpr KscopeBitUint(const volatile KscopeBitUint& other) : val(other.val) {}
+			constexpr KscopeBitUint(const KscopeBitUint& other) : val(other.val) {}
+			constexpr KscopeBitUint(const volatile KscopeBitUint& other) : val(other.val) {}
 			constexpr ITHARE_KSCOPE_FORCEINLINE operator T() const { assert((val&mask) == val); return val & mask; }
 
 			constexpr ITHARE_KSCOPE_FORCEINLINE KscopeBitUint operator -() const { return KscopeBitUint(-val); }
