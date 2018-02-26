@@ -156,9 +156,9 @@ namespace ithare {
 	template<class T>
 	using KscopeExtendedZeroLiteralContext = KscopeZeroLiteralContext<T>;
 	#endif
-	#ifdef ITHARE_KSCOPE_VAR_CONTEXT
+	#ifdef ITHARE_KSCOPE_INTVAR_CONTEXT
 	template<class T, ITHARE_KSCOPE_SEEDTPARAM seed,KSCOPECYCLES cycles>
-	using KscopeExtendedIntVarContext = ITHARE_KSCOPE_VAR_CONTEXT<T,seed,cycles>;
+	using KscopeExtendedIntVarContext = ITHARE_KSCOPE_INTVAR_CONTEXT<T,seed,cycles>;
 	#else
 	template<class T, ITHARE_KSCOPE_SEEDTPARAM seed,KSCOPECYCLES cycles>
 	using KscopeExtendedIntVarContext = KscopeIntVarContext<T,seed,cycles>;
