@@ -71,7 +71,7 @@ class KscopeTestEnvironment {
 	virtual std::string testSrcFolder() { return  srcDirPrefix + "../"; }
 
 	virtual std::string alwaysDefine() {//relative to kscope/test
-		return "-DITHARE_KSCOPE_EXTENSION=\"../src/kscope_sample_extension.h\"";
+		return "-DITHARE_KSCOPE_TEST_EXTENSION=\"../src/kscope_sample_extension.h\"";
 	}
 	virtual std::string buildRelease(std::string defines) {
 		return std::string("$CXX -O3 -DNDEBUG ") + alwaysDefine() + " " + defines + " -o testapp -std=c++1z -lstdc++ -Werror" + file_list(testSrcFolder());

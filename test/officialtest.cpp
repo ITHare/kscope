@@ -31,9 +31,12 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 #include "lest.hpp"
-#ifdef ITHARE_KSCOPE_EXTENSION
-#include ITHARE_KSCOPE_EXTENSION //MUST go BEFORE ../src/kscope.h
+#ifdef ITHARE_KSCOPE_TEST_EXTENSION
+#include ITHARE_KSCOPE_TEST_EXTENSION //MUST go BEFORE ../src/kscope.h
 #endif
+//NB: normally, in your own files you should use simple #include "your_extension.h", 
+//  #include MACRO above is to allow using the same test .cpp with external extensions
+
 #include "../src/kscope.h"
 
 #ifndef ITHARE_KSCOPE_TEST_NO_NAMESPACE
