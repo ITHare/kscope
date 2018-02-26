@@ -30,6 +30,10 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
+#ifndef ithare_kscope_context_h_included
+#define ithare_kscope_context_h_included
+
+
 #ifdef ITHARE_KSCOPE_SEED
 
 namespace ithare { namespace kscope {
@@ -207,3 +211,5 @@ namespace ithare { namespace kscope {
 }}; //namespace ithare::kscope
  
 #endif //ITHARE_KSCOPE_SEED
+
+#endif //ithare_kscope_context_h_included
