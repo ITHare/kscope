@@ -100,6 +100,10 @@ namespace ithare { namespace kscope {
 		constexpr static T2 random_const(T2 upper_bound=0) {
 			return kscope_random_const<T2,seed2,flags2>(upper_bound);
 		}
+		template<class T2,ITHARE_KSCOPE_SEEDTPARAM seed2,KSCOPECYCLES cycles2>
+		using recursive_context_type = KscopeZeroLiteralContext<T2>;
+		template<class T2,ITHARE_KSCOPE_SEEDTPARAM seed2,KSCOPECYCLES cycles2>
+		using intermediate_context_type = KscopeZeroLiteralContext<T2>;
 
 		template<ITHARE_KSCOPE_SEEDTPARAM seed2,KSCOPEFLAGS flags>
 		ITHARE_KSCOPE_FORCEINLINE static constexpr T final_injection(T x) {
@@ -115,11 +119,6 @@ namespace ithare { namespace kscope {
 			std::cout << std::string(offset, ' ') << prefix << "KscopeZeroContext<" << kscope_dbg_print_t<T>() << ">" << std::endl;
 		}
 #endif
-	};
-	template<class T, class T0, ITHARE_KSCOPE_SEEDTPARAM seed, KSCOPECYCLES cycles>
-	struct KscopeRecursiveContext<T, KscopeZeroLiteralContext<T0>, seed, cycles> {
-		using recursive_context_type = KscopeZeroLiteralContext<T>;
-		using intermediate_context_type = KscopeZeroLiteralContext<T>;
 	};
 	
 	//KscopeIntVarContext
@@ -137,6 +136,11 @@ namespace ithare { namespace kscope {
 			using LiteralContext = KscopeExtendedLiteralContext<T2, ITHARE_KSCOPE_COMBINED_PRNG(seed,seed2), literal_cycles>;
 			using type = KscopeLiteralFromContext<T2, C, LiteralContext, seed2, literal_cycles>;
 		};
+		template<class T2,ITHARE_KSCOPE_SEEDTPARAM seed2,KSCOPECYCLES cycles2>
+		using recursive_context_type = KscopeIntVarContext<T2,seed2,cycles2>;//TODO:COMBINED
+		template<class T2,ITHARE_KSCOPE_SEEDTPARAM seed2,KSCOPECYCLES cycles2>
+		using intermediate_context_type = KscopeIntVarContext<T2,seed2,cycles2>;//TODO:COMBINED
+		
 		template<class T2,ITHARE_KSCOPE_SEEDTPARAM seed2,KSCOPECONSTFLAGS flags2>
 		constexpr static T2 random_const(T2 upper_bound=0) {
 			return kscope_random_const<T2,seed2,flags2>(upper_bound);
@@ -157,11 +161,6 @@ namespace ithare { namespace kscope {
 		}
 #endif
 	};
-	template<class T, class T0, ITHARE_KSCOPE_SEEDTPARAM seed0, KSCOPECYCLES cycles0, ITHARE_KSCOPE_SEEDTPARAM seed, KSCOPECYCLES cycles>
-	struct KscopeRecursiveContext<T, KscopeIntVarContext<T0,seed0,cycles0>, seed, cycles> {
-		using recursive_context_type = KscopeIntVarContext<T,seed,cycles>;
-		using intermediate_context_type = KscopeIntVarContext<T,seed,cycles>;
-	};
 	
 	template<class Descr, class T, ITHARE_KSCOPE_SEEDTPARAM seed, KSCOPECYCLES cycles>
 	class KscopeExtensibleLiteralContext {
@@ -175,6 +174,12 @@ namespace ithare { namespace kscope {
 		constexpr static KSCOPECYCLES calc_cycles(KSCOPECYCLES inj, KSCOPECYCLES surj) {
 			return surj;//for literals, ONLY surjection costs apply in runtime (as injection applies in compile-time)
 		}
+
+		template<class T2,ITHARE_KSCOPE_SEEDTPARAM seed2,KSCOPECYCLES cycles2>
+		using recursive_context_type = KscopeExtendedLiteralContext<T2, ITHARE_KSCOPE_NEW_PRNG(seed2, 1),cycles2>;
+		template<class T2,ITHARE_KSCOPE_SEEDTPARAM seed2,KSCOPECYCLES cycles2>
+		using intermediate_context_type = typename ithare::kscope::KscopeExtendedLiteralContext<T2, ITHARE_KSCOPE_NEW_PRNG(seed2, 2), cycles2>;//whenever cycles is low (which is very often), will fallback to version0
+
 		template<class T2,ITHARE_KSCOPE_SEEDTPARAM seed2,KSCOPECONSTFLAGS flags2>
 		constexpr static T2 random_const(T2 upper_bound=0) {
 			return kscope_random_const<T2,seed2,flags2>(upper_bound);
@@ -206,7 +211,6 @@ namespace ithare { namespace kscope {
 		}
 #endif
 	};
-	//no RecursiveContext for this one (it will be defined at the point of specializing descr)
 	
 }}; //namespace ithare::kscope
  

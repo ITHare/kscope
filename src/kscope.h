@@ -168,11 +168,6 @@ namespace ithare {
 	template<class T, ITHARE_KSCOPE_SEEDTPARAM seed, KSCOPECYCLES cycles>
 	class KscopeExtendedLiteralContext : public ITHARE_KSCOPE_LITERAL_CONTEXT<T,seed,cycles> {//for whatever-reason, 'using' doesn't work here
 	};
-	template<class T, class T0, ITHARE_KSCOPE_SEEDTPARAM seed, ITHARE_KSCOPE_SEEDTPARAM seed0, KSCOPECYCLES cycles0,KSCOPECYCLES cycles>
-	struct KscopeRecursiveContext<T, KscopeExtendedLiteralContext<T0, seed0,cycles0>, seed, cycles> {
-		using recursive_context_type = KscopeExtendedLiteralContext<T, ITHARE_KSCOPE_NEW_PRNG(seed, 1),cycles>;
-		using intermediate_context_type = typename ithare::kscope::KscopeExtendedLiteralContext<T, ITHARE_KSCOPE_NEW_PRNG(seed, 2), cycles>;//whenever cycles is low (which is very often), will fallback to version0
-	};
 	#else
 	template<class T>
 	struct KscopeExtendedLiteralContextDescr {
@@ -185,11 +180,6 @@ namespace ithare {
 	//EXTENSIBLE => according to extensibility paradigm, we cannot have it in kscope_context.h :-( 
 	template<class T, ITHARE_KSCOPE_SEEDTPARAM seed, KSCOPECYCLES cycles>
 	class KscopeExtendedLiteralContext : public KscopeExtensibleLiteralContext<KscopeExtendedLiteralContextDescr<T>,T,seed,cycles> {
-	};
-	template<class T, class T0, ITHARE_KSCOPE_SEEDTPARAM seed, ITHARE_KSCOPE_SEEDTPARAM seed0, KSCOPECYCLES cycles0,KSCOPECYCLES cycles>
-	struct KscopeRecursiveContext<T, KscopeExtendedLiteralContext<T0, seed0,cycles0>, seed, cycles> {
-		using recursive_context_type = KscopeExtendedLiteralContext<T, ITHARE_KSCOPE_NEW_PRNG(seed, 1),cycles>;
-		using intermediate_context_type = typename ithare::kscope::KscopeExtendedLiteralContext<T, ITHARE_KSCOPE_NEW_PRNG(seed, 2), cycles>;//whenever cycles is low (which is very often), will fallback to version0
 	};
 	#endif
 

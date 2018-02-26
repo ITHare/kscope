@@ -214,10 +214,6 @@ namespace ithare {
 	template<class T, class Context, class InjectionRequirements,ITHARE_KSCOPE_SEEDTPARAM seed, KSCOPECYCLES cycles>
 	class KscopeInjection;
 
-	//KscopeRecursiveContext
-	template<class T, class Context, ITHARE_KSCOPE_SEEDTPARAM seed, KSCOPECYCLES cycles>
-	struct KscopeRecursiveContext;
-
 	//injection-with-constant - building block both for injections and for literals
 	template <size_t which, class T, class Context, class InjectionRequirements, ITHARE_KSCOPE_SEEDTPARAM seed, KSCOPECYCLES cycles>
 	class KscopeInjectionVersion;
@@ -614,7 +610,7 @@ namespace ithare {
 		static constexpr KSCOPECYCLES cycles_loCtx = splitCyclesLo.arr[0];
 		static constexpr KSCOPECYCLES cycles_loInj = splitCyclesLo.arr[1];
 		static_assert(cycles_loCtx + cycles_loInj <= cycles_lo);
-		using LoContext = typename KscopeRecursiveContext < halfT, Context, ITHARE_KSCOPE_NEW_PRNG(seed, 3), cycles_loCtx>::intermediate_context_type;
+		using LoContext = typename Context::template intermediate_context_type< halfT, ITHARE_KSCOPE_NEW_PRNG(seed, 3), cycles_loCtx>;
 		using LoInjection = KscopeInjection<halfT, LoContext, LoHiInjectionRequirements,ITHARE_KSCOPE_NEW_PRNG(seed, 4), cycles_loInj+LoContext::context_cycles>;
 		static_assert(sizeof(typename LoInjection::return_type) == sizeof(halfT));//bijections ONLY
 
@@ -623,7 +619,7 @@ namespace ithare {
 		static constexpr KSCOPECYCLES cycles_hiCtx = splitCyclesHi.arr[0];
 		static constexpr KSCOPECYCLES cycles_hiInj = splitCyclesHi.arr[1];
 		static_assert(cycles_hiCtx + cycles_hiInj <= cycles_hi);
-		using HiContext = typename KscopeRecursiveContext<halfT, Context, ITHARE_KSCOPE_NEW_PRNG(seed, 6), cycles_hiCtx>::intermediate_context_type;
+		using HiContext = typename Context::template intermediate_context_type<halfT, ITHARE_KSCOPE_NEW_PRNG(seed, 6), cycles_hiCtx>;
 		using HiInjection = KscopeInjection<halfT, HiContext, LoHiInjectionRequirements,ITHARE_KSCOPE_NEW_PRNG(seed, 7), cycles_hiInj+HiContext::context_cycles>;
 		static_assert(sizeof(typename HiInjection::return_type) == sizeof(halfT));//bijections ONLY
 
@@ -853,7 +849,7 @@ namespace ithare {
 		static constexpr KSCOPECYCLES cycles_loCtx = splitCyclesLo.arr[0];
 		static constexpr KSCOPECYCLES cycles_loInj = splitCyclesLo.arr[1];
 		static_assert(cycles_loCtx + cycles_loInj <= cycles_lo);
-		using RecursiveLoContext = typename KscopeRecursiveContext<halfT, Context, ITHARE_KSCOPE_NEW_PRNG(seed, 3), cycles_loCtx+Context::context_cycles>::recursive_context_type;
+		using RecursiveLoContext = typename Context::template recursive_context_type<halfT, ITHARE_KSCOPE_NEW_PRNG(seed, 3), cycles_loCtx+Context::context_cycles>;
 		using RecursiveInjectionLo = KscopeInjection<halfT, RecursiveLoContext, RecursiveInjectionRequirements,ITHARE_KSCOPE_NEW_PRNG(seed, 4), cycles_loInj+ RecursiveLoContext::context_cycles>;
 
 		constexpr static size_t splitHi[] = { 100 /*Context*/, 100/*Injection*/ };
@@ -861,7 +857,7 @@ namespace ithare {
 		static constexpr KSCOPECYCLES cycles_hiCtx = splitCyclesHi.arr[0];
 		static constexpr KSCOPECYCLES cycles_hiInj = splitCyclesHi.arr[1];
 		static_assert(cycles_hiCtx + cycles_hiInj <= cycles_hi);
-		using RecursiveHiContext = typename KscopeRecursiveContext<halfT, Context, ITHARE_KSCOPE_NEW_PRNG(seed, 6), cycles_hiCtx+Context::context_cycles>::recursive_context_type;
+		using RecursiveHiContext = typename Context::template recursive_context_type<halfT, ITHARE_KSCOPE_NEW_PRNG(seed, 6), cycles_hiCtx+Context::context_cycles>;
 		using RecursiveInjectionHi = KscopeInjection < halfT, RecursiveHiContext, RecursiveInjectionRequirements,ITHARE_KSCOPE_NEW_PRNG(seed, 7), cycles_hiInj+ RecursiveHiContext::context_cycles> ;
 
 		struct return_type {
@@ -951,7 +947,7 @@ namespace ithare {
 		static constexpr KSCOPECYCLES cycles_loCtx = splitCyclesLo.arr[0];
 		static constexpr KSCOPECYCLES cycles_loInj = splitCyclesLo.arr[1];
 		static_assert(cycles_loCtx + cycles_loInj <= cycles_lo);
-		using RecursiveLoContext = typename KscopeRecursiveContext<TypeLo, Context, ITHARE_KSCOPE_NEW_PRNG(seed, 3), cycles_loCtx + Context::context_cycles>::recursive_context_type;
+		using RecursiveLoContext = typename Context::template recursive_context_type<TypeLo, ITHARE_KSCOPE_NEW_PRNG(seed, 3), cycles_loCtx + Context::context_cycles>;
 		using RecursiveInjectionLo = KscopeInjection<TypeLo, RecursiveLoContext, RecursiveInjectionRequirements,ITHARE_KSCOPE_NEW_PRNG(seed, 4), cycles_loInj + RecursiveLoContext::context_cycles>;
 
 		constexpr static size_t splitHi[] = { 100 /*Context*/, 100 /*Injection*/ };
@@ -959,7 +955,7 @@ namespace ithare {
 		static constexpr KSCOPECYCLES cycles_hiCtx = splitCyclesHi.arr[0];
 		static constexpr KSCOPECYCLES cycles_hiInj = splitCyclesHi.arr[1];
 		static_assert(cycles_hiCtx + cycles_hiInj <= cycles_hi);
-		using RecursiveHiContext = typename KscopeRecursiveContext<TypeHi, Context, ITHARE_KSCOPE_NEW_PRNG(seed, 6), cycles_hiCtx + Context::context_cycles>::recursive_context_type;
+		using RecursiveHiContext = typename Context::template recursive_context_type<TypeHi, ITHARE_KSCOPE_NEW_PRNG(seed, 6), cycles_hiCtx + Context::context_cycles>;
 		using RecursiveInjectionHi = KscopeInjection <TypeHi, RecursiveHiContext, RecursiveInjectionRequirements,ITHARE_KSCOPE_NEW_PRNG(seed, 7), cycles_hiInj + RecursiveHiContext::context_cycles >;
 
 		struct return_type {
