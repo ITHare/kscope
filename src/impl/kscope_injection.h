@@ -454,6 +454,7 @@ namespace ithare {
 			KscopeRandomizedNonReversibleFunctionVersion0Descr::descr,
 			KscopeRandomizedNonReversibleFunctionVersion1Descr::descr,
 			KscopeRandomizedNonReversibleFunctionVersion2Descr::descr,
+			//TODO: allow extending for non-reversible functions (generalized, as it can be also used at least for Lai-Massey)
 		};
 		constexpr static size_t max_cycles_that_make_sense = kscope_max_min_descr(descr);
 		constexpr static size_t which = kscope_random_choice_from_list<ITHARE_KSCOPE_NEW_PRNG(seed, 1)>(cycles, descr);

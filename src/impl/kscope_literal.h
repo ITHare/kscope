@@ -109,7 +109,7 @@ namespace ithare {
 		}
 #endif
 	private:
-		static /*volatile*/ T c;//TODO! - return back volatile
+		static /*volatile*/ T c;//TODO! - reinstate volatile
 	};
 
 	template<class T, ITHARE_KSCOPE_SEEDTPARAM seed>

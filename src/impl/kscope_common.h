@@ -187,6 +187,7 @@ namespace ithare {
 												  //  THE ONLY type which should be used for cast-based fooling around
 		static_assert(sizeof(kscope_aliased_byte)==1);
 		
+		/* not used now, if needed for kaleidoscoped - will re-instate
 		enum class kscope_endian//along the lines of p0463r1, to be replaced with std::endian
 		{
 #ifdef _MSC_VER
@@ -206,6 +207,7 @@ namespace ithare {
 			native = __BYTE_ORDER__,
 #endif
 		};
+		*/
 
 		using KSCOPEFLAGS = uint64_t;
 		constexpr KSCOPEFLAGS kscope_flag_is_constexpr = 0x01;
@@ -662,7 +664,7 @@ namespace ithare {
 			T val;
 		};
 
-		template<size_t N_>
+		/*template<size_t N_>
 		class KscopeBitSint {
 		public:
 			static constexpr size_t N = N_;
@@ -683,7 +685,7 @@ namespace ithare {
 
 		private:
 			UT val;
-		};
+		};*/
 
 		template<size_t N>
 		struct KscopeTraits<KscopeBitUint<N>> {
