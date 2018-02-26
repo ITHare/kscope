@@ -133,15 +133,9 @@ namespace ithare {
 	//KscopeLiteralContext
 
 	template<class T, T C, class Context, ITHARE_KSCOPE_SEEDTPARAM seed, KSCOPECYCLES cycles>
-	class KscopeLiteralCtx {
+	class KscopeLiteralFromContext {
 		static_assert(std::is_integral<T>::value);
 		static_assert(std::is_unsigned<T>::value);
-
-		/*constexpr static KSCOPECYCLES literal_cycles = 0;
-		template<class T2, T2 C, ITHARE_KSCOPE_SEEDTPARAM seed2>
-		struct literal {
-			using type = KscopeLiteralCtx<T2, C, KscopeZeroLiteralContext<T2>, seed2, literal_cycles>;
-		};*/
 
 		struct InjectionRequirements {
 			static constexpr size_t exclude_version = size_t(-1);
@@ -151,7 +145,7 @@ namespace ithare {
 		};
 		using Injection = KscopeInjection<T, Context, InjectionRequirements,ITHARE_KSCOPE_NEW_PRNG(seed, 1), cycles>;
 	public:
-		ITHARE_KSCOPE_FORCEINLINE constexpr KscopeLiteralCtx() : val(Injection::template injection<ITHARE_KSCOPE_NEW_PRNG(seed, 2),kscope_flag_is_constexpr>(C)) {
+		ITHARE_KSCOPE_FORCEINLINE constexpr KscopeLiteralFromContext() : val(Injection::template injection<ITHARE_KSCOPE_NEW_PRNG(seed, 2),kscope_flag_is_constexpr>(C)) {
 		}
 		ITHARE_KSCOPE_FORCEINLINE constexpr T value() const {
 			return Injection::template surjection<ITHARE_KSCOPE_NEW_PRNG(seed, 3),kscope_flag_is_constexpr>(val);
@@ -159,7 +153,7 @@ namespace ithare {
 
 #ifdef ITHARE_KSCOPE_DBG_ENABLE_DBGPRINT
 		static void dbg_print(size_t offset = 0, const char* prefix = "") {
-			std::cout << std::string(offset, ' ') << prefix << "KscopeLiteralCtx<" << kscope_dbg_print_t<T>() << "," << kscope_dbg_print_c<T>(C) << "," << kscope_dbg_print_seed<seed>() << "," << cycles << ">" << std::endl;
+			std::cout << std::string(offset, ' ') << prefix << "KscopeLiteralFromContext<" << kscope_dbg_print_t<T>() << "," << kscope_dbg_print_c<T>(C) << "," << kscope_dbg_print_seed<seed>() << "," << cycles << ">" << std::endl;
 			Injection::dbg_print(offset + 1);
 		}
 		static void dbgCheck() {
@@ -183,7 +177,7 @@ namespace ithare {
 		constexpr static KSCOPECYCLES literal_cycles = 0;
 		template<class T2,T2 C, ITHARE_KSCOPE_SEEDTPARAM seed>
 		struct literal {
-			using type = KscopeLiteralCtx<T2, C, KscopeZeroLiteralContext<T2>, seed, literal_cycles>;
+			using type = KscopeLiteralFromContext<T2, C, KscopeZeroLiteralContext<T2>, seed, literal_cycles>;
 		};
 		template<class T2,ITHARE_KSCOPE_SEEDTPARAM seed2,KSCOPECONSTFLAGS flags2>
 		constexpr static T2 random_const(T2 upper_bound=0) {
@@ -237,7 +231,7 @@ namespace ithare {
 		constexpr static KSCOPECYCLES literal_cycles = 0;
 		template<class T2, T2 C, ITHARE_KSCOPE_SEEDTPARAM seed2>
 		struct literal {
-			using type = KscopeLiteralCtx<T2, C, KscopeZeroLiteralContext<T2>, seed2, literal_cycles>;
+			using type = KscopeLiteralFromContext<T2, C, KscopeZeroLiteralContext<T2>, ITHARE_KSCOPE_COMBINED_PRNG(seed,seed2), literal_cycles>;
 		};
 
 		template<ITHARE_KSCOPE_SEEDTPARAM seed2,KSCOPEFLAGS flags>
@@ -336,8 +330,8 @@ namespace ithare {
 		constexpr static KSCOPECYCLES literal_cycles = std::min(cycles/2,50);//TODO: justify (or define?)
 		template<class T2, T2 C, ITHARE_KSCOPE_SEEDTPARAM seed2>
 		struct literal {
-			using LiteralContext = KscopeLiteralContext<T2, seed, literal_cycles>;
-			using type = KscopeLiteralCtx<T2, C, LiteralContext, seed2, literal_cycles>;
+			using LiteralContext = KscopeLiteralContext<T2, ITHARE_KSCOPE_COMBINED_PRNG(seed,seed2), literal_cycles>;
+			using type = KscopeLiteralFromContext<T2, C, LiteralContext, seed2, literal_cycles>;
 		};
 		template<class T2,ITHARE_KSCOPE_SEEDTPARAM seed2,KSCOPECONSTFLAGS flags2>
 		constexpr static T2 random_const(T2 upper_bound=0) {
