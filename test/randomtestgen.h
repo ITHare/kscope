@@ -64,6 +64,8 @@ std::string replace_string(std::string subject, std::string search,//adapted fro
 
 class KscopeTestEnvironment {
 	public:
+	using Flags = uint32_t; 
+	constexpr static Flags flag_auto_dbg_print = 0x01;
 	std::string srcDirPrefix = "";
 	
 	virtual std::string rootTestFolder() { return  srcDirPrefix + "../"; }
@@ -124,7 +126,7 @@ class KscopeTestEnvironment {
 		else
 			return std::string("./testapp");
 	}
-	virtual std::string checkExe(int nseeds) {
+	virtual std::string checkExe(int nseeds,Flags flags) {
 		return "";
 	}
 	virtual std::string cmpFiles(std::string f1, std::string f2) {
@@ -145,6 +147,8 @@ class KscopeTestEnvironment {
 #include <windows.h>
 class KscopeTestEnvironment {
 	public:
+	using Flags = uint32_t; 
+	constexpr static Flags flag_auto_dbg_print = 0x01;
 	std::string srcDirPrefix = "";
 	
 	virtual std::string rootTestFolder() { return  srcDirPrefix + "..\\"; }
@@ -223,7 +227,7 @@ class KscopeTestEnvironment {
 		else
 			return std::string("officialtest.exe");
 	}
-	virtual std::string checkExe(int nseeds) {
+	virtual std::string checkExe(int nseeds,Flags flags) {
 		return "";
 	}
 	virtual std::string cmpFiles(std::string f1, std::string f2) {
@@ -267,10 +271,10 @@ class KscopeTestGenerator {
 		std::cout << kenv->command(cmd) << std::endl;
 	}
 
-	virtual void buildCheckRunCheck(std::string cmd,int nseeds,write_output wo) {
+	virtual void buildCheckRunCheck(std::string cmd,int nseeds,KscopeTestEnvironment::Flags flags,write_output wo) {
 		issueCommand(cmd);
 		std::cout << kenv->exitCheck(cmd) << std::endl;
-		std::cout << kenv->checkExe(nseeds) << std::endl;
+		std::cout << kenv->checkExe(nseeds,flags) << std::endl;
 
 		std::string tofile = "";
 		switch (wo) {
@@ -321,7 +325,7 @@ class KscopeTestGenerator {
 		return "";
 	}
 
-	virtual void buildCheckRunCheckx2(config cfg,std::string defs,int nseeds,write_output wo=write_output::none) {
+	virtual void buildCheckRunCheckx2(config cfg,std::string defs,int nseeds,KscopeTestEnvironment::Flags flags=0,write_output wo=write_output::none) {
 		assert(nseeds >= -1 && nseeds <= 2);
 		write_output wox = wo;
 		if(wo==write_output::stable){
@@ -333,18 +337,18 @@ class KscopeTestGenerator {
 		}
 		
 		std::string cmd1 = buildCmd(cfg, defs + seedsByNum(nseeds));
-		buildCheckRunCheck(cmd1,nseeds,wox);
+		buildCheckRunCheck(cmd1,nseeds,flags,wox);
 		if(wox==write_output::stable_first)
 			wox = write_output::stable_next;
 		std::string cmd2 = buildCmd(cfg, defs + seedsByNum(nseeds) + " -DITHARE_KSCOPE_TEST_NO_NAMESPACE");
-		buildCheckRunCheck(cmd2,nseeds,wox);
+		buildCheckRunCheck(cmd2,nseeds,flags,wox);
 		
 		if(add32tests) {
 			std::string m32 = kenv->build32option();
 			std::string cmd1 = buildCmd(cfg, defs + m32 + seedsByNum(nseeds));
-			buildCheckRunCheck(cmd1,nseeds,wox);
+			buildCheckRunCheck(cmd1,nseeds,flags,wox);
 			std::string cmd2 = buildCmd(cfg, defs + m32 + seedsByNum(nseeds) + " -DITHARE_KSCOPE_TEST_NO_NAMESPACE");
-			buildCheckRunCheck(cmd2,nseeds	,wox);
+			buildCheckRunCheck(cmd2,nseeds,flags,wox);
 		}
 	}
 	
@@ -353,9 +357,9 @@ class KscopeTestGenerator {
 
 	virtual void genDefineTests() {
 		std::cout << kenv->echo("=== kscope -Define Test 1/12 (DEBUG, -DITHARE_KSCOPE_ENABLE_AUTO_DBGPRINT, write_output::stable) ===",true) << std::endl;
-		buildCheckRunCheckx2(config::debug, " -DITHARE_KSCOPE_CONSISTENT_XPLATFORM_IMPLICIT_SEEDS -DITHARE_KSCOPE_ENABLE_AUTO_DBGPRINT", -1, write_output::stable);
+		buildCheckRunCheckx2(config::debug, " -DITHARE_KSCOPE_CONSISTENT_XPLATFORM_IMPLICIT_SEEDS -DITHARE_KSCOPE_ENABLE_AUTO_DBGPRINT", -1, KscopeTestEnvironment::flag_auto_dbg_print, write_output::stable);
 		std::cout << kenv->echo("=== kscope -Define Test 2/12 (RELEASE, -DITHARE_KSCOPE_ENABLE_AUTO_DBGPRINT=2, write_output::random)===",true) << std::endl;
-		buildCheckRunCheckx2(config::release, " -DITHARE_KSCOPE_CONSISTENT_XPLATFORM_IMPLICIT_SEEDS -DITHARE_KSCOPE_ENABLE_AUTO_DBGPRINT=2", 2, write_output::random);
+		buildCheckRunCheckx2(config::release, " -DITHARE_KSCOPE_CONSISTENT_XPLATFORM_IMPLICIT_SEEDS -DITHARE_KSCOPE_ENABLE_AUTO_DBGPRINT=2", 2, KscopeTestEnvironment::flag_auto_dbg_print,write_output::random);
 		std::cout << kenv->echo("=== kscope -Define Test 3/12 (DEBUG, no ITHARE_KSCOPE_SEED) ===",true ) << std::endl;
 		buildCheckRunCheckx2(config::debug,"",0);
 		std::cout << kenv->echo("=== kscope -Define Test 4/12 (RELEASE, no ITHARE_KSCOPE_SEED) ===",true) << std::endl;
@@ -413,10 +417,10 @@ class KscopeTestGenerator {
 			std::cout << kenv->echo( std::string("=== Random Test ") + std::to_string(i+1) + "/" + std::to_string(n) + " ===", true ) << std::endl;
 			std::string defines = genSeeds()+" -DITHARE_KSCOPE_CONSISTENT_XPLATFORM_IMPLICIT_SEEDS"+extra;
 			if( cfg == config::debug ) 
-				buildCheckRunCheck(kenv->buildDebug(defines),true,write_output::none);
+				buildCheckRunCheck(kenv->buildDebug(defines),2,0,write_output::none);
 			else {
 				assert(cfg == config::release);
-				buildCheckRunCheck(kenv->buildRelease(defines), true, write_output::none);
+				buildCheckRunCheck(kenv->buildRelease(defines),2,0,write_output::none);
 				postBuildCheckRunCheck(extra);
 			}
 		}
