@@ -40,6 +40,10 @@ namespace ithare { namespace kscope {
 
 	template<class T, ITHARE_KSCOPE_SEEDTPARAM seed, KSCOPECYCLES cycles>
 	class KscopeLiteralContext;
+	
+	template<size_t which, class T, ITHARE_KSCOPE_SEEDTPARAM seed>
+	struct KscopeLiteralContextVersion;
+
 
 	template<class T, T C, class Context, ITHARE_KSCOPE_SEEDTPARAM seed, KSCOPECYCLES cycles>
 	class KscopeLiteralFromContext {
@@ -154,6 +158,52 @@ namespace ithare { namespace kscope {
 		using recursive_context_type = KscopeVarContext<T,seed,cycles>;
 		using intermediate_context_type = KscopeVarContext<T,seed,cycles>;
 	};
+	
+	template<class Descr, class T, ITHARE_KSCOPE_SEEDTPARAM seed, KSCOPECYCLES cycles>
+	class KscopeExtensibleLiteralContext {
+		using Traits = KscopeTraits<T>;
+		constexpr static size_t which = kscope_random_choice_from_list<ITHARE_KSCOPE_NEW_PRNG(seed, 1)>(cycles, Descr::descr);
+		using WhichType = KscopeLiteralContextVersion<which, T, seed>;
+
+	public:
+		using Type = T;
+		constexpr static KSCOPECYCLES context_cycles = WhichType::context_cycles;
+		constexpr static KSCOPECYCLES calc_cycles(KSCOPECYCLES inj, KSCOPECYCLES surj) {
+			return surj;//for literals, ONLY surjection costs apply in runtime (as injection applies in compile-time)
+		}
+		template<class T2,ITHARE_KSCOPE_SEEDTPARAM seed2,KSCOPECONSTFLAGS flags2>
+		constexpr static T2 random_const(T2 upper_bound=0) {
+			return kscope_random_const<T2,seed2,flags2>(upper_bound);
+		}
+
+		constexpr static KSCOPECYCLES literal_cycles = 0;
+		template<class T2, T2 C, ITHARE_KSCOPE_SEEDTPARAM seed2>
+		struct literal {
+			using type = KscopeLiteralFromContext<T2, C, KscopeZeroLiteralContext<T2>, ITHARE_KSCOPE_COMBINED_PRNG(seed,seed2), literal_cycles>;
+		};
+
+		template<ITHARE_KSCOPE_SEEDTPARAM seed2,KSCOPEFLAGS flags>
+		ITHARE_KSCOPE_FORCEINLINE static constexpr /* only if flags & kscope_flag_is_constexpr */ T final_injection(T x) {
+			ITHARE_KSCOPE_DECLAREPRNG_INFUNC seedc = ITHARE_KSCOPE_COMBINED_PRNG(seed,seed2);
+			return WhichType::template final_injection<seedc,flags>(x);
+		}
+		template<ITHARE_KSCOPE_SEEDTPARAM seed2,KSCOPEFLAGS flags>
+		ITHARE_KSCOPE_FORCEINLINE static constexpr /* only if flags & kscope_flag_is_constexpr */ T final_surjection(T y) {
+			ITHARE_KSCOPE_DECLAREPRNG_INFUNC seedc = ITHARE_KSCOPE_COMBINED_PRNG(seed,seed2);
+			return WhichType::template final_surjection<seedc,flags>(y);
+		}
+
+
+	public:
+#ifdef ITHARE_KSCOPE_DBG_ENABLE_DBGPRINT
+		static void dbg_print(size_t offset = 0, const char* prefix = "") {
+			size_t dbgWhich = kscope_random_choice_from_list<ITHARE_KSCOPE_NEW_PRNG(seed, 1)>(cycles, Descr::descr);
+			std::cout << std::string(offset, ' ') << prefix << "KscopeExtensibleLiteralContext<ndescr=" << kscope_arraysz(Descr::descr) << "," << kscope_dbg_print_t<T>() << "," << kscope_dbg_print_seed<seed>() << "," << cycles << ">: which=" << which << " dbgWhich=" << dbgWhich << std::endl;
+			WhichType::dbg_print(offset + 1);
+		}
+#endif
+	};
+	//no RecursiveContext for this one (it will be defined at the point of specializing descr)
 	
 }}; //namespace ithare::kscope
  
