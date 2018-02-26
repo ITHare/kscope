@@ -36,6 +36,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "impl/kscope_common.h"
 #include "impl/kscope_prng.h"
 #include "impl/kscope_injection.h"
+#include "impl/kscope_context.h"
 #include "impl/kscope_literal.h"
 
 // LIST OF supported #defines:
@@ -64,6 +65,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //    KSCOPETYPE
 //  macros:
 //    ITHARE_KSCOPE_MACRO
+
+//ithare::kscope extensibility paradigm:
+//  ALL extensibility happens directly in kscope.h, which means ALL the other headers safe to include before specifying extensions
 
 #ifdef ITHARE_KSCOPE_SEED
 
@@ -129,83 +133,23 @@ namespace ithare {
 		}
 #endif
 	};
+
+	constexpr KSCOPECYCLES kscope_exp_cycles(int exp) {
+		if (exp < 0)
+			return 0;
+		KSCOPECYCLES ret = 1;
+		if (exp & 1) {
+			ret *= 3;
+			exp -= 1;
+		}
+		assert((exp & 1) == 0);
+		exp >>= 1;
+		for (int i = 0; i < exp; ++i)
+			ret *= 10;
+		return ret;
+	}
 	
-	//KscopeLiteralContext
-
-	template<class T, T C, class Context, ITHARE_KSCOPE_SEEDTPARAM seed, KSCOPECYCLES cycles>
-	class KscopeLiteralFromContext {
-		static_assert(std::is_integral<T>::value);
-		static_assert(std::is_unsigned<T>::value);
-
-		struct InjectionRequirements {
-			static constexpr size_t exclude_version = size_t(-1);
-			static constexpr bool is_constexpr = true;
-			static constexpr bool only_bijections = false;
-			static constexpr bool no_substrate_size_increase = false;
-		};
-		using Injection = KscopeInjection<T, Context, InjectionRequirements,ITHARE_KSCOPE_NEW_PRNG(seed, 1), cycles>;
-	public:
-		ITHARE_KSCOPE_FORCEINLINE constexpr KscopeLiteralFromContext() : val(Injection::template injection<ITHARE_KSCOPE_NEW_PRNG(seed, 2),kscope_flag_is_constexpr>(C)) {
-		}
-		ITHARE_KSCOPE_FORCEINLINE constexpr T value() const {
-			return Injection::template surjection<ITHARE_KSCOPE_NEW_PRNG(seed, 3),kscope_flag_is_constexpr>(val);
-		}
-
-#ifdef ITHARE_KSCOPE_DBG_ENABLE_DBGPRINT
-		static void dbg_print(size_t offset = 0, const char* prefix = "") {
-			std::cout << std::string(offset, ' ') << prefix << "KscopeLiteralFromContext<" << kscope_dbg_print_t<T>() << "," << kscope_dbg_print_c<T>(C) << "," << kscope_dbg_print_seed<seed>() << "," << cycles << ">" << std::endl;
-			Injection::dbg_print(offset + 1);
-		}
-		static void dbgCheck() {
-			typename Injection::return_type c = Injection::template injection<seed,0>(C);
-			T cc = Injection::template surjection<seed,0>(c);
-			assert(cc == C);
-		}
-#endif
-	private:
-		typename Injection::return_type val;
-	};		
-
-	template<class T>
-	struct KscopeZeroLiteralContext {
-		//same as KscopeLiteralContextVersion<0,...> but with additional stuff to make it suitable for use as Context parameter to injections
-		using Type = T;
-		constexpr static KSCOPECYCLES context_cycles = 0;
-		constexpr static KSCOPECYCLES calc_cycles(KSCOPECYCLES inj, KSCOPECYCLES surj) {
-			return surj;//for literals, ONLY surjection costs apply in runtime (as injection applies in compile-time)
-		}
-		constexpr static KSCOPECYCLES literal_cycles = 0;
-		template<class T2,T2 C, ITHARE_KSCOPE_SEEDTPARAM seed>
-		struct literal {
-			using type = KscopeLiteralFromContext<T2, C, KscopeZeroLiteralContext<T2>, seed, literal_cycles>;
-		};
-		template<class T2,ITHARE_KSCOPE_SEEDTPARAM seed2,KSCOPECONSTFLAGS flags2>
-		constexpr static T2 random_const(T2 upper_bound=0) {
-			return kscope_random_const<T2,seed2,flags2>(upper_bound);
-		}
-
-
-		template<ITHARE_KSCOPE_SEEDTPARAM seed2,KSCOPEFLAGS flags>
-		ITHARE_KSCOPE_FORCEINLINE static constexpr T final_injection(T x) {
-			return x;
-		}
-		template<ITHARE_KSCOPE_SEEDTPARAM seed2,KSCOPEFLAGS flags>
-		ITHARE_KSCOPE_FORCEINLINE static constexpr T final_surjection(T y) {
-			return y;
-		}
-
-#ifdef ITHARE_KSCOPE_DBG_ENABLE_DBGPRINT
-		static void dbg_print(size_t offset = 0, const char* prefix = "") {
-			std::cout << std::string(offset, ' ') << prefix << "KscopeZeroContext<" << kscope_dbg_print_t<T>() << ">" << std::endl;
-		}
-#endif
-	};
-	template<class T, class T0, ITHARE_KSCOPE_SEEDTPARAM seed, KSCOPECYCLES cycles>
-	struct KscopeRecursiveContext<T, KscopeZeroLiteralContext<T0>, seed, cycles> {
-		using recursive_context_type = KscopeZeroLiteralContext<T>;
-		using intermediate_context_type = KscopeZeroLiteralContext<T>;
-	};
-	
+	//EXTENSIBLE => according to extensibility paradigm, we cannot have it in kscope_context.h :-( 
 	template<class T, ITHARE_KSCOPE_SEEDTPARAM seed, KSCOPECYCLES cycles>
 	class KscopeLiteralContext {
 		using Traits = KscopeTraits<T>;
@@ -255,28 +199,12 @@ namespace ithare {
 		}
 #endif
 	};
-
 	template<class T, class T0, ITHARE_KSCOPE_SEEDTPARAM seed, ITHARE_KSCOPE_SEEDTPARAM seed0, KSCOPECYCLES cycles0,KSCOPECYCLES cycles>
 	struct KscopeRecursiveContext<T, KscopeLiteralContext<T0, seed0,cycles0>, seed, cycles> {
 		using recursive_context_type = KscopeLiteralContext<T, ITHARE_KSCOPE_NEW_PRNG(seed, 1),cycles>;//@@
 		using intermediate_context_type = typename ithare::kscope::KscopeLiteralContext<T, ITHARE_KSCOPE_NEW_PRNG(seed, 2), cycles>;//whenever cycles is low (which is very often), will fallback to version0
 	};
-
-
-	constexpr KSCOPECYCLES kscope_exp_cycles(int exp) {
-		if (exp < 0)
-			return 0;
-		KSCOPECYCLES ret = 1;
-		if (exp & 1) {
-			ret *= 3;
-			exp -= 1;
-		}
-		assert((exp & 1) == 0);
-		exp >>= 1;
-		for (int i = 0; i < exp; ++i)
-			ret *= 10;
-		return ret;
-	}
+	
 
 	//IMPORTANT: ANY API CHANGES MUST BE MIRRORED in KscopeLiteralDbg<>
 	template<class T_, T_ C_, ITHARE_KSCOPE_SEEDTPARAM seed, KSCOPECYCLES cycles,KSCOPEFLAGS flags>
@@ -316,47 +244,6 @@ namespace ithare {
 #endif
 	private:
 		typename Injection::return_type val;
-	};
-	
-	//KscopeVarContext
-	template<class T, ITHARE_KSCOPE_SEEDTPARAM seed,KSCOPECYCLES cycles>
-	struct KscopeVarContext {
-		using Type = T;
-		constexpr static KSCOPECYCLES context_cycles = 0;
-		constexpr static KSCOPECYCLES calc_cycles(KSCOPECYCLES inj, KSCOPECYCLES surj) {
-			return inj + surj;//for variables, BOTH injection and surjection are executed in runtime
-		}
-
-		constexpr static KSCOPECYCLES literal_cycles = std::min(cycles/2,50);//TODO: justify (or define?)
-		template<class T2, T2 C, ITHARE_KSCOPE_SEEDTPARAM seed2>
-		struct literal {
-			using LiteralContext = KscopeLiteralContext<T2, ITHARE_KSCOPE_COMBINED_PRNG(seed,seed2), literal_cycles>;
-			using type = KscopeLiteralFromContext<T2, C, LiteralContext, seed2, literal_cycles>;
-		};
-		template<class T2,ITHARE_KSCOPE_SEEDTPARAM seed2,KSCOPECONSTFLAGS flags2>
-		constexpr static T2 random_const(T2 upper_bound=0) {
-			return kscope_random_const<T2,seed2,flags2>(upper_bound);
-		}
-
-		template<ITHARE_KSCOPE_SEEDTPARAM seed2,KSCOPEFLAGS flags>
-		ITHARE_KSCOPE_FORCEINLINE static constexpr T final_injection(T x) {
-			return x;
-		}
-		template<ITHARE_KSCOPE_SEEDTPARAM seed2,KSCOPEFLAGS flags>
-		ITHARE_KSCOPE_FORCEINLINE static constexpr T final_surjection(	T y) {
-			return y;
-		}
-
-#ifdef ITHARE_KSCOPE_DBG_ENABLE_DBGPRINT
-		static void dbg_print(size_t offset = 0, const char* prefix = "") {
-			std::cout << std::string(offset, ' ') << prefix << "KscopeVarContext<" << kscope_dbg_print_t<T>() << ">" << std::endl;
-		}
-#endif
-	};
-	template<class T, class T0, ITHARE_KSCOPE_SEEDTPARAM seed0, KSCOPECYCLES cycles0, ITHARE_KSCOPE_SEEDTPARAM seed, KSCOPECYCLES cycles>
-	struct KscopeRecursiveContext<T, KscopeVarContext<T0,seed0,cycles0>, seed, cycles> {
-		using recursive_context_type = KscopeVarContext<T,seed,cycles>;
-		using intermediate_context_type = KscopeVarContext<T,seed,cycles>;
 	};
 	
 	template<bool is_real, class T, class Context, class InjectionRequirements,ITHARE_KSCOPE_SEEDTPARAM seed, KSCOPECYCLES cycles>
