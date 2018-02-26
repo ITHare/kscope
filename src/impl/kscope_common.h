@@ -623,6 +623,10 @@ namespace ithare {
 				return (T(1) << n) - T(1);
 		}
 
+#ifdef _MSC_VER
+#pragma warning(push)
+#pragma warning(disable:4521) //multiple constructors
+#endif
 		template<size_t N_>
 		class KscopeBitUint {
 		public:
@@ -638,6 +642,7 @@ namespace ithare {
 			constexpr ITHARE_KSCOPE_FORCEINLINE KscopeBitUint(T x) : val(x & mask) {}
 			constexpr KscopeBitUint(const KscopeBitUint& other) : val(other.val) {}
 			constexpr KscopeBitUint(const volatile KscopeBitUint& other) : val(other.val) {}
+
 			constexpr ITHARE_KSCOPE_FORCEINLINE operator T() const { assert((val&mask) == val); return val & mask; }
 
 			constexpr ITHARE_KSCOPE_FORCEINLINE KscopeBitUint operator -() const { return KscopeBitUint(-val); }
@@ -663,6 +668,9 @@ namespace ithare {
 		private:
 			T val;
 		};
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif
 
 		/*template<size_t N_>
 		class KscopeBitSint {
