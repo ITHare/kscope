@@ -148,24 +148,43 @@ namespace ithare {
 			ret *= 10;
 		return ret;
 	}
-	
+
+	#ifdef ITHARE_KSCOPE_ZERO_LITERAL_CONTEXT
+	template<class T>
+	using KscopeExtendedZeroLiteralContext = ITHARE_KSCOPE_ZERO_LITERAL_CONTEXT<T>;
+	#else
+	template<class T>
+	using KscopeExtendedZeroLiteralContext = KscopeZeroLiteralContext<T>;
+	#endif
+	#ifdef ITHARE_KSCOPE_VAR_CONTEXT
+	template<class T, ITHARE_KSCOPE_SEEDTPARAM seed,KSCOPECYCLES cycles>
+	using KscopeExtendedIntVarContext = ITHARE_KSCOPE_VAR_CONTEXT<T,seed,cycles>;
+	#else
+	template<class T, ITHARE_KSCOPE_SEEDTPARAM seed,KSCOPECYCLES cycles>
+	using KscopeExtendedIntVarContext = KscopeIntVarContext<T,seed,cycles>;
+	#endif
+
+	#ifdef ITHARE_KSCOPE_LITERAL_CONTEXT
+	template<class T, ITHARE_KSCOPE_SEEDTPARAM seed, KSCOPECYCLES cycles>
+	using KscopeExtendedLiteralContext = ITHARE_KSCOPE_LITERAL_CONTEXT<T,seed,cycles>;
+	#else
 	struct ExtendedLiteralContextDescr {
 		constexpr static KscopeDescriptor descr[] = {
-			KscopeLiteralContextVersion0Descr::descr,
-			KscopeLiteralContextVersion1Descr::descr,
+			ITHARE_KSCOPE_STOCK_LITERAL_DESCRIPTOR_LIST
 			ITHARE_KSCOPE_ADDITIONAL_LITERAL_DESCRIPTOR_LIST
 		};
 	}; 
 	
 	//EXTENSIBLE => according to extensibility paradigm, we cannot have it in kscope_context.h :-( 
 	template<class T, ITHARE_KSCOPE_SEEDTPARAM seed, KSCOPECYCLES cycles>
-	class KscopeLiteralContext : public KscopeExtensibleLiteralContext<ExtendedLiteralContextDescr,T,seed,cycles> {
+	class KscopeExtendedLiteralContext : public KscopeExtensibleLiteralContext<ExtendedLiteralContextDescr,T,seed,cycles> {
 	};
 	template<class T, class T0, ITHARE_KSCOPE_SEEDTPARAM seed, ITHARE_KSCOPE_SEEDTPARAM seed0, KSCOPECYCLES cycles0,KSCOPECYCLES cycles>
-	struct KscopeRecursiveContext<T, KscopeLiteralContext<T0, seed0,cycles0>, seed, cycles> {
-		using recursive_context_type = KscopeLiteralContext<T, ITHARE_KSCOPE_NEW_PRNG(seed, 1),cycles>;
-		using intermediate_context_type = typename ithare::kscope::KscopeLiteralContext<T, ITHARE_KSCOPE_NEW_PRNG(seed, 2), cycles>;//whenever cycles is low (which is very often), will fallback to version0
+	struct KscopeRecursiveContext<T, KscopeExtendedLiteralContext<T0, seed0,cycles0>, seed, cycles> {
+		using recursive_context_type = KscopeExtendedLiteralContext<T, ITHARE_KSCOPE_NEW_PRNG(seed, 1),cycles>;
+		using intermediate_context_type = typename ithare::kscope::KscopeExtendedLiteralContext<T, ITHARE_KSCOPE_NEW_PRNG(seed, 2), cycles>;//whenever cycles is low (which is very often), will fallback to version0
 	};
+	#endif
 
 	//IMPORTANT: ANY API CHANGES MUST BE MIRRORED in KscopeLiteralDbg<>
 	template<class T_, T_ C_, ITHARE_KSCOPE_SEEDTPARAM seed, KSCOPECYCLES cycles,KSCOPEFLAGS flags>
@@ -174,7 +193,7 @@ namespace ithare {
 		using T = typename kscope_normalized_unsigned_integral_type<T_>::type;//from this point on, uint8_t..uint64_t only; simple std::make_unsigned didn't do as some compilers tried to treat unsigned long distinct from both uint32_t and uint64_t
 		static constexpr T C = T(C_);
 
-		using Context = KscopeLiteralContext<T, ITHARE_KSCOPE_NEW_PRNG(seed, 1),cycles>;
+		using Context = KscopeExtendedLiteralContext<T, ITHARE_KSCOPE_NEW_PRNG(seed, 1),cycles>;
 		struct InjectionRequirements {
 			static constexpr size_t exclude_version = size_t(-1);
 			static constexpr bool is_constexpr = true;
@@ -228,7 +247,7 @@ namespace ithare {
 		using T = typename kscope_normalized_unsigned_integral_type<T_>::type;//from this point on, uint8_t..uint64_t only; simple std::make_unsigned<> didn't do as some compilers tried to treat unsigned long distinct from both uint32_t and uint64_t
 		//using TTraits = KscopeTraits<T>;
 
-		using Context = KscopeVarContext<T, ITHARE_KSCOPE_NEW_PRNG(seed, 1), cycles>;
+		using Context = KscopeExtendedIntVarContext<T, ITHARE_KSCOPE_NEW_PRNG(seed, 1), cycles>;
 		struct InjectionRequirements {
 			static constexpr size_t exclude_version = size_t(-1);
 			static constexpr bool is_constexpr = false;
@@ -508,21 +527,21 @@ namespace ithare {
 			static constexpr bool cross_platform_only = false;//currently there seems to be no need to ensure cross-platform compatibility for literals 
 		};
 
-		using Injection0 = KscopeInjection<uint32_t, KscopeZeroLiteralContext<uint32_t>, InjectionRequirements, ITHARE_KSCOPE_NEW_PRNG(seed, 3), std::max(split0,2)>;
+		using Injection0 = KscopeInjection<uint32_t, KscopeExtendedZeroLiteralContext<uint32_t>, InjectionRequirements, ITHARE_KSCOPE_NEW_PRNG(seed, 3), std::max(split0,2)>;
 		static_assert(sizeof(typename Injection0::return_type) == sizeof(uint32_t));//only_bijections
-		using Injection1 = KscopeInjection<uint32_t, KscopeZeroLiteralContext<uint32_t>, InjectionRequirements, ITHARE_KSCOPE_NEW_PRNG(seed, 4), std::max(split1,2)>;
+		using Injection1 = KscopeInjection<uint32_t, KscopeExtendedZeroLiteralContext<uint32_t>, InjectionRequirements, ITHARE_KSCOPE_NEW_PRNG(seed, 4), std::max(split1,2)>;
 		static_assert(sizeof(typename Injection1::return_type) == sizeof(uint32_t));//only_bijections
-		using Injection2 = KscopeInjection<uint32_t, KscopeZeroLiteralContext<uint32_t>, InjectionRequirements, ITHARE_KSCOPE_NEW_PRNG(seed, 5), std::max(split2,2)>;
+		using Injection2 = KscopeInjection<uint32_t, KscopeExtendedZeroLiteralContext<uint32_t>, InjectionRequirements, ITHARE_KSCOPE_NEW_PRNG(seed, 5), std::max(split2,2)>;
 		static_assert(sizeof(typename Injection2::return_type) == sizeof(uint32_t));//only_bijections
-		using Injection3 = KscopeInjection<uint32_t, KscopeZeroLiteralContext<uint32_t>, InjectionRequirements, ITHARE_KSCOPE_NEW_PRNG(seed, 6), std::max(split3,2)>;
+		using Injection3 = KscopeInjection<uint32_t, KscopeExtendedZeroLiteralContext<uint32_t>, InjectionRequirements, ITHARE_KSCOPE_NEW_PRNG(seed, 6), std::max(split3,2)>;
 		static_assert(sizeof(typename Injection3::return_type) == sizeof(uint32_t));//only_bijections
-		using Injection4 = KscopeInjection<uint32_t, KscopeZeroLiteralContext<uint32_t>, InjectionRequirements, ITHARE_KSCOPE_NEW_PRNG(seed, 7), std::max(split4,2)>;
+		using Injection4 = KscopeInjection<uint32_t, KscopeExtendedZeroLiteralContext<uint32_t>, InjectionRequirements, ITHARE_KSCOPE_NEW_PRNG(seed, 7), std::max(split4,2)>;
 		static_assert(sizeof(typename Injection4::return_type) == sizeof(uint32_t));//only_bijections
-		using Injection5 = KscopeInjection<uint32_t, KscopeZeroLiteralContext<uint32_t>, InjectionRequirements, ITHARE_KSCOPE_NEW_PRNG(seed, 8), std::max(split5,2)>;
+		using Injection5 = KscopeInjection<uint32_t, KscopeExtendedZeroLiteralContext<uint32_t>, InjectionRequirements, ITHARE_KSCOPE_NEW_PRNG(seed, 8), std::max(split5,2)>;
 		static_assert(sizeof(typename Injection5::return_type) == sizeof(uint32_t));//only_bijections
-		using Injection6 = KscopeInjection<uint32_t, KscopeZeroLiteralContext<uint32_t>, InjectionRequirements, ITHARE_KSCOPE_NEW_PRNG(seed, 9), std::max(split6,2)>;
+		using Injection6 = KscopeInjection<uint32_t, KscopeExtendedZeroLiteralContext<uint32_t>, InjectionRequirements, ITHARE_KSCOPE_NEW_PRNG(seed, 9), std::max(split6,2)>;
 		static_assert(sizeof(typename Injection6::return_type) == sizeof(uint32_t));//only_bijections
-		using Injection7 = KscopeInjection<uint32_t, KscopeZeroLiteralContext<uint32_t>, InjectionRequirements, ITHARE_KSCOPE_NEW_PRNG(seed, 10), std::max(split7,2)>;
+		using Injection7 = KscopeInjection<uint32_t, KscopeExtendedZeroLiteralContext<uint32_t>, InjectionRequirements, ITHARE_KSCOPE_NEW_PRNG(seed, 10), std::max(split7,2)>;
 		static_assert(sizeof(typename Injection7::return_type) == sizeof(uint32_t));//only_bijections
 
 		ITHARE_KSCOPE_FORCEINLINE static constexpr uint32_t little_endian4(const char* str, size_t offset) {//TODO: BIG-ENDIAN

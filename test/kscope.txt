@@ -4,18 +4,18 @@ ITHARE_KSCOPE_SEED2=36e007a38ae8e0ea
 ----- f(@officialtest.cpp @126) -----
  KscopeInt<uint64_t,3097125810820147656,1000>
   KscopeInjection<uint64_t,17493895585096812532,1000>: which=5 dbgWhich=5
-   Context:KscopeVarContext<uint64_t>
+   Context:KscopeIntVarContext<uint64_t>
    KscopeInjectionVersion<5/*split*/,uint64_t,17493895585096812532,1000>
     Lo:KscopeInjection<uint32_t,17974258531247412321,404>: which=7 dbgWhich=7
-     Context:KscopeVarContext<uint32_t>
+     Context:KscopeIntVarContext<uint32_t>
      KscopeInjectionVersion<ITHARE_KSCOPE_LAST_STOCK_INJECTION+1=7/*rotl*/,uint32_t,17974258531247412321,404>: nbits=32 SHIFT=25
       KscopeInjection<uint32_t,881051157849560085,402>: which=6 dbgWhich=6
-       Context:KscopeVarContext<uint32_t>
+       Context:KscopeIntVarContext<uint32_t>
        KscopeInjectionVersion<6/*split into KscopeBitUint<>*/,uint32_t, Context, InjectionRequirements, 881051157849560085,402>
-        Context:KscopeVarContext<uint32_t>
+        Context:KscopeIntVarContext<uint32_t>
         TypeLo:KscopeBitUint<23>: mask =8388607
         Lo:KscopeInjection<KscopeBitUint<23>,3196830553878504359,75>: which=4 dbgWhich=4
-         Context:KscopeVarContext<KscopeBitUint<23>>
+         Context:KscopeIntVarContext<KscopeBitUint<23>>
          KscopeInjectionVersion<4/*mul odd mod 2^N*/,KscopeBitUint<23>,3196830553878504359,75>: C=4084463 CINV=2694159
           literal:KscopeLiteralFromContext<uint32_t,2694159,5750654634482694305,50>
            KscopeInjection<uint32_t,13388381952010189294,50>: which=4 dbgWhich=4
@@ -86,70 +86,70 @@ ITHARE_KSCOPE_SEED2=36e007a38ae8e0ea
                          KscopeExtensibleLiteralContext<ndescr=2,KscopeBitUint<11>,12730776250398176184,12>: which=1 dbgWhich=1
                           KscopeLiteralContextVersion<1/*global volatile*/,KscopeBitUint<11>,12730776250398176184>: CC=954
           Recursive:KscopeInjection<KscopeBitUint<23>,2216897056979469969,19>: which=1 dbgWhich=1
-           Context:KscopeVarContext<KscopeBitUint<23>>
+           Context:KscopeIntVarContext<KscopeBitUint<23>>
            KscopeInjectionVersion<1/*add mod 2^N*/,KscopeBitUint<23>,2216897056979469969,19>: C=5518169 neg=0
             KscopeInjection<KscopeBitUint<23>,7619253179098559791,17>: which=7 dbgWhich=7
-             Context:KscopeVarContext<KscopeBitUint<23>>
+             Context:KscopeIntVarContext<KscopeBitUint<23>>
              KscopeInjectionVersion<ITHARE_KSCOPE_LAST_STOCK_INJECTION+1=7/*rotl*/,KscopeBitUint<23>,7619253179098559791,17>: nbits=23 SHIFT=18
               KscopeInjection<KscopeBitUint<23>,10978265450044305302,15>: which=1 dbgWhich=1
-               Context:KscopeVarContext<KscopeBitUint<23>>
+               Context:KscopeIntVarContext<KscopeBitUint<23>>
                KscopeInjectionVersion<1/*add mod 2^N*/,KscopeBitUint<23>,10978265450044305302,15>: C=1391855 neg=0
                 KscopeInjection<KscopeBitUint<23>,17883769605625727359,13>: which=7 dbgWhich=7
-                 Context:KscopeVarContext<KscopeBitUint<23>>
+                 Context:KscopeIntVarContext<KscopeBitUint<23>>
                  KscopeInjectionVersion<ITHARE_KSCOPE_LAST_STOCK_INJECTION+1=7/*rotl*/,KscopeBitUint<23>,17883769605625727359,13>: nbits=23 SHIFT=14
                   KscopeInjection<KscopeBitUint<23>,10666649814750590755,11>: which=1 dbgWhich=1
-                   Context:KscopeVarContext<KscopeBitUint<23>>
+                   Context:KscopeIntVarContext<KscopeBitUint<23>>
                    KscopeInjectionVersion<1/*add mod 2^N*/,KscopeBitUint<23>,10666649814750590755,11>: C=8378248 neg=0
                     KscopeInjection<KscopeBitUint<23>,8649934503743057922,9>: which=7 dbgWhich=7
-                     Context:KscopeVarContext<KscopeBitUint<23>>
+                     Context:KscopeIntVarContext<KscopeBitUint<23>>
                      KscopeInjectionVersion<ITHARE_KSCOPE_LAST_STOCK_INJECTION+1=7/*rotl*/,KscopeBitUint<23>,8649934503743057922,9>: nbits=23 SHIFT=1
                       KscopeInjection<KscopeBitUint<23>,14187761457520277484,7>: which=1 dbgWhich=1
-                       Context:KscopeVarContext<KscopeBitUint<23>>
+                       Context:KscopeIntVarContext<KscopeBitUint<23>>
                        KscopeInjectionVersion<1/*add mod 2^N*/,KscopeBitUint<23>,14187761457520277484,7>: C=2478880 neg=0
                         KscopeInjection<KscopeBitUint<23>,13830628787738581674,5>: which=7 dbgWhich=7
-                         Context:KscopeVarContext<KscopeBitUint<23>>
+                         Context:KscopeIntVarContext<KscopeBitUint<23>>
                          KscopeInjectionVersion<ITHARE_KSCOPE_LAST_STOCK_INJECTION+1=7/*rotl*/,KscopeBitUint<23>,13830628787738581674,5>: nbits=23 SHIFT=9
                           KscopeInjection<KscopeBitUint<23>,1638073883597525143,3>: which=1 dbgWhich=1
-                           Context:KscopeVarContext<KscopeBitUint<23>>
+                           Context:KscopeIntVarContext<KscopeBitUint<23>>
                            KscopeInjectionVersion<1/*add mod 2^N*/,KscopeBitUint<23>,1638073883597525143,3>: C=6921596 neg=1
                             KscopeInjection<KscopeBitUint<23>,6759361368095302493,1>: which=0 dbgWhich=0
-                             Context:KscopeVarContext<KscopeBitUint<23>>
+                             Context:KscopeIntVarContext<KscopeBitUint<23>>
                              KscopeInjectionVersion<0/*identity*/,KscopeBitUint<23>,6759361368095302493,1>: availCycles=1
-                              KscopeVarContext<KscopeBitUint<23>>
+                              KscopeIntVarContext<KscopeBitUint<23>>
         TypeHi:KscopeBitUint<9>: mask =511
         Hi:KscopeInjection<KscopeBitUint<9>,5447429155793298668,19>: which=1 dbgWhich=1
-         Context:KscopeVarContext<KscopeBitUint<9>>
+         Context:KscopeIntVarContext<KscopeBitUint<9>>
          KscopeInjectionVersion<1/*add mod 2^N*/,KscopeBitUint<9>,5447429155793298668,19>: C=452 neg=1
           KscopeInjection<KscopeBitUint<9>,7804418488044241261,17>: which=7 dbgWhich=7
-           Context:KscopeVarContext<KscopeBitUint<9>>
+           Context:KscopeIntVarContext<KscopeBitUint<9>>
            KscopeInjectionVersion<ITHARE_KSCOPE_LAST_STOCK_INJECTION+1=7/*rotl*/,KscopeBitUint<9>,7804418488044241261,17>: nbits=9 SHIFT=3
             KscopeInjection<KscopeBitUint<9>,1733202101689404863,15>: which=1 dbgWhich=1
-             Context:KscopeVarContext<KscopeBitUint<9>>
+             Context:KscopeIntVarContext<KscopeBitUint<9>>
              KscopeInjectionVersion<1/*add mod 2^N*/,KscopeBitUint<9>,1733202101689404863,15>: C=28 neg=0
               KscopeInjection<KscopeBitUint<9>,8159884057527385298,13>: which=7 dbgWhich=7
-               Context:KscopeVarContext<KscopeBitUint<9>>
+               Context:KscopeIntVarContext<KscopeBitUint<9>>
                KscopeInjectionVersion<ITHARE_KSCOPE_LAST_STOCK_INJECTION+1=7/*rotl*/,KscopeBitUint<9>,8159884057527385298,13>: nbits=9 SHIFT=8
                 KscopeInjection<KscopeBitUint<9>,12224849564448449485,11>: which=1 dbgWhich=1
-                 Context:KscopeVarContext<KscopeBitUint<9>>
+                 Context:KscopeIntVarContext<KscopeBitUint<9>>
                  KscopeInjectionVersion<1/*add mod 2^N*/,KscopeBitUint<9>,12224849564448449485,11>: C=416 neg=0
                   KscopeInjection<KscopeBitUint<9>,15175634491043089543,9>: which=7 dbgWhich=7
-                   Context:KscopeVarContext<KscopeBitUint<9>>
+                   Context:KscopeIntVarContext<KscopeBitUint<9>>
                    KscopeInjectionVersion<ITHARE_KSCOPE_LAST_STOCK_INJECTION+1=7/*rotl*/,KscopeBitUint<9>,15175634491043089543,9>: nbits=9 SHIFT=6
                     KscopeInjection<KscopeBitUint<9>,1294160397934277160,7>: which=1 dbgWhich=1
-                     Context:KscopeVarContext<KscopeBitUint<9>>
+                     Context:KscopeIntVarContext<KscopeBitUint<9>>
                      KscopeInjectionVersion<1/*add mod 2^N*/,KscopeBitUint<9>,1294160397934277160,7>: C=383 neg=0
                       KscopeInjection<KscopeBitUint<9>,4119924106785934970,5>: which=7 dbgWhich=7
-                       Context:KscopeVarContext<KscopeBitUint<9>>
+                       Context:KscopeIntVarContext<KscopeBitUint<9>>
                        KscopeInjectionVersion<ITHARE_KSCOPE_LAST_STOCK_INJECTION+1=7/*rotl*/,KscopeBitUint<9>,4119924106785934970,5>: nbits=9 SHIFT=2
                         KscopeInjection<KscopeBitUint<9>,15372074649686134551,3>: which=1 dbgWhich=1
-                         Context:KscopeVarContext<KscopeBitUint<9>>
+                         Context:KscopeIntVarContext<KscopeBitUint<9>>
                          KscopeInjectionVersion<1/*add mod 2^N*/,KscopeBitUint<9>,15372074649686134551,3>: C=407 neg=0
                           KscopeInjection<KscopeBitUint<9>,10147696193225977101,1>: which=0 dbgWhich=0
-                           Context:KscopeVarContext<KscopeBitUint<9>>
+                           Context:KscopeIntVarContext<KscopeBitUint<9>>
                            KscopeInjectionVersion<0/*identity*/,KscopeBitUint<9>,10147696193225977101,1>: availCycles=1
-                            KscopeVarContext<KscopeBitUint<9>>
+                            KscopeIntVarContext<KscopeBitUint<9>>
     Hi:KscopeInjection<uint32_t,15111933860589934687,227>: which=4 dbgWhich=4
-     Context:KscopeVarContext<uint32_t>
+     Context:KscopeIntVarContext<uint32_t>
      KscopeInjectionVersion<4/*mul odd mod 2^N*/,uint32_t,15111933860589934687,227>: C=3971334943 CINV=2948331743
       literal:KscopeLiteralFromContext<uint32_t,2948331743,15734023881799944073,35>
        KscopeInjection<uint32_t,14621718925055571774,35>: which=6 dbgWhich=6
@@ -185,37 +185,37 @@ ITHARE_KSCOPE_SEED2=36e007a38ae8e0ea
                KscopeExtensibleLiteralContext<ndescr=2,KscopeBitUint<28>,9453063762488902100,6>: which=1 dbgWhich=1
                 KscopeLiteralContextVersion<1/*global volatile*/,KscopeBitUint<28>,9453063762488902100>: CC=242044128
       Recursive:KscopeInjection<uint32_t,10586499624056558312,186>: which=3 dbgWhich=3
-       Context:KscopeVarContext<uint32_t>
+       Context:KscopeIntVarContext<uint32_t>
        KscopeInjectionVersion<3/*split-join*/,uint32_t,10586499624056558312,186>
         Lo:KscopeInjection<uint16_t,250638752775359507,2>: which=7 dbgWhich=7
-         Context:KscopeVarContext<uint16_t>
+         Context:KscopeIntVarContext<uint16_t>
          KscopeInjectionVersion<ITHARE_KSCOPE_LAST_STOCK_INJECTION+1=7/*rotl*/,uint16_t,250638752775359507,2>: nbits=16 SHIFT=13
           KscopeInjection<uint16_t,3202499364135087361,0>: which=0 dbgWhich=0
-           Context:KscopeVarContext<uint16_t>
+           Context:KscopeIntVarContext<uint16_t>
            KscopeInjectionVersion<0/*identity*/,uint16_t,3202499364135087361,0>: availCycles=0
-            KscopeVarContext<uint16_t>
+            KscopeIntVarContext<uint16_t>
         Hi:KscopeInjection<uint16_t,5325077673302733460,12>: which=5 dbgWhich=5
-         Context:KscopeVarContext<uint16_t>
+         Context:KscopeIntVarContext<uint16_t>
          KscopeInjectionVersion<5/*split*/,uint16_t,5325077673302733460,12>
           Lo:KscopeInjection<uint8_t,12533930607823638379,1>: which=0 dbgWhich=0
-           Context:KscopeVarContext<uint8_t>
+           Context:KscopeIntVarContext<uint8_t>
            KscopeInjectionVersion<0/*identity*/,uint8_t,12533930607823638379,1>: availCycles=1
-            KscopeVarContext<uint8_t>
+            KscopeIntVarContext<uint8_t>
           Hi:KscopeInjection<uint8_t,9258853652697091675,0>: which=0 dbgWhich=0
-           Context:KscopeVarContext<uint8_t>
+           Context:KscopeIntVarContext<uint8_t>
            KscopeInjectionVersion<0/*identity*/,uint8_t,9258853652697091675,0>: availCycles=0
-            KscopeVarContext<uint8_t>
+            KscopeIntVarContext<uint8_t>
         Recursive:KscopeInjection<uint32_t,6619355975149080004,104>: which=5 dbgWhich=5
-         Context:KscopeVarContext<uint32_t>
+         Context:KscopeIntVarContext<uint32_t>
          KscopeInjectionVersion<5/*split*/,uint32_t,6619355975149080004,104>
           Lo:KscopeInjection<uint16_t,5823073839713918863,27>: which=1 dbgWhich=1
-           Context:KscopeVarContext<uint16_t>
+           Context:KscopeIntVarContext<uint16_t>
            KscopeInjectionVersion<1/*add mod 2^N*/,uint16_t,5823073839713918863,27>: C=3947 neg=0
             KscopeInjection<uint16_t,1253921766621665210,25>: which=7 dbgWhich=7
-             Context:KscopeVarContext<uint16_t>
+             Context:KscopeIntVarContext<uint16_t>
              KscopeInjectionVersion<ITHARE_KSCOPE_LAST_STOCK_INJECTION+1=7/*rotl*/,uint16_t,1253921766621665210,25>: nbits=16 SHIFT=10
               KscopeInjection<uint16_t,3152500198375212537,23>: which=4 dbgWhich=4
-               Context:KscopeVarContext<uint16_t>
+               Context:KscopeIntVarContext<uint16_t>
                KscopeInjectionVersion<4/*mul odd mod 2^N*/,uint16_t,3152500198375212537,23>: C=64715 CINV=35043
                 literal:KscopeLiteralFromContext<uint16_t,35043,8708173054888467291,16>
                  KscopeInjection<uint16_t,11334433649616044997,16>: which=1 dbgWhich=1
@@ -249,18 +249,18 @@ ITHARE_KSCOPE_SEED2=36e007a38ae8e0ea
                          KscopeExtensibleLiteralContext<ndescr=2,uint16_t,10992577688788910923,16>: which=1 dbgWhich=1
                           KscopeLiteralContextVersion<1/*global volatile*/,uint16_t,10992577688788910923>: CC=56921
                 Recursive:KscopeInjection<uint16_t,15047106547076236604,1>: which=0 dbgWhich=0
-                 Context:KscopeVarContext<uint16_t>
+                 Context:KscopeIntVarContext<uint16_t>
                  KscopeInjectionVersion<0/*identity*/,uint16_t,15047106547076236604,1>: availCycles=1
-                  KscopeVarContext<uint16_t>
+                  KscopeIntVarContext<uint16_t>
           Hi:KscopeInjection<uint16_t,15990150334682572645,16>: which=2 dbgWhich=2
-           Context:KscopeVarContext<uint16_t>
+           Context:KscopeIntVarContext<uint16_t>
            KscopeInjectionVersion<2/*kinda-Feistel*/,uint16_t,15990150334682572645,16>: availCycles=2 cycles_f=1 cycles_rInj=0
             f():KscopeRandomizedNonReversibleFunction<uint8_t,7322148958104305061,1>: which=0
              KscopeRandomizedNonReversibleFunction<0/*identity*/,uint8_t,7322148958104305061,1>
             Recursive:KscopeInjection<uint16_t,596204584659539500,0>: which=0 dbgWhich=0
-             Context:KscopeVarContext<uint16_t>
+             Context:KscopeIntVarContext<uint16_t>
              KscopeInjectionVersion<0/*identity*/,uint16_t,596204584659539500,0>: availCycles=0
-              KscopeVarContext<uint16_t>
+              KscopeIntVarContext<uint16_t>
 
 ----- lit(@officialtest.cpp @66) -----
  KscopeStrLiteral<'Negative argument to factorial!',14092808165457277839,30>

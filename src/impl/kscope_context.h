@@ -39,7 +39,7 @@ namespace ithare { namespace kscope {
 	class KscopeInjection;
 
 	template<class T, ITHARE_KSCOPE_SEEDTPARAM seed, KSCOPECYCLES cycles>
-	class KscopeLiteralContext;
+	class KscopeExtendedLiteralContext;
 	
 	template<size_t which, class T, ITHARE_KSCOPE_SEEDTPARAM seed>
 	struct KscopeLiteralContextVersion;
@@ -118,9 +118,9 @@ namespace ithare { namespace kscope {
 		using intermediate_context_type = KscopeZeroLiteralContext<T>;
 	};
 	
-	//KscopeVarContext
+	//KscopeIntVarContext
 	template<class T, ITHARE_KSCOPE_SEEDTPARAM seed,KSCOPECYCLES cycles>
-	struct KscopeVarContext {
+	struct KscopeIntVarContext {
 		using Type = T;
 		constexpr static KSCOPECYCLES context_cycles = 0;
 		constexpr static KSCOPECYCLES calc_cycles(KSCOPECYCLES inj, KSCOPECYCLES surj) {
@@ -130,7 +130,7 @@ namespace ithare { namespace kscope {
 		constexpr static KSCOPECYCLES literal_cycles = std::min(cycles/2,50);//TODO: justify (or define?)
 		template<class T2, T2 C, ITHARE_KSCOPE_SEEDTPARAM seed2>
 		struct literal {
-			using LiteralContext = KscopeLiteralContext<T2, ITHARE_KSCOPE_COMBINED_PRNG(seed,seed2), literal_cycles>;
+			using LiteralContext = KscopeExtendedLiteralContext<T2, ITHARE_KSCOPE_COMBINED_PRNG(seed,seed2), literal_cycles>;
 			using type = KscopeLiteralFromContext<T2, C, LiteralContext, seed2, literal_cycles>;
 		};
 		template<class T2,ITHARE_KSCOPE_SEEDTPARAM seed2,KSCOPECONSTFLAGS flags2>
@@ -149,14 +149,14 @@ namespace ithare { namespace kscope {
 
 #ifdef ITHARE_KSCOPE_DBG_ENABLE_DBGPRINT
 		static void dbg_print(size_t offset = 0, const char* prefix = "") {
-			std::cout << std::string(offset, ' ') << prefix << "KscopeVarContext<" << kscope_dbg_print_t<T>() << ">" << std::endl;
+			std::cout << std::string(offset, ' ') << prefix << "KscopeIntVarContext<" << kscope_dbg_print_t<T>() << ">" << std::endl;
 		}
 #endif
 	};
 	template<class T, class T0, ITHARE_KSCOPE_SEEDTPARAM seed0, KSCOPECYCLES cycles0, ITHARE_KSCOPE_SEEDTPARAM seed, KSCOPECYCLES cycles>
-	struct KscopeRecursiveContext<T, KscopeVarContext<T0,seed0,cycles0>, seed, cycles> {
-		using recursive_context_type = KscopeVarContext<T,seed,cycles>;
-		using intermediate_context_type = KscopeVarContext<T,seed,cycles>;
+	struct KscopeRecursiveContext<T, KscopeIntVarContext<T0,seed0,cycles0>, seed, cycles> {
+		using recursive_context_type = KscopeIntVarContext<T,seed,cycles>;
+		using intermediate_context_type = KscopeIntVarContext<T,seed,cycles>;
 	};
 	
 	template<class Descr, class T, ITHARE_KSCOPE_SEEDTPARAM seed, KSCOPECYCLES cycles>
@@ -192,7 +192,6 @@ namespace ithare { namespace kscope {
 			ITHARE_KSCOPE_DECLAREPRNG_INFUNC seedc = ITHARE_KSCOPE_COMBINED_PRNG(seed,seed2);
 			return WhichType::template final_surjection<seedc,flags>(y);
 		}
-
 
 	public:
 #ifdef ITHARE_KSCOPE_DBG_ENABLE_DBGPRINT
