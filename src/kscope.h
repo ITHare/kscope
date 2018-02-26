@@ -168,7 +168,7 @@ namespace ithare {
 	template<class T, ITHARE_KSCOPE_SEEDTPARAM seed, KSCOPECYCLES cycles>
 	using KscopeExtendedLiteralContext = ITHARE_KSCOPE_LITERAL_CONTEXT<T,seed,cycles>;
 	#else
-	struct ExtendedLiteralContextDescr {
+	struct KscopeExtendedLiteralContextDescr {
 		constexpr static KscopeDescriptor descr[] = {
 			ITHARE_KSCOPE_STOCK_LITERAL_DESCRIPTOR_LIST
 			ITHARE_KSCOPE_ADDITIONAL_LITERAL_DESCRIPTOR_LIST
@@ -177,7 +177,7 @@ namespace ithare {
 	
 	//EXTENSIBLE => according to extensibility paradigm, we cannot have it in kscope_context.h :-( 
 	template<class T, ITHARE_KSCOPE_SEEDTPARAM seed, KSCOPECYCLES cycles>
-	class KscopeExtendedLiteralContext : public KscopeExtensibleLiteralContext<ExtendedLiteralContextDescr,T,seed,cycles> {
+	class KscopeExtendedLiteralContext : public KscopeExtensibleLiteralContext<KscopeExtendedLiteralContextDescr,T,seed,cycles> {
 	};
 	template<class T, class T0, ITHARE_KSCOPE_SEEDTPARAM seed, ITHARE_KSCOPE_SEEDTPARAM seed0, KSCOPECYCLES cycles0,KSCOPECYCLES cycles>
 	struct KscopeRecursiveContext<T, KscopeExtendedLiteralContext<T0, seed0,cycles0>, seed, cycles> {
