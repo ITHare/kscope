@@ -8,8 +8,7 @@
 /test/nix/generatedrandomtest.sh
 /test/nix/nohup.out
 /test/nix/testapp.dSYM/
-test/nix/randomtest
-test/nix/randomtest-obf
+/test/nix/randomtest
 
 /.vs
 /test/win/officialtest/.vs
