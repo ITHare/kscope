@@ -73,7 +73,7 @@ namespace ithare { namespace kscope {
 			std::cout << std::string(offset, ' ') << prefix << "KscopeLiteralFromContext<" << kscope_dbg_print_t<T>() << "," << kscope_dbg_print_c<T>(C) << "," << kscope_dbg_print_seed<seed>() << "," << cycles << ">" << std::endl;
 			Injection::dbg_print(offset + 1);
 		}
-		static void dbgCheck() {
+		static void dbg_check() {
 #ifndef NDEBUG	//to be used in assert() below
 			typename Injection::return_type c = Injection::template injection<seed,0>(C);
 			T cc = Injection::template surjection<seed,0>(c);

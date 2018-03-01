@@ -71,7 +71,7 @@ namespace ithare {
 #define ITHARE_KSCOPE_DBG_CHECK_LITERAL(where, val, c) do {\
 			if (val.value() != c) {\
 				std::cout << "DBG_CHECK_LITERAL ERROR @" << where << ": " << val.value() << "!=" << c << std::endl; \
-				val.dbgCheck();\
+				val.dbg_check();\
 				dbg_print(); \
 				abort(); \
 			}\
