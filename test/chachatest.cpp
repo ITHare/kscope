@@ -345,6 +345,11 @@ chacha_ctx_single_test(const chacha_tv *tv, uint8_t* out0, uint8_t* in0)
 	ithare::kscope::kscope_copyarr(out0,out,tv->len);
 }
 
+#ifdef __clang__ //warning in lest.hpp - can only disable :-(
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wmissing-braces"
+#endif
+
 const lest::test module[] = {
     CASE( "compile-time: crypto_chacha_20_test_compile_time()" ) 
     {//pretty ugly; NOT recommended for practical usage (see KSCOPE_CT_* wrappers below for recommended usage of constexpr crypto)
@@ -427,6 +432,10 @@ const lest::test module[] = {
 		}
     },
 };
+
+#ifdef __clang__
+#pragma GCC diagnostic pop
+#endif
 
 extern lest::tests& specification();
 

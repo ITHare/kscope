@@ -678,10 +678,12 @@ namespace ithare {
 	template< class T >
 	constexpr T kscope_mul_inverse_mod2n(T num) {//extended GCD, intended to be used in compile-time only
 											  //implementation by Dmytro Ivanchykhin
+#ifndef NDEBUG //to be used in assert() below
 		using UintT = typename KscopeTraits<T>::UintT;
+		T num0 = num;
+#endif
 
 		assert(num & T(1));
-		T num0 = num;
 		T x = 0, lastx = 1, y = 1, lasty = 0;
 		T q=0, temp1=0, temp2=0, temp3=0;
 		T mod = 0;

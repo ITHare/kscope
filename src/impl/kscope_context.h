@@ -74,8 +74,10 @@ namespace ithare { namespace kscope {
 			Injection::dbg_print(offset + 1);
 		}
 		static void dbgCheck() {
+#ifndef NDEBUG	//to be used in assert() below
 			typename Injection::return_type c = Injection::template injection<seed,0>(C);
 			T cc = Injection::template surjection<seed,0>(c);
+#endif
 			assert(cc == C);
 		}
 #endif

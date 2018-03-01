@@ -99,6 +99,11 @@ public:
 
 #define NBENCH 1000
 
+#ifdef __clang__ //warning in lest.hpp - can only disable :-(
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wmissing-braces"
+#endif
+
 static const lest::test module[] = {
 	CASE("types") {
 		//well, at least for common 32/64-bit platforms is should stand
@@ -142,6 +147,10 @@ lest::tests& specification() {
 }
 
 MODULE( specification(), module )
+
+#ifdef __clang__
+#pragma GCC diagnostic pop
+#endif
 
 int main(int argc, char** argv) {
 #if !defined(ITHARE_KSCOPE_ENABLE_AUTO_DBGPRINT) || ITHARE_KSCOPE_ENABLE_AUTO_DBGPRINT == 2//excluding platform-specific stuff to avoid spurious changes to kscope.txt with -DITHARE_KSCOPE_ENABLE_AUTO_DBGPRINT

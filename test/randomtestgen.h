@@ -76,10 +76,10 @@ class KscopeTestEnvironment {
 		return "-DITHARE_KSCOPE_TEST_EXTENSION=\"../src/kscope_sample_extension.h\"";
 	}
 	virtual std::string build_release(std::string defines) {
-		return std::string("$CXX -O3 -DNDEBUG ") + always_define() + " " + defines + " -o randomtest -std=c++1z -lstdc++ -Werror" + file_list(test_src_dir());
+		return std::string("$CXX -O3 -DNDEBUG ") + always_define() + " " + defines + " -o randomtest -std=c++1z -lstdc++ -Werror -Wall" + file_list(test_src_dir());
 	}
 	virtual std::string build_debug(std::string defines) {
-		return std::string("$CXX ") + always_define() + " " + defines + " -o randomtest -std=c++1z -lstdc++ -Werror" + file_list(test_src_dir());
+		return std::string("$CXX ") + always_define() + " " + defines + " -o randomtest -std=c++1z -lstdc++ -Werror -Wall" + file_list(test_src_dir());
 	}
 	virtual std::string build32option() {
 		return " -m32";
