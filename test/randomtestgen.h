@@ -39,13 +39,13 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <stdio.h>
 #include <assert.h>
 
-static const char* randomtestfiles[] = { "officialtest.cpp", "chachatest.cpp", nullptr };
+static const char* randomtest_files[] = { "officialtest.cpp", "chachatest.cpp", nullptr };
 std::string file_list(std::string srcDir)  {
 	std::string ret = "";
-	for(size_t i=0; randomtestfiles[i] ; ++i ) {
+	for(size_t i=0; randomtest_files[i] ; ++i ) {
 		ret += " ";
 		ret += srcDir;
-		ret += randomtestfiles[i];
+		ret += randomtest_files[i];
 	}
 	return ret;
 }
@@ -67,24 +67,24 @@ class KscopeTestEnvironment {
 	enum class config { debug, release };
 	using Flags = uint32_t;
 	constexpr static Flags flag_auto_dbg_print = 0x01;
-	std::string srcDirPrefix = "";
+	std::string src_dir_prefix = "";
 	
-	virtual std::string rootTestFolder() { return  srcDirPrefix + "../"; }
-	virtual std::string testSrcFolder() { return  srcDirPrefix + "../"; }
+	virtual std::string root_test_dir() { return  src_dir_prefix + "../"; }
+	virtual std::string test_src_dir() { return  src_dir_prefix + "../"; }
 
-	virtual std::string alwaysDefine() {//relative to kscope/test
+	virtual std::string always_define() {//relative to kscope/test
 		return "-DITHARE_KSCOPE_TEST_EXTENSION=\"../src/kscope_sample_extension.h\"";
 	}
-	virtual std::string buildRelease(std::string defines) {
-		return std::string("$CXX -O3 -DNDEBUG ") + alwaysDefine() + " " + defines + " -o randomtest -std=c++1z -lstdc++ -Werror" + file_list(testSrcFolder());
+	virtual std::string build_release(std::string defines) {
+		return std::string("$CXX -O3 -DNDEBUG ") + always_define() + " " + defines + " -o randomtest -std=c++1z -lstdc++ -Werror" + file_list(test_src_dir());
 	}
-	virtual std::string buildDebug(std::string defines) {
-		return std::string("$CXX ") + alwaysDefine() + " " + defines + " -o randomtest -std=c++1z -lstdc++ -Werror" + file_list(testSrcFolder());
+	virtual std::string build_debug(std::string defines) {
+		return std::string("$CXX ") + always_define() + " " + defines + " -o randomtest -std=c++1z -lstdc++ -Werror" + file_list(test_src_dir());
 	}
 	virtual std::string build32option() {
 		return " -m32";
 	}
-	virtual std::string genRandom64() {
+	virtual std::string gen_random64() {
 		static FILE* frnd = fopen("/dev/urandom","rb");
 		if(frnd==0) {
 			std::cout << "Cannot open /dev/urandom, aborting" << std::endl;
@@ -104,7 +104,7 @@ class KscopeTestEnvironment {
 		}
 		return std::string(buf2);
 	}
-	virtual std::string exitCheck(std::string cmd_, bool expectok = true) {
+	virtual std::string exit_check(std::string cmd_, bool expectok = true) {
 		std::string cmd = replace_string(cmd_,"\"", "\\\\\\\"");//yes, it is this many backslashes required to get through 3 levels of de-escaping (C++ compiler, 'echo', and failedrandomtest.sh)
 		if( expectok )
 			return std::string("if [ ! $? -eq 0 ]; then\n  echo \"") + cmd + ( "\">failedrandomtest.sh\n  exit 1\nfi");
@@ -127,10 +127,10 @@ class KscopeTestEnvironment {
 		else
 			return std::string("./randomtest");
 	}
-	virtual std::string checkExe(int nseeds,config cfg,Flags flags) {
+	virtual std::string check_exe(int nseeds,config cfg,Flags flags) {
 		return "";
 	}
-	virtual std::string cmpFiles(std::string f1, std::string f2) {
+	virtual std::string cmp_files(std::string f1, std::string f2) {
 		return std::string("diff ") + f1 + " " + f2 + " 2>&1 >/dev/null";
 	}
 	virtual std::string setup() {
@@ -151,22 +151,22 @@ class KscopeTestEnvironment {
 	enum class config { debug, release };
 	using Flags = uint32_t;
 	constexpr static Flags flag_auto_dbg_print = 0x01;
-	std::string srcDirPrefix = "";
+	std::string src_dir_prefix = "";
 	
-	virtual std::string rootTestFolder() { return  srcDirPrefix + "..\\"; }
-	virtual std::string testSrcFolder() { return  srcDirPrefix + "..\\"; }
+	virtual std::string root_test_dir() { return  src_dir_prefix + "..\\"; }
+	virtual std::string test_src_dir() { return  src_dir_prefix + "..\\"; }
 
-	virtual std::string alwaysDefine() {
+	virtual std::string always_define() {
 		return "/DITHARE_KSCOPE_TEST_EXTENSION=\"../src/kscope_sample_extension.h\"";
 	}
-	virtual std::string buildRelease(std::string defines_) {
+	virtual std::string build_release(std::string defines_) {
 		std::string defines = replace_string(defines_, " -D", " /D");
-		return std::string("cl /permissive- /GS /GL /W3 /Gy /Zc:wchar_t /Gm- /O2 /sdl /Zc:inline /fp:precise /DNDEBUG /D_CONSOLE /D_UNICODE /DUNICODE /errorReport:prompt /WX /Zc:forScope /GR- /Gd /Oi /MT /EHsc /nologo /diagnostics:classic /std:c++17 /cgthreads1 /INCREMENTAL:NO /Ferandomtest.exe") + defines + " " + alwaysDefine() + file_list(testSrcFolder());
+		return std::string("cl /permissive- /GS /GL /W3 /Gy /Zc:wchar_t /Gm- /O2 /sdl /Zc:inline /fp:precise /DNDEBUG /D_CONSOLE /D_UNICODE /DUNICODE /errorReport:prompt /WX /Zc:forScope /GR- /Gd /Oi /MT /EHsc /nologo /diagnostics:classic /std:c++17 /cgthreads1 /INCREMENTAL:NO /Ferandomtest.exe") + defines + " " + always_define() + file_list(test_src_dir());
 			//string is copy-pasted from Rel-NoPDB config with manually-added /cgthreads1 /INCREMENTAL:NO, /Fe, and /WX- replaced with /WX
 	}
-	virtual std::string buildDebug(std::string defines_) {
+	virtual std::string build_debug(std::string defines_) {
 		std::string defines = replace_string(defines_, " -D", " /D");
-		return std::string("cl /permissive- /GS /W3 /Zc:wchar_t /ZI /Gm /Od /sdl /Zc:inline /fp:precise /D_DEBUG /D_CONSOLE /D_UNICODE /DUNICODE /errorReport:prompt /WX /Zc:forScope /RTC1 /Gd /MDd /EHsc /nologo /diagnostics:classic /std:c++17 /cgthreads1 /INCREMENTAL:NO /bigobj /Ferandomtest.exe") + defines + " " + alwaysDefine() + file_list(testSrcFolder());
+		return std::string("cl /permissive- /GS /W3 /Zc:wchar_t /ZI /Gm /Od /sdl /Zc:inline /fp:precise /D_DEBUG /D_CONSOLE /D_UNICODE /DUNICODE /errorReport:prompt /WX /Zc:forScope /RTC1 /Gd /MDd /EHsc /nologo /diagnostics:classic /std:c++17 /cgthreads1 /INCREMENTAL:NO /bigobj /Ferandomtest.exe") + defines + " " + always_define() + file_list(test_src_dir());
 			//string is copy-pasted from Debug config with manually-added /cgthreads1 /INCREMENTAL:NO /bigobj, /Fe, and /WX- replaced with /WX
 	}
 	virtual std::string build32option() {
@@ -174,7 +174,7 @@ class KscopeTestEnvironment {
 		abort();
 	}
 
-	virtual std::string genRandom64() {
+	virtual std::string gen_random64() {
 		static HCRYPTPROV prov = NULL;
 		if (!prov) {
 			BOOL ok = CryptAcquireContext(&prov,NULL,NULL,PROV_RSA_FULL,0);
@@ -197,7 +197,7 @@ class KscopeTestEnvironment {
 		}
 		return std::string(buf2);
 	}
-	virtual std::string exitCheck(std::string cmd_,bool expectok = true) {
+	virtual std::string exit_check(std::string cmd_,bool expectok = true) {
 		std::string cmd = replace_string(cmd_,"\"", "\\\"");
 		static int nextlabel = 1;
 		if (expectok) {
@@ -229,10 +229,10 @@ class KscopeTestEnvironment {
 		else
 			return std::string("randomtest.exe");
 	}
-	virtual std::string checkExe(int nseeds,config cfg,Flags flags) {
+	virtual std::string check_exe(int nseeds,config cfg,Flags flags) {
 		return "";
 	}
-	virtual std::string cmpFiles(std::string f1, std::string f2) {
+	virtual std::string cmp_files(std::string f1, std::string f2) {
 		return std::string("fc ") + f1 + " " + f2 + " >nul";
 	}
 	virtual std::string cleanup() {
@@ -257,36 +257,36 @@ protected:
 	KscopeTestGenerator(KscopeTestEnvironment& kenv_) : kenv(&kenv_) {
 	}
 
-	virtual std::string fixedSeeds() {
+	virtual std::string fixed_seeds() {
 		return std::string(" -DITHARE_KSCOPE_SEED=0x4b295ebab3333abc -DITHARE_KSCOPE_SEED2=0x36e007a38ae8e0ea");//from random.org
 	}
-	virtual std::string genSeed() {
-		return std::string(" -DITHARE_KSCOPE_SEED=0x") + kenv->genRandom64();
+	virtual std::string gen_seed() {
+		return std::string(" -DITHARE_KSCOPE_SEED=0x") + kenv->gen_random64();
 	}
 
-	virtual std::string genSeeds() {
-		return genSeed() + " -DITHARE_KSCOPE_SEED2=0x" + kenv->genRandom64();
+	virtual std::string gen_seeds() {
+		return gen_seed() + " -DITHARE_KSCOPE_SEED2=0x" + kenv->gen_random64();
 	}
 
-	virtual void issueCommand(std::string cmd) {
+	virtual void issue_command(std::string cmd) {
 		std::cout << kenv->echo(cmd) << std::endl;
 		std::cout << kenv->command(cmd) << std::endl;
 	}
 
-	virtual void buildCheckRunCheck(std::string cmd,int nseeds,KscopeTestEnvironment::config cfg,KscopeTestEnvironment::Flags flags,write_output wo) {
-		issueCommand(cmd);
-		std::cout << kenv->exitCheck(cmd) << std::endl;
-		std::cout << kenv->checkExe(nseeds,cfg,flags) << std::endl;
+	virtual void build_check_run_check(std::string cmd,int nseeds,KscopeTestEnvironment::config cfg,KscopeTestEnvironment::Flags flags,write_output wo) {
+		issue_command(cmd);
+		std::cout << kenv->exit_check(cmd) << std::endl;
+		std::cout << kenv->check_exe(nseeds,cfg,flags) << std::endl;
 
 		std::string tofile = "";
 		switch (wo) {
 		case write_output::none:
 			break;
 		case write_output::stable_first:
-			tofile = kenv->rootTestFolder() + "kscope.txt";
+			tofile = kenv->root_test_dir() + "kscope.txt";
 			break;
 		case write_output::stable_next:
-			tofile = kenv->rootTestFolder() + "kscope2.txt";
+			tofile = kenv->root_test_dir() + "kscope2.txt";
 			break;
 		case write_output::random:
 			tofile = "local_kscope.txt";
@@ -295,23 +295,23 @@ protected:
 			assert(false);
 		}
 		std::string cmdrun = kenv->run(tofile);
-		issueCommand(cmdrun);
-		std::cout << kenv->exitCheck(cmdrun) << std::endl;
+		issue_command(cmdrun);
+		std::cout << kenv->exit_check(cmdrun) << std::endl;
 		if(wo==write_output::stable_next) {
-			std::string cmpfiles = kenv->cmpFiles(kenv->rootTestFolder() + "kscope.txt", kenv->rootTestFolder() + "kscope2.txt");
-			issueCommand(cmpfiles);
-			std::cout << kenv->exitCheck(cmpfiles) << std::endl;
+			std::string cmpfiles = kenv->cmp_files(kenv->root_test_dir() + "kscope.txt", kenv->root_test_dir() + "kscope2.txt");
+			issue_command(cmpfiles);
+			std::cout << kenv->exit_check(cmpfiles) << std::endl;
 		}
 	}
 
 	virtual std::string seedsByNum(int nseeds) {
 		assert(nseeds >= -1 && nseeds <= 2);
 		if(nseeds==1)
-			return genSeed();
+			return gen_seed();
 		else if(nseeds==2)
-			return genSeeds();
+			return gen_seeds();
 		else if(nseeds==-1)
-			return fixedSeeds();
+			return fixed_seeds();
 		assert(nseeds==0);
 		return "";
 	}
@@ -319,15 +319,15 @@ protected:
 	virtual std::string buildCmd(KscopeTestEnvironment::config cfg,std::string defs) {
 		switch(cfg) {
 		case KscopeTestEnvironment::config::debug:
-			return kenv->buildDebug(defs);
+			return kenv->build_debug(defs);
 		case KscopeTestEnvironment::config::release:
-			return kenv->buildRelease(defs);
+			return kenv->build_release(defs);
 		}
 		assert(false);
 		return "";
 	}
 
-	virtual void buildCheckRunCheckx2(KscopeTestEnvironment::config cfg,std::string defs,int nseeds,KscopeTestEnvironment::Flags flags=0,write_output wo=write_output::none) {
+	virtual void build_check_run_check_x2(KscopeTestEnvironment::config cfg,std::string defs,int nseeds,KscopeTestEnvironment::Flags flags=0,write_output wo=write_output::none) {
 		assert(nseeds >= -1 && nseeds <= 2);
 		write_output wox = wo;
 		if(wo==write_output::stable){
@@ -339,65 +339,65 @@ protected:
 		}
 		
 		std::string cmd1 = buildCmd(cfg, defs + seedsByNum(nseeds));
-		buildCheckRunCheck(cmd1,nseeds,cfg,flags,wox);
+		build_check_run_check(cmd1,nseeds,cfg,flags,wox);
 		if(wox==write_output::stable_first)
 			wox = write_output::stable_next;
 		std::string cmd2 = buildCmd(cfg, defs + seedsByNum(nseeds) + " -DITHARE_KSCOPE_TEST_NO_NAMESPACE");
-		buildCheckRunCheck(cmd2,nseeds,cfg,flags,wox);
+		build_check_run_check(cmd2,nseeds,cfg,flags,wox);
 		
 		if(add32tests) {
 			std::string m32 = kenv->build32option();
 			std::string cmd1 = buildCmd(cfg, defs + m32 + seedsByNum(nseeds));
-			buildCheckRunCheck(cmd1,nseeds,cfg,flags,wox);
+			build_check_run_check(cmd1,nseeds,cfg,flags,wox);
 			std::string cmd2 = buildCmd(cfg, defs + m32 + seedsByNum(nseeds) + " -DITHARE_KSCOPE_TEST_NO_NAMESPACE");
-			buildCheckRunCheck(cmd2,nseeds,cfg,flags,wox);
+			build_check_run_check(cmd2,nseeds,cfg,flags,wox);
 		}
 	}
 	
-	virtual void genDefineTests() {
+	virtual void gen_fixed_tests() {
 		std::cout << kenv->echo("=== kscope -Define Test 1/12 (DEBUG, -DITHARE_KSCOPE_ENABLE_AUTO_DBGPRINT, write_output::stable) ===",true) << std::endl;
-		buildCheckRunCheckx2(KscopeTestEnvironment::config::debug, " -DITHARE_KSCOPE_CONSISTENT_XPLATFORM_IMPLICIT_SEEDS -DITHARE_KSCOPE_ENABLE_AUTO_DBGPRINT", -1, KscopeTestEnvironment::flag_auto_dbg_print, write_output::stable);
+		build_check_run_check_x2(KscopeTestEnvironment::config::debug, " -DITHARE_KSCOPE_CONSISTENT_XPLATFORM_IMPLICIT_SEEDS -DITHARE_KSCOPE_ENABLE_AUTO_DBGPRINT", -1, KscopeTestEnvironment::flag_auto_dbg_print, write_output::stable);
 		std::cout << kenv->echo("=== kscope -Define Test 2/12 (RELEASE, -DITHARE_KSCOPE_ENABLE_AUTO_DBGPRINT=2, write_output::random)===",true) << std::endl;
-		buildCheckRunCheckx2(KscopeTestEnvironment::config::release, " -DITHARE_KSCOPE_CONSISTENT_XPLATFORM_IMPLICIT_SEEDS -DITHARE_KSCOPE_ENABLE_AUTO_DBGPRINT=2", 2, KscopeTestEnvironment::flag_auto_dbg_print,write_output::random);
+		build_check_run_check_x2(KscopeTestEnvironment::config::release, " -DITHARE_KSCOPE_CONSISTENT_XPLATFORM_IMPLICIT_SEEDS -DITHARE_KSCOPE_ENABLE_AUTO_DBGPRINT=2", 2, KscopeTestEnvironment::flag_auto_dbg_print,write_output::random);
 		std::cout << kenv->echo("=== kscope -Define Test 3/12 (DEBUG, no ITHARE_KSCOPE_SEED) ===",true ) << std::endl;
-		buildCheckRunCheckx2(KscopeTestEnvironment::config::debug,"",0);
+		build_check_run_check_x2(KscopeTestEnvironment::config::debug,"",0);
 		std::cout << kenv->echo("=== kscope -Define Test 4/12 (RELEASE, no ITHARE_KSCOPE_SEED) ===",true) << std::endl;
-		buildCheckRunCheckx2(KscopeTestEnvironment::config::release,"",0);
+		build_check_run_check_x2(KscopeTestEnvironment::config::release,"",0);
 		std::cout << kenv->echo("=== kscope -Define Test 5/12 (DEBUG, single ITHARE_KSCOPE_SEED) ===",true) << std::endl;
-		buildCheckRunCheckx2(KscopeTestEnvironment::config::debug,"",1);
+		build_check_run_check_x2(KscopeTestEnvironment::config::debug,"",1);
 		std::cout << kenv->echo("=== kscope -Define Test 6/12 (RELEASE, single ITHARE_KSCOPE_SEED) ===",true) << std::endl;
-		buildCheckRunCheckx2(KscopeTestEnvironment::config::release,"",1);
+		build_check_run_check_x2(KscopeTestEnvironment::config::release,"",1);
 		std::cout << kenv->echo("=== kscope -Define Test 7/12 (DEBUG) ===",true ) << std::endl;
-		buildCheckRunCheckx2(KscopeTestEnvironment::config::debug,"",2);
+		build_check_run_check_x2(KscopeTestEnvironment::config::debug,"",2);
 		std::cout << kenv->echo("=== kscope -Define Test 8/12 (RELEASE) ===",true ) << std::endl;
-		buildCheckRunCheckx2(KscopeTestEnvironment::config::release,"",2);
+		build_check_run_check_x2(KscopeTestEnvironment::config::release,"",2);
 		std::cout << kenv->echo("=== kscope -Define Test 9/12 (DEBUG, -DITHARE_KSCOPE_DBG_RUNTIME_CHECKS) ===" ,true ) << std::endl;
 	#if defined(_MSC_VER)
 		std::cout << kenv->echo("*** SKIPPED -DITHARE_KSCOPE_DBG_RUNTIME_CHECKS FOR MSVC (cannot cope) ***",true) << std::endl;
 	#else
-		buildCheckRunCheckx2(KscopeTestEnvironment::config::debug, " -DITHARE_KSCOPE_DBG_RUNTIME_CHECKS", 2);
+		build_check_run_check_x2(KscopeTestEnvironment::config::debug, " -DITHARE_KSCOPE_DBG_RUNTIME_CHECKS", 2);
 	#endif
 		std::cout << kenv->echo( "=== kscope -Define Test 10/12 (RELEASE, -DITHARE_KSCOPE_DBG_RUNTIME_CHECKS) ===" ,true ) << std::endl;
 	#if defined(_MSC_VER)
 		std::cout << kenv->echo("*** SKIPPED -DITHARE_KSCOPE_DBG_RUNTIME_CHECKS FOR MSVC (cannot cope) ***",true) << std::endl;
 	#else
-		buildCheckRunCheckx2(KscopeTestEnvironment::config::release, " -DITHARE_KSCOPE_DBG_RUNTIME_CHECKS",2);
+		build_check_run_check_x2(KscopeTestEnvironment::config::release, " -DITHARE_KSCOPE_DBG_RUNTIME_CHECKS",2);
 	#endif
 		std::cout << kenv->echo("=== kscope -Define Test 11/12 (DEBUG, -DITHARE_KSCOPE_CRYPTO_PRNG) ===",true) << std::endl;
 	#if defined(_MSC_VER) && !defined(_M_X64)
 		std::cout << kenv->echo("*** SKIPPED -DITHARE_KSCOPE_DBG_CRYPTO_PRNG FOR MSVC/x86 (cannot cope) ***",true) << std::endl;
 	#else
-		buildCheckRunCheckx2(KscopeTestEnvironment::config::debug," -DITHARE_KSCOPE_CRYPTO_PRNG",2);
+		build_check_run_check_x2(KscopeTestEnvironment::config::debug," -DITHARE_KSCOPE_CRYPTO_PRNG",2);
 	#endif
 		std::cout << kenv->echo("=== kscope -Define Test 12/12 (RELEASE, -DITHARE_KSCOPE_CRYPTO_PRNG) ===",true) << std::endl;
 	#if defined(_MSC_VER) && !defined(_M_X64)
 		std::cout << kenv->echo("*** SKIPPED -DITHARE_KSCOPE_DBG_CRYPTO_PRNG FOR MSVC/x86 (cannot cope) ***",true) << std::endl;
 	#else
-		buildCheckRunCheckx2(KscopeTestEnvironment::config::release, " -DITHARE_KSCOPE_CRYPTO_PRNG", 2);
+		build_check_run_check_x2(KscopeTestEnvironment::config::release, " -DITHARE_KSCOPE_CRYPTO_PRNG", 2);
 	#endif
 	}
 
-	virtual void genRandomTests(size_t n) {
+	virtual void gen_random_tests(size_t n) {
 		for (size_t i = 0; i < n; ++i) {
 			KscopeTestEnvironment::config cfg = KscopeTestEnvironment::config::release;
 			if (i % 4 == 0)
@@ -414,38 +414,38 @@ protected:
 			if(add32tests && i%5 <=1)
 				extra += kenv->build32option();
 			std::cout << kenv->echo( std::string("=== Random Test ") + std::to_string(i+1) + "/" + std::to_string(n) + " ===", true ) << std::endl;
-			std::string defines = genSeeds()+" -DITHARE_KSCOPE_CONSISTENT_XPLATFORM_IMPLICIT_SEEDS"+extra;
+			std::string defines = gen_seeds()+" -DITHARE_KSCOPE_CONSISTENT_XPLATFORM_IMPLICIT_SEEDS"+extra;
 			if( cfg == KscopeTestEnvironment::config::debug )
-				buildCheckRunCheck(kenv->buildDebug(defines),2, KscopeTestEnvironment::config::debug,0,write_output::none);
+				build_check_run_check(kenv->build_debug(defines),2, KscopeTestEnvironment::config::debug,0,write_output::none);
 			else {
 				assert(cfg == KscopeTestEnvironment::config::release);
-				buildCheckRunCheck(kenv->buildRelease(defines),2, KscopeTestEnvironment::config::release,0,write_output::none);
+				build_check_run_check(kenv->build_release(defines),2, KscopeTestEnvironment::config::release,0,write_output::none);
 			}
 		}
 	}
 
-	void genSetup() {
+	void gen_setup() {
 		std::cout << kenv->setup() << std::endl;
 	}
 
-	void genCleanup() {
+	void gen_cleanup() {
 		std::cout << kenv->cleanup() << std::endl;
 	}
 };
 
 inline int usage() {
 	std::cout << "Usage:" << std::endl;
-	std::cout << "helper [-nodefinetests] <nrandomtests>" << std::endl; 
+	std::cout << "helper [-nofixedtests] <nrandomtests>" << std::endl; 
 	return 1;
 }
 
 inline int almost_main(KscopeTestEnvironment& kenv, KscopeTestGenerator& kgen, int argc, char** argv) {
-	bool nodefinetests = false;
+	bool nofixedtests = false;
 	
 	int argcc = 1;
 	while(argcc<argc) {
-		if(strcmp(argv[argcc],"-nodefinetests") == 0) {
-			nodefinetests = true;
+		if(strcmp(argv[argcc],"-nofixedtests") == 0) {
+			nofixedtests = true;
 			argcc++;
 		}
 		else if(strcmp(argv[argcc],"-add32tests") == 0) {
@@ -454,7 +454,7 @@ inline int almost_main(KscopeTestEnvironment& kenv, KscopeTestGenerator& kgen, i
 		}
 		else if (strcmp(argv[argcc], "-srcdirprefix") == 0) {
 			assert(argcc +1 < argc);
-			kenv.srcDirPrefix = argv[argcc+1];
+			kenv.src_dir_prefix = argv[argcc+1];
 			argcc+=2;
 		}
 		//other options go here
@@ -469,11 +469,11 @@ inline int almost_main(KscopeTestEnvironment& kenv, KscopeTestGenerator& kgen, i
 	if(*end!=0)
 		return usage();
 		
-	kgen.genSetup();
-	if(!nodefinetests)
-		kgen.genDefineTests();
+	kgen.gen_setup();
+	if(!nofixedtests)
+		kgen.gen_fixed_tests();
 
-	kgen.genRandomTests(nrandom);
-	kgen.genCleanup();
+	kgen.gen_random_tests(nrandom);
+	kgen.gen_cleanup();
 	return 0;
 }
