@@ -74,7 +74,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #if _MSC_VER < 1910
 #pragma message("MSVC prior to VS2017 is not likely to work :-(")
 #endif
-#pragma warning (disable:4307 4146)
+#pragma warning (disable:4307 4146 4310 4702)
 
 #define ITHARE_KSCOPE_FORCEINLINE __forceinline
 #define ITHARE_KSCOPE_NOINLINE __declspec(noinline)

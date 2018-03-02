@@ -541,18 +541,18 @@ namespace ithare {
 		using Injection7 = KscopeInjection<uint32_t, KscopeExtendedZeroLiteralContext<uint32_t>, InjectionRequirements, ITHARE_KSCOPE_NEW_PRNG(seed, 10), std::max(split7,2)>;
 		static_assert(sizeof(typename Injection7::return_type) == sizeof(uint32_t));//only_bijections
 
-		ITHARE_KSCOPE_FORCEINLINE static constexpr uint32_t little_endian4(const char* str, size_t offset) {//TODO: BIG-ENDIAN
-			//replacement for non-constexpr return *(uint32_t*)(str + offset);
-			return str[offset] | (uint32_t(str[offset + 1]) << 8) | (uint32_t(str[offset + 2]) << 16) | (uint32_t(str[offset + 3]) << 24);
+		ITHARE_KSCOPE_FORCEINLINE static constexpr uint32_t little_endian4(const char* s, size_t offset) {//TODO: BIG-ENDIAN
+			//replacement for non-constexpr return *(uint32_t*)(s + offset);
+			return s[offset] | (uint32_t(s[offset + 1]) << 8) | (uint32_t(s[offset + 2]) << 16) | (uint32_t(s[offset + 3]) << 24);
 		}
-		ITHARE_KSCOPE_FORCEINLINE static constexpr uint32_t last4(char const str[origSz], size_t offset, uint32_t filler) {
+		ITHARE_KSCOPE_FORCEINLINE static constexpr uint32_t last4(char const s[origSz], size_t offset, uint32_t filler) {
 			assert(origSz > offset);
 			size_t delta = origSz - offset;
 			assert(delta <= 3);
 			char buf[4] = {};
 			size_t i = 0;
 			for (; i < delta; ++i) {
-				buf[i] = str[origSz + i];
+				buf[i] = s[origSz + i];
 			}
 			for (; i < 4; ++i) {
 				buf[i] = char(filler);
@@ -560,12 +560,12 @@ namespace ithare {
 			}
 			return little_endian4(buf,0);
 		}
-		ITHARE_KSCOPE_FORCEINLINE static constexpr uint32_t get4(char const str[origSz], size_t offset) {
+		ITHARE_KSCOPE_FORCEINLINE static constexpr uint32_t get4(char const s[origSz], size_t offset) {
 			assert(offset < origSz);
 			if (offset + 4 < origSz)
-				return little_endian4(str, offset);
+				return little_endian4(s, offset);
 			else
-				return last4(str, offset,FILLER);
+				return last4(s, offset,FILLER);
 		}
 		ITHARE_KSCOPE_FORCEINLINE static constexpr KscopeArrayWrapper<uint32_t, sz4> str_kscoped() {
 			KscopeArrayWrapper<uint32_t, sz4> ret = {{}};

@@ -351,6 +351,11 @@ chacha_ctx_single_test(const chacha_tv *tv, uint8_t* out0, uint8_t* in0)
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 #endif
 
+#ifdef _MSC_VER //warnings in lest.hpp - can only disable :-(
+#pragma warning(push)
+#pragma warning(disable:4100)
+#endif
+
 const lest::test module[] = {
     CASE( "compile-time: crypto_chacha_20_test_compile_time()" ) 
     {//pretty ugly; NOT recommended for practical usage (see KSCOPE_CT_* wrappers below for recommended usage of constexpr crypto)
@@ -433,6 +438,10 @@ const lest::test module[] = {
 		}
     },
 };
+
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif
 
 #ifdef __clang__
 #pragma GCC diagnostic pop
