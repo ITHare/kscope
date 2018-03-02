@@ -78,7 +78,7 @@ ITHARE_KSCOPE_FINTP2(uint64_t) factorial(ITHARE_KSCOPE_DECLAREPARAM_INT(int64_t)
 	return ret;
 }
 
-ITHARE_KSCOPE_NOINLINE ITHARE_KSCOPE_INT3(int64_t) factorial(ITHARE_KSCOPE_INT3(int64_t) x) {
+ITHARE_KSCOPE_NOINLINE ITHARE_KSCOPE_INT3(uint64_t) factorial(ITHARE_KSCOPE_INT3(int64_t) x) {
 	return ITHARE_KSCOPE_CALL3(factorial)(x);
 }
 }}//namespace ithare::kscope
