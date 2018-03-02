@@ -139,11 +139,11 @@ class KscopeTestEnvironment {
 			return  
 			std::string("# no shebang - don't want to change current shell")
 			+ "\nif [ -z ${BASH_VERSINFO[0]} ]; then"
-			  "\necho \"Bash version 4+ is required (to work with .sh or older bash, re-generate using randomtest -gen_sh)\""
+			  "\necho \"Bash version 4+ is required (to work with .sh or older bash, re-generate using randomtestgen -gen_sh)\""
 			  "\nexit 1"
 			  "\nfi"
 			  "\nif [ ${BASH_VERSINFO[0]} -lt 4 ]; then"
-			  "\necho \"Bash version 4+ is required (to work with .sh or older bash, re-generate using randomtest -gen_sh)\""
+			  "\necho \"Bash version 4+ is required (to work with .sh or older bash, re-generate using randomtestgen -gen_sh)\""
 			  "\nexit 1"
 			  "\nfi"
 			+ "\nCXX=${CXX:=g++}"
