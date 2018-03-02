@@ -68,6 +68,7 @@ class KscopeTestEnvironment {
 	using Flags = uint32_t;
 	constexpr static Flags flag_auto_dbg_print = 0x01;
 	std::string src_dir_prefix = "";
+	bool gen_sh = false;
 	
 	virtual std::string root_test_dir() { return  src_dir_prefix + "../"; }
 	virtual std::string test_src_dir() { return  src_dir_prefix + "../"; }
@@ -134,18 +135,37 @@ class KscopeTestEnvironment {
 		return std::string("diff ") + f1 + " " + f2 + " 2>&1 >/dev/null";
 	}
 	virtual std::string setup() {
-		return //std::string("#!/bin/bash") 
-		std::string("#!/usr/bin/env bash")
-		+ "\nCXX=${CXX:=g++}"
-		//+ "\nHIGHLIGHT='\\033[32m\\033[1m\\033[7m'\nNOHIGHLIGHT='\\033[0m'\n" //along the lines of https://stackoverflow.com/a/5947802/4947867
-		+ "\nHIGHLIGHT=\"$(tput bold)$(tput setaf 2)$(tput rev)\""
-		+ "\nNOHIGHLIGHT=\"$(tput sgr0)\""
-		+ "\n" + echo("===*** COMPILER BEING USED: CXX=${CXX} ***===",true)+"\n$CXX --version"
-		+ "\nSTART=${1:-f1}"
-		+ "\ncase $START in";
+		if( !gen_sh ) {
+			return  
+			std::string("# no shebang - don't want to change current shell")
+			+ "\nif [ -z ${BASH_VERSINFO[0]} ]; then"
+			  "\necho \"Bash version 4+ is required (to work with .sh or older bash, re-generate using randomtest -gen_sh)\""
+			  "\nexit 1"
+			  "\nfi"
+			  "\nif [ ${BASH_VERSINFO[0]} -lt 4 ]; then"
+			  "\necho \"Bash version 4+ is required (to work with .sh or older bash, re-generate using randomtest -gen_sh)\""
+			  "\nexit 1"
+			  "\nfi"
+			+ "\nCXX=${CXX:=g++}"
+			+ "\nHIGHLIGHT=\"$(tput bold)$(tput setaf 2)$(tput rev)\""
+			  "\nNOHIGHLIGHT=\"$(tput sgr0)\""
+			+ "\n" + echo("===*** COMPILER BEING USED: CXX=${CXX} ***===",true)+"\n$CXX --version"
+			+ "\nSTART=${1:-f1}"
+			  "\ncase $START in";
+		  }
+		else {
+			return std::string("# no shebang - don't want to change current shell")
+			+ "\necho \"NOTICE: .sh version, start-from parameter is disabled\""
+			+ "\nCXX=${CXX:=g++}"
+			+ "\nHIGHLIGHT=\"$(tput bold)$(tput setaf 2)$(tput rev)\""
+			  "\nNOHIGHLIGHT=\"$(tput sgr0)\""
+			+ "\n" + echo("===*** COMPILER BEING USED: CXX=${CXX} ***===",true)+"\n$CXX --version";
+		}
 	}
 	static int nlabels;
 	virtual std::string label(std::string lab) {
+		if( gen_sh )
+			return "";
 		if(nlabels++==0)
 			return lab+")";
 		else
@@ -153,8 +173,12 @@ class KscopeTestEnvironment {
 			+ "\n"+lab+")";
 	}
 	virtual std::string cleanup() {
-		return std::string("esac") 
-		+ "\nrm randomtest";	
+		if (!gen_sh ) {
+			return std::string("esac") 
+			+ "\nrm randomtest";
+		}
+		else
+			return "rm randomtest";
 	}
 
 };
@@ -474,21 +498,19 @@ protected:
 };
 
 inline int usage() {
-	std::cout << "Usage:" << std::endl;
-	std::cout << "helper [-nofixedtests] <nrandomtests>" << std::endl; 
+	std::cerr << "Usage:" << std::endl;
+	std::cerr << "randomtestgen"; 
+#if defined(__APPLE_CC__) || defined(__linux__)
+	std::cerr << " [-gen_sh]";
+#endif
+	std::cerr << " [-add32tests] [-srcdirprefix] <nrandomtests>" << std::endl;
 	return 1;
 }
 
 inline int almost_main(KscopeTestEnvironment& kenv, KscopeTestGenerator& kgen, int argc, char** argv) {
-	bool nofixedtests = false;
-	
 	int argcc = 1;
 	while(argcc<argc) {
-		if(strcmp(argv[argcc],"-nofixedtests") == 0) {
-			nofixedtests = true;
-			argcc++;
-		}
-		else if(strcmp(argv[argcc],"-add32tests") == 0) {
+		if(strcmp(argv[argcc],"-add32tests") == 0) {
 			kgen.add32tests = true;
 			argcc++;
 		}
@@ -497,6 +519,12 @@ inline int almost_main(KscopeTestEnvironment& kenv, KscopeTestGenerator& kgen, i
 			kenv.src_dir_prefix = argv[argcc+1];
 			argcc+=2;
 		}
+#if defined(__APPLE_CC__) || defined(__linux__)
+		else if(strcmp(argv[argcc],"-gen_sh") == 0) {
+			kenv.gen_sh = true;
+			argcc++;
+		}
+#endif
 		//other options go here
 		else
 			break;
@@ -510,8 +538,7 @@ inline int almost_main(KscopeTestEnvironment& kenv, KscopeTestGenerator& kgen, i
 		return usage();
 		
 	kgen.gen_setup();
-	if(!nofixedtests)
-		kgen.gen_fixed_tests();
+	kgen.gen_fixed_tests();
 
 	kgen.gen_random_tests(nrandom);
 	kgen.gen_cleanup();
