@@ -214,7 +214,7 @@ namespace ithare { namespace kscope {
 #endif
 	};
 	
-}}; //namespace ithare::kscope
+}} //namespace ithare::kscope
  
 #endif //ITHARE_KSCOPE_SEED
 

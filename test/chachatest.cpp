@@ -345,14 +345,16 @@ chacha_ctx_single_test(const chacha_tv *tv, uint8_t* out0, uint8_t* in0)
 	ithare::kscope::kscope_copyarr(out0,out,tv->len);
 }
 
-#ifdef __clang__ //warnings in lest.hpp - can only disable :-(
+#ifdef __GNUC__ //warnings in lest.hpp - can only disable :-(
 #pragma GCC diagnostic push
+#ifdef __clang__
 #pragma GCC diagnostic ignored "-Wmissing-braces"
+#endif
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 #endif
 
 const lest::test module[] = {
-    CASE( "compile-time: crypto_chacha_20_test_compile_time()" ) 
+    CASE( "compile-time: crypto_chacha_20_test_compile_time()", ) 
     {//pretty ugly; NOT recommended for practical usage (see KSCOPE_CT_* wrappers below for recommended usage of constexpr crypto)
 			constexpr uint8_t in[64] = {};
 			constexpr uint8_t out[64] = {};
@@ -361,7 +363,7 @@ const lest::test module[] = {
 			static_assert(tv->len <= sizeof(out));
 			crypto_chacha_20_test_compile_time(tv,tv->out,in);
 	},
-    CASE( "compile-time: KSCOPE_CT_Chacha(); RECOMMENDED way to use compile-time crypto" ) 
+    CASE( "compile-time: KSCOPE_CT_Chacha(); RECOMMENDED way to use compile-time crypto", ) 
     {
 			constexpr const chacha_tv* tv = &chacha_test_vectors[0];
 #ifdef ITHARE_KSCOPE_WORKAROUND_FOR_GCC_BUG_84463
@@ -380,7 +382,7 @@ const lest::test module[] = {
 #endif
 			constexpr ChaCha_ctx<> ctx2 = encrypted1.first;
 	},
-    CASE( "crypto_chacha_20_test()" ) 
+    CASE( "crypto_chacha_20_test()", ) 
     {
 		for (size_t i = 0; i < N_VECTORS; i++) {
 			uint8_t in[64];
@@ -393,7 +395,7 @@ const lest::test module[] = {
 			EXPECT(memcmp(out,tv->out,tv->len)==0);
 		}
     },
-    CASE( "chacha_ctx_full_test()" ) 
+    CASE( "chacha_ctx_full_test()", ) 
     {
 		for (size_t i = 0; i < N_VECTORS; i++) {
 			uint8_t in[64];
@@ -406,7 +408,7 @@ const lest::test module[] = {
 			EXPECT(memcmp(out,tv->out,tv->len)==0);
 		}
     },
-    CASE( "chacha_ctx_partial_test()" ) 
+    CASE( "chacha_ctx_partial_test()", ) 
     {
 		for (size_t i = 0; i < N_VECTORS; i++) {
 			uint8_t in[64];
@@ -419,7 +421,7 @@ const lest::test module[] = {
 			EXPECT(memcmp(out,tv->out,tv->len)==0);
 		}
     },
-    CASE( "chacha_ctx_single_test()" ) 
+    CASE( "chacha_ctx_single_test()", ) 
     {
 		for (size_t i = 0; i < N_VECTORS; i++) {
 			uint8_t in[64];
@@ -434,7 +436,7 @@ const lest::test module[] = {
     },
 };
 
-#ifdef __clang__
+#ifdef __GNUC__
 #pragma GCC diagnostic pop
 #endif
 

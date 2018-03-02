@@ -105,7 +105,7 @@ public:
 #endif
 
 static const lest::test module[] = {
-	CASE("types") {
+	CASE("types",) {
 		//well, at least for common 32/64-bit platforms is should stand
 		using TT1 = typename ITKSCOPE kscope_integral_operator_promoconv<int8_t,unsigned short>::type;
 		static_assert(std::is_same<TT1,int>::value);
@@ -130,7 +130,7 @@ static const lest::test module[] = {
 		EXPECT((ITKSCOPE kscope_integral_operator_literal_cast_is_safe<TT4,int,0>()==true));
 		EXPECT((ITKSCOPE kscope_integral_operator_literal_cast_is_safe<TT4,int,0x7fff'ffff>()==true));
 	},
-	CASE("factorial()") {
+	CASE("factorial()",) {
 		auto f = ITKSCOPE ITHARE_KSCOPE_CALL4(factorial)(ITHARE_KSCOPE_INTLIT3I(17)); ITHARE_KSCOPE_DBGPRINT(f);
 		EXPECT(f==UINT64_C(355687428096000));
 		EXPECT( ITKSCOPE factorial(18) == UINT64_C(6402373705728000));
