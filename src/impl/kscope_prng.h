@@ -142,7 +142,7 @@ namespace ithare {
 			uint64_t u = kscope_const_random1[modifier];
 			return kscope_murmurhash2(u, seed);//could use ranhash here too, but why not?
 		}
-		constexpr uint64_t kscope_init_prng(const char* file, int line, int counter) {
+		constexpr uint64_t kscope_init_prng(const char* file, int line, [[maybe_unused]] int counter) {
 			uint64_t u = kscope_global_seed ^ line;
 #ifdef ITHARE_KSCOPE_CONSISTENT_XPLATFORM_IMPLICIT_SEEDS
 			const char* filename = kscope_normalize_fname(file);

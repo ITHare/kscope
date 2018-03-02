@@ -90,7 +90,7 @@ namespace ithare { namespace kscope {
 		//to be used as a context for literals-created-from-literals
 		using Type = T;
 		constexpr static KSCOPECYCLES context_cycles = 0;
-		constexpr static KSCOPECYCLES calc_cycles(KSCOPECYCLES inj, KSCOPECYCLES surj) {
+		constexpr static KSCOPECYCLES calc_cycles([[maybe_unused]] KSCOPECYCLES inj, KSCOPECYCLES surj) {
 			return surj;//for literals, ONLY surjection costs apply in runtime (as injection applies in compile-time)
 		}
 		constexpr static KSCOPECYCLES literal_cycles = 0;
@@ -173,7 +173,7 @@ namespace ithare { namespace kscope {
 	public:
 		using Type = T;
 		constexpr static KSCOPECYCLES context_cycles = WhichType::context_cycles;
-		constexpr static KSCOPECYCLES calc_cycles(KSCOPECYCLES inj, KSCOPECYCLES surj) {
+		constexpr static KSCOPECYCLES calc_cycles([[maybe_unused]] KSCOPECYCLES inj, KSCOPECYCLES surj) {
 			return surj;//for literals, ONLY surjection costs apply in runtime (as injection applies in compile-time)
 		}
 

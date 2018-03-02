@@ -250,7 +250,7 @@ crypto_chacha_20_test(const chacha_tv* tv, uint8_t* out0, uint8_t* in0)
 }
 
 static void
-constexpr crypto_chacha_20_test_compile_time(const chacha_tv* tv, const uint8_t* expected_out, const uint8_t* in0)
+constexpr crypto_chacha_20_test_compile_time(const chacha_tv* tv, [[maybe_unused]] const uint8_t* expected_out, const uint8_t* in0)
 {
 	assert(tv->len <= 64);
 	/*ITHARE_KSCOPE_INT0C(uint8_t) in[64];
@@ -345,9 +345,10 @@ chacha_ctx_single_test(const chacha_tv *tv, uint8_t* out0, uint8_t* in0)
 	ithare::kscope::kscope_copyarr(out0,out,tv->len);
 }
 
-#ifdef __clang__ //warning in lest.hpp - can only disable :-(
+#ifdef __clang__ //warnings in lest.hpp - can only disable :-(
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wmissing-braces"
+#pragma GCC diagnostic ignored "-Wunused-parameter"
 #endif
 
 const lest::test module[] = {
