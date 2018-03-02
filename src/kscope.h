@@ -905,42 +905,42 @@ namespace ithare {
 			template<class T2, T2 C2>
 			constexpr bool operator <(KscopeLiteralDbg<T2, C2> t) {
 				if constexpr(kscope_integral_operator_literal_cast_is_safe<T,T2,C2>())//safe to cast, avoiding spurious signed/unsigned mismatch warning
-					return value() < T(t.value());
+					return value() < T_(t.value());
 				else
 					return value() < t.value();
 			}
 			template<class T2, T2 C2>
 			constexpr bool operator >(KscopeLiteralDbg<T2, C2> t) {
 				if constexpr(kscope_integral_operator_literal_cast_is_safe<T,T2,C2>())//safe to cast, avoiding spurious signed/unsigned mismatch warning
-					return value() > T(t.value());
+					return value() > T_(t.value());
 				else
 					return value() > t.value();
 			}
 			template<class T2, T2 C2>
 			constexpr bool operator ==(KscopeLiteralDbg<T2, C2> t) {
 				if constexpr(kscope_integral_operator_literal_cast_is_safe<T,T2,C2>())//safe to cast, avoiding spurious signed/unsigned mismatch warning
-					return value() == T_(T(t.value()));
+					return value() == T_(t.value());
 				else
 					return value() == t.value();
 			}
 			template<class T2, T2 C2>
 			constexpr bool operator !=(KscopeLiteralDbg<T2, C2> t) {
 				if constexpr(kscope_integral_operator_literal_cast_is_safe<T,T2,C2>())//safe to cast, avoiding spurious signed/unsigned mismatch warning
-					return value() != T(t.value());
+					return value() != T_(t.value());
 				else
 					return value() != t.value();
 			}
 			template<class T2, T2 C2>
 			constexpr bool operator <=(KscopeLiteralDbg<T2, C2> t) {
 				if constexpr(kscope_integral_operator_literal_cast_is_safe<T,T2,C2>())//safe to cast, avoiding spurious signed/unsigned mismatch warning
-					return value() <= T(t.value());
+					return value() <= T_(t.value());
 				else
 					return value() <= t.value();
 			}
 			template<class T2, T2 C2>
 			constexpr bool operator >=(KscopeLiteralDbg<T2, C2> t) {
 				if constexpr(kscope_integral_operator_literal_cast_is_safe<T,T2,C2>())//safe to cast, avoiding spurious signed/unsigned mismatch warning
-					return value() > T(t.value());
+					return value() > T_(t.value());
 				else
 					return value() > t.value();
 			}

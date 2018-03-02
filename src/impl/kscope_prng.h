@@ -118,7 +118,6 @@ namespace ithare {
 			assert(maxn < 1'048'576);//limiting bits to 20 and bias to <0.1%
 									 //  if REALLY necessary - can raise the limit at the cost of increased bias
 
-			assert(modifier >= 0);
 			assert(modifier < sizeof(kscope_const_random0) / sizeof(uint64_t));//if necessary - add more random data to kscope_const_random0
 			uint64_t u = kscope_const_random0[modifier] ^ seed;
 			uint64_t v = kscope_ranhash(u);
@@ -127,7 +126,6 @@ namespace ithare {
 		static constexpr size_t kscope_const_nrandom0 = sizeof(kscope_const_random0) / sizeof(uint64_t);
 		constexpr uint32_t kscope_random_uint32(uint64_t seed, uint32_t modifier) {
 			uint64_t init = 0;
-			assert(modifier >= 0);
 			if(modifier >= kscope_const_nrandom0) {
 				init ^= kscope_const_random0[kscope_const_nrandom0-1];
 				modifier -= kscope_const_nrandom0;
@@ -140,7 +138,6 @@ namespace ithare {
 		}
 
 		constexpr uint64_t kscope_new_prng(uint64_t seed, uint32_t modifier) {
-			assert(modifier >= 0);
 			assert(modifier < sizeof(kscope_const_random0) / sizeof(uint64_t));//if necessary - add more random data to kscope_const_random0
 			uint64_t u = kscope_const_random1[modifier];
 			return kscope_murmurhash2(u, seed);//could use ranhash here too, but why not?
@@ -237,7 +234,6 @@ namespace ithare {
 			UINT32_C(0xa0d7'9b06), UINT32_C(0x29da'2659), UINT32_C(0x3b70'20ec), UINT32_C(0xa3ff'52fb)
 		};//from random.org
 		constexpr std::pair<uint64_t, uint64_t> kscope_new_prng(uint64_t lo, uint64_t hi, uint32_t modifier) {
-			assert(modifier >= 0);
 			assert(modifier < sizeof(kscope_const_random0) / sizeof(uint64_t));//if necessary - add more random data to kscope_const_random0
 																			//using block cipher (currently XXTEA) in CTR mode
 			assert(modifier < sizeof(kscope_const_random1) / sizeof(uint64_t));//if necessary - add more random data to kscope_const_random0
@@ -253,13 +249,12 @@ namespace ithare {
 			uint64_t rhi = (uint64_t(v.arr[3]) << 32) | uint64_t(v.arr[2]);
 			return std::pair<uint64_t, uint64_t>(rlo, rhi);
 		}
-		constexpr size_t kscope_random(uint64_t lo, uint64_t hi, int32_t modifier, size_t maxn) {
+		constexpr size_t kscope_random(uint64_t lo, uint64_t hi, uint32_t modifier, size_t maxn) {
 			//for maxn < 1M, bias is limited to <0.1% - more than enough for our purposes
 			assert(maxn > 0);
 			assert(maxn < 1'048'576);//limiting bits to 20 and bias to <0.1%
 									 //  if REALLY necessary - can raise the limit at the cost of increased bias
 
-			assert(modifier >= 0);
 			assert(modifier < sizeof(kscope_const_random0) / sizeof(uint64_t));//if necessary - add more random data to kscope_const_random0
 																			//using block cipher (currently XXTEA) in CTR mode
 			assert(modifier < sizeof(kscope_const_random1) / sizeof(uint64_t));//if necessary - add more random data to kscope_const_random0
@@ -273,8 +268,7 @@ namespace ithare {
 			uint64_t rlo = (uint64_t(v.arr[1]) << 32) | uint64_t(v.arr[0]);
 			return rlo % maxn;
 		}
-		constexpr uint32_t kscope_random_uint32(uint64_t lo, uint64_t hi, int32_t modifier) {
-			assert(modifier >= 0);
+		constexpr uint32_t kscope_random_uint32(uint64_t lo, uint64_t hi, uint32_t modifier) {
 			assert(modifier < sizeof(kscope_const_random0) / sizeof(uint64_t));//if necessary - add more random data to kscope_const_random0
 																			//using block cipher (currently XXTEA) in CTR mode
 			assert(modifier < sizeof(kscope_const_random1) / sizeof(uint64_t));//if necessary - add more random data to kscope_const_random0
