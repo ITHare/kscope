@@ -479,7 +479,7 @@ protected:
 			if(add32tests && i%5 <=1)
 				extra += kenv->build32option();
 			insert_label(std::string("r")+std::to_string(i+1));
-			std::cout << kenv->echo( std::string("=== Random Test ") + std::to_string(i+1) + "/" + std::to_string(n) + " ===", true ) << std::endl;
+			std::cout << kenv->echo( std::string("=== " + project_name() + " Random Test ") + std::to_string(i+1) + "/" + std::to_string(n) + " ===", true ) << std::endl;
 			std::string defines = gen_seeds()+" -DITHARE_KSCOPE_CONSISTENT_XPLATFORM_IMPLICIT_SEEDS"+extra;
 			if( cfg == KscopeTestEnvironment::config::debug ) {
 				build_check_run_check(kenv->build_debug(defines),2, KscopeTestEnvironment::config::debug,0,write_output::none);
