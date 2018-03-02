@@ -194,17 +194,21 @@ namespace ithare {
 #ifdef ITHARE_KSCOPE_WORKAROUND_FOR_MSVC_BUG_195483
 				//https://developercommunity.visualstudio.com/content/problem/195483/continue-in-constexpr-function-causes-constexpr-fu.html
 				bool ok = true;
-				if ((flags & kscope_const_zero_ok) == 0 && ret == 0)
-					ok = false;//cannot 'continue' here as MSVC goes crazy...
-				if( (flags & kscope_const_one_ok) == 0 && ret == 1 )
-					ok = false;
+				if constexpr ((flags & kscope_const_zero_ok) == 0)
+					if(ret == 0)
+						ok = false;//cannot 'continue' here as MSVC goes crazy...
+				if constexpr( (flags & kscope_const_one_ok) == 0)
+					if(ret == 1)
+						ok = false;
 				if (ok)
 					return T(TT(ret));
 #else
-				if ((flags & kscope_const_zero_ok) == 0 && ret == 0)
-					continue;
-				if ((flags & kscope_const_one_ok) == 0 && ret == 1)
-					continue;
+				if constexpr((flags & kscope_const_zero_ok) == 0)
+					if(ret == 0)
+						continue;
+				if constexpr ((flags & kscope_const_one_ok) == 0)
+					if(ret == 1)
+						continue;
 				return T(TT(ret));
 #endif
 			}
