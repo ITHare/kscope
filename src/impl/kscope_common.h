@@ -159,8 +159,19 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //  ALL #defines MUST be prefixed with ITHARE_KSCOPE_
 
 //regardless of ITHARE_KSCOPE_SEED
+
+//VERY generic requirements:
+//  8-bit systems only at the moment
+static_assert(CHAR_BIT==8);//adapting for non-8-bit systems is theoretically possible, but will take quite a bit of tweaking
+//  requiring uint*_t, detection along the lines of https://stackoverflow.com/a/14078003/4947867
+#if !defined(UINT8_MAX) || !defined(UINT16_MAX) || !defined(UINT32_MAX) || !defined(UINT64_MAX)//TODO: allow to skip uint64_t
+#error kscope requires that your compiler supports all of the uint8_t, uint16_t, uint32_t, and uint64_t types - and they ARE supported for vast majority of platforms. Maybe there is something wrong with supposedly-standard headers on your box (they're supposed to be defined in stdint.h which is included above, but you never know)? 
+#endif
+//  we're allowed to rely on being 2's complement
+static_assert(uint32_t(-1)==0xFFFF'FFFF);//asserting for 2's complement (which is de-facto standard, but you never know)
+
 namespace ithare {
-	namespace kscope {
+	namespace kscope {		
 		template<class T,size_t N>
 		ITHARE_KSCOPE_FORCEINLINE constexpr size_t kscope_arraysz(T(&)[N]) { return N; }
 
@@ -182,7 +193,6 @@ namespace ithare {
 			return u;
 		}
 		
-		static_assert(CHAR_BIT==8);
 		using kscope_aliased_byte = unsigned char;//GUARANTEES pointer aliasing even if uint8_t is not the same as unsigned char
 												  //  THE ONLY type which should be used for cast-based fooling around
 		static_assert(sizeof(kscope_aliased_byte)==1);
