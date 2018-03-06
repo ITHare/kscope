@@ -436,7 +436,7 @@ KSCOPE_CT_Chacha_set_key_iv(const uint8_t* key0, int keybits /*128 or 256*/, con
 	assert(keybits==128||keybits==256);
 	auto key = kscope_int_arr_to_ct_kscope_int<64 /*maximum value*/>(key0,keybits/8 /*actual value*/);
 	auto iv = kscope_int_arr_to_ct_kscope_int<8>(iv0);
-	ITHARE_KSCOPE_CALL_AS_CONSTEXPR(ChaCha_set_key)(&ctx,key.arr, ITHARE_KSCOPE_INT0C(int)(keybits));
+	ITHARE_KSCOPE_CALL_AS_CONSTEXPR(ChaCha_set_key)(&ctx,key.arr, ITHARE_KSCOPE_INT_CONSTEXPR(int)(keybits));
 	if(counter0==nullptr)
 		ITHARE_KSCOPE_CALL_AS_CONSTEXPR(ChaCha_set_iv)(&ctx,iv.arr,ITHARE_KSCOPE_INTNULLPTR);
 	else {
@@ -450,8 +450,8 @@ template<size_t N>
 constexpr std::pair<ChaCha_ctx<>,KscopeArrayWrapper<uint8_t,N>>
 KSCOPE_CT_Chacha(ChaCha_ctx<> ctx, const uint8_t (&in0)[N]) {
 	auto in = kscope_int_arr_to_ct_kscope_int(in0);
-	ITHARE_KSCOPE_INT0C(uint8_t) out[N];
-	ITHARE_KSCOPE_CALL_AS_CONSTEXPR(ChaCha)(&ctx, out, in.arr, ITHARE_KSCOPE_INT0C(size_t)(N));
+	ITHARE_KSCOPE_INT_CONSTEXPR(uint8_t) out[N];
+	ITHARE_KSCOPE_CALL_AS_CONSTEXPR(ChaCha)(&ctx, out, in.arr, ITHARE_KSCOPE_INT_CONSTEXPR(size_t)(N));
 	KscopeArrayWrapper<uint8_t,N> ret = {};
 	ithare::kscope::kscope_copyarr(ret.arr,out,N);
 	return std::pair<ChaCha_ctx<>,KscopeArrayWrapper<uint8_t,N>>(ctx,ret);

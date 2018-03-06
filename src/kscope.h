@@ -721,14 +721,7 @@ namespace ithare {
 #define ITHARE_KSCOPE_INT5(type) ithare::kscope::KscopeInt<type,ITHARE_KSCOPE_INIT_PRNG(__FILE__,ITHARE_KSCOPE_LINE,__COUNTER__),ithare::kscope::kscope_exp_cycles(5),0>
 #define ITHARE_KSCOPE_INT6(type) ithare::kscope::KscopeInt<type,ITHARE_KSCOPE_INIT_PRNG(__FILE__,ITHARE_KSCOPE_LINE,__COUNTER__),ithare::kscope::kscope_exp_cycles(6),0>
 
-#define ITHARE_KSCOPE_INT0C(type) ithare::kscope::KscopeInt<type,ITHARE_KSCOPE_INIT_PRNG(__FILE__,ITHARE_KSCOPE_LINE,__COUNTER__),ithare::kscope::kscope_exp_cycles(0),ithare::kscope::kscope_flag_is_constexpr>
-#define ITHARE_KSCOPE_INT1C(type) ithare::kscope::KscopeInt<type,ITHARE_KSCOPE_INIT_PRNG(__FILE__,ITHARE_KSCOPE_LINE,__COUNTER__),ithare::kscope::kscope_exp_cycles(1),ithare::kscope::kscope_flag_is_constexpr>
-#define ITHARE_KSCOPE_INT2C(type) ithare::kscope::KscopeInt<type,ITHARE_KSCOPE_INIT_PRNG(__FILE__,ITHARE_KSCOPE_LINE,__COUNTER__),ithare::kscope::kscope_exp_cycles(2),ithare::kscope::kscope_flag_is_constexpr>
-#define ITHARE_KSCOPE_INT3C(type) ithare::kscope::KscopeInt<type,ITHARE_KSCOPE_INIT_PRNG(__FILE__,ITHARE_KSCOPE_LINE,__COUNTER__),ithare::kscope::kscope_exp_cycles(3),ithare::kscope::kscope_flag_is_constexpr>
-#define ITHARE_KSCOPE_INT4C(type) ithare::kscope::KscopeInt<type,ITHARE_KSCOPE_INIT_PRNG(__FILE__,ITHARE_KSCOPE_LINE,__COUNTER__),ithare::kscope::kscope_exp_cycles(4),ithare::kscope::kscope_flag_is_constexpr>
-#define ITHARE_KSCOPE_INT5C(type) ithare::kscope::KscopeInt<type,ITHARE_KSCOPE_INIT_PRNG(__FILE__,ITHARE_KSCOPE_LINE,__COUNTER__),ithare::kscope::kscope_exp_cycles(5),ithare::kscope::kscope_flag_is_constexpr>
-#define ITHARE_KSCOPE_INT6C(type) ithare::kscope::KscopeInt<type,ITHARE_KSCOPE_INIT_PRNG(__FILE__,ITHARE_KSCOPE_LINE,__COUNTER__),ithare::kscope::kscope_exp_cycles(6),ithare::kscope::kscope_flag_is_constexpr>
-
+#define ITHARE_KSCOPE_INT_CONSTEXPR(type) ithare::kscope::KscopeInt<type,ITHARE_KSCOPE_INIT_PRNG(__FILE__,ITHARE_KSCOPE_LINE,__COUNTER__),0,ithare::kscope::kscope_flag_is_constexpr>
 #define ITHARE_KSCOPE_INTNULLPTR ((ithare::kscope::KscopeInt<int,ITHARE_KSCOPE_DUMMYSEED,0,0>*)nullptr)
 
 //INTLIT: constructing KscopeInt to be compatible with ITHARE_KSCOPE_DECLAREFUNC* functions
@@ -1137,14 +1130,7 @@ namespace ithare {
 #define ITHARE_KSCOPE_INT5(type) ithare::kscope::KscopeIntDbg<type>
 #define ITHARE_KSCOPE_INT6(type) ithare::kscope::KscopeIntDbg<type>
 
-#define ITHARE_KSCOPE_INT0C(type) ithare::kscope::KscopeIntDbg<type>
-#define ITHARE_KSCOPE_INT1C(type) ithare::kscope::KscopeIntDbg<type>
-#define ITHARE_KSCOPE_INT2C(type) ithare::kscope::KscopeIntDbg<type>
-#define ITHARE_KSCOPE_INT3C(type) ithare::kscope::KscopeIntDbg<type>
-#define ITHARE_KSCOPE_INT4C(type) ithare::kscope::KscopeIntDbg<type>
-#define ITHARE_KSCOPE_INT5C(type) ithare::kscope::KscopeIntDbg<type>
-#define ITHARE_KSCOPE_INT6C(type) ithare::kscope::KscopeIntDbg<type>
-
+#define ITHARE_KSCOPE_INT_CONSTEXPR(type) ithare::kscope::KscopeIntDbg<type>
 #define ITHARE_KSCOPE_INTNULLPTR ((ithare::kscope::KscopeIntDbg<int>*)nullptr)
 
 #define ITHARE_KSCOPE_INTLIT0(c) ithare::kscope::KscopeLiteralDbg<typename std::remove_cv<decltype(c)>::type,c>()

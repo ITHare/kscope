@@ -257,7 +257,7 @@ constexpr crypto_chacha_20_test_compile_time(const chacha_tv* tv, [[maybe_unused
 	for (size_t i = 0; i < tv->len; ++i)
 		in[i] = in0[i];*/
 	auto in = ithare::kscope::kscope_int_arr_to_ct_kscope_int<64 /*maximum value*/>(in0,tv->len /*actual value*/);		
-	ITHARE_KSCOPE_INT0C(uint8_t) out[64];
+	ITHARE_KSCOPE_INT_CONSTEXPR(uint8_t) out[64];
 	auto key = ithare::kscope::kscope_int_arr_to_ct_kscope_int(tv->key);
 	auto iv = ithare::kscope::kscope_int_arr_to_ct_kscope_int(tv->iv);
 	ITHARE_KSCOPE_CALL_AS_CONSTEXPR(CRYPTO_chacha_20)(out, in.arr, ITHARE_KSCOPE_INT3(size_t)(tv->len), key.arr, iv.arr, 0);
