@@ -40,12 +40,12 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <assert.h>
 
 static const char* randomtest_files[] = { "officialtest.cpp", "chachatest.cpp", nullptr };
-std::string file_list(std::string srcDir)  {
+std::string make_file_list(const char* files[] /*ends with nullptr*/,std::string srcDir)  {
 	std::string ret = "";
-	for(size_t i=0; randomtest_files[i] ; ++i ) {
+	for(size_t i=0; files[i] ; ++i ) {
 		ret += " ";
 		ret += srcDir;
-		ret += randomtest_files[i];
+		ret += files[i];
 	}
 	return ret;
 }
@@ -72,15 +72,16 @@ class KscopeTestEnvironment {
 	
 	virtual std::string root_test_dir() { return  src_dir_prefix + "../"; }
 	virtual std::string test_src_dir() { return  src_dir_prefix + "../"; }
+	virtual std::string file_list() { return make_file_list(randomtest_files,test_src_dir()); } 
 
 	virtual std::string always_define() {//relative to kscope/test
 		return "-DITHARE_KSCOPE_TEST_EXTENSION=\"../src/kscope_sample_extension.h\"";
 	}
 	virtual std::string build_release(std::string defines) {
-		return std::string("$CXX -O3 -DNDEBUG ") + always_define() + " " + defines + " -o randomtest -std=c++1z -lstdc++ -pedantic -pedantic-errors -Wall -Wextra -Werror" + file_list(test_src_dir());
+		return std::string("$CXX -O3 -DNDEBUG ") + always_define() + " " + defines + " -o randomtest -std=c++1z -lstdc++ -pedantic -pedantic-errors -Wall -Wextra -Werror" + file_list();
 	}
 	virtual std::string build_debug(std::string defines) {
-		return std::string("$CXX ") + always_define() + " " + defines + " -o randomtest -std=c++1z -lstdc++ -pedantic -pedantic-errors -Wall -Wextra -Werror" + file_list(test_src_dir());
+		return std::string("$CXX ") + always_define() + " " + defines + " -o randomtest -std=c++1z -lstdc++ -pedantic -pedantic-errors -Wall -Wextra -Werror" + file_list();
 	}
 	virtual std::string build32option() {
 		return " -m32";
@@ -193,6 +194,7 @@ class KscopeTestEnvironment {
 	constexpr static Flags flag_auto_dbg_print = 0x01;
 	std::string src_dir_prefix = "";
 	
+	virtual std::string file_list() { return make_file_list(randomtest_files,test_src_dir()); } 
 	virtual std::string root_test_dir() { return  src_dir_prefix + "..\\"; }
 	virtual std::string test_src_dir() { return  src_dir_prefix + "..\\"; }
 
@@ -201,12 +203,12 @@ class KscopeTestEnvironment {
 	}
 	virtual std::string build_release(std::string defines_) {
 		std::string defines = replace_string(defines_, " -D", " /D");
-		return std::string("cl /permissive- /GS /GL /W4 /Gy /Zc:wchar_t /Gm- /O2 /sdl /Zc:inline /fp:precise /DNDEBUG /D_CONSOLE /D_UNICODE /DUNICODE /errorReport:prompt /WX /Zc:forScope /GR- /Gd /Oi /MT /EHsc /nologo /diagnostics:classic /std:c++17 /cgthreads1 /INCREMENTAL:NO /Ferandomtest.exe") + defines + " " + always_define() + file_list(test_src_dir());
+		return std::string("cl /permissive- /GS /GL /W4 /Gy /Zc:wchar_t /Gm- /O2 /sdl /Zc:inline /fp:precise /DNDEBUG /D_CONSOLE /D_UNICODE /DUNICODE /errorReport:prompt /WX /Zc:forScope /GR- /Gd /Oi /MT /EHsc /nologo /diagnostics:classic /std:c++17 /cgthreads1 /INCREMENTAL:NO /Ferandomtest.exe") + defines + " " + always_define() + file_list();
 			//string is copy-pasted from Rel-NoPDB config with manually-added /cgthreads1 /INCREMENTAL:NO, /Fe, and /WX- replaced with /WX
 	}
 	virtual std::string build_debug(std::string defines_) {
 		std::string defines = replace_string(defines_, " -D", " /D");
-		return std::string("cl /permissive- /GS /W4 /Zc:wchar_t /ZI /Gm /Od /sdl /Zc:inline /fp:precise /D_DEBUG /D_CONSOLE /D_UNICODE /DUNICODE /errorReport:prompt /WX /Zc:forScope /RTC1 /Gd /MDd /EHsc /nologo /diagnostics:classic /std:c++17 /cgthreads1 /INCREMENTAL:NO /bigobj /Ferandomtest.exe") + defines + " " + always_define() + file_list(test_src_dir());
+		return std::string("cl /permissive- /GS /W4 /Zc:wchar_t /ZI /Gm /Od /sdl /Zc:inline /fp:precise /D_DEBUG /D_CONSOLE /D_UNICODE /DUNICODE /errorReport:prompt /WX /Zc:forScope /RTC1 /Gd /MDd /EHsc /nologo /diagnostics:classic /std:c++17 /cgthreads1 /INCREMENTAL:NO /bigobj /Ferandomtest.exe") + defines + " " + always_define() + file_list();
 			//string is copy-pasted from Debug config with manually-added /cgthreads1 /INCREMENTAL:NO /bigobj, /Fe, and /WX- replaced with /WX
 	}
 	virtual std::string build32option() {
