@@ -83,6 +83,7 @@ ITHARE_KSCOPE_NOINLINE ITHARE_KSCOPE_INT3(uint64_t) factorial(ITHARE_KSCOPE_INT3
 }
 }}//namespace ithare::kscope
 
+/*
 class Benchmark {
 	std::chrono::high_resolution_clock::time_point start;
 
@@ -98,6 +99,22 @@ public:
 };
 
 #define NBENCH 1000
+
+//TODO: reinstate
+	CASE("benchmarks") {
+#if !defined(ITHARE_KSCOPE_ENABLE_AUTO_DBGPRINT) || ITHARE_KSCOPE_ENABLE_AUTO_DBGPRINT == 2//excluding platform-specific stuff to avoid spurious changes to kscope.txt with -DITHARE_KSCOPE_ENABLE_AUTO_DBGPRINT
+		{
+			Benchmark bm0;
+			for (size_t i = 0; i < NBENCH; ++i) {
+				uint8_t inp[16] = { 0 };
+				uint8_t out[16] = { 0 };
+				test_chacha_cipher(inp, out);
+			}
+			std::cout << "chacha_cipher():" << ( bm0.us() * 1000 / NBENCH ) << " nanoseconds" << std::endl; 
+		}
+#endif
+	}
+*/
 
 #ifdef __clang__ //warning in lest.hpp - can only disable :-(
 #pragma GCC diagnostic push
