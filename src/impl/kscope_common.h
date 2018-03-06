@@ -165,7 +165,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 static_assert(CHAR_BIT==8);//adapting for non-8-bit systems is theoretically possible, but will take quite a bit of tweaking
 //  requiring uint*_t, detection along the lines of https://stackoverflow.com/a/14078003/4947867
 #if !defined(UINT8_MAX) || !defined(UINT16_MAX) || !defined(UINT32_MAX) || !defined(UINT64_MAX)//TODO: allow to skip uint64_t
-#error kscope requires that your compiler supports all of the uint8_t, uint16_t, uint32_t, and uint64_t types - and they ARE supported for vast majority of platforms. Maybe there is something wrong with supposedly-standard headers on your box (they're supposed to be defined in stdint.h which is included above, but you never know)? 
+#error kscope requires that your compiler supports all of the uint8_t, uint16_t, uint32_t, and uint64_t types - and they ARE supported for vast majority of platforms. Maybe there is something wrong with supposedly-standard headers on your box (they are supposed to be defined in stdint.h which is included above, but you never know)? 
 #endif
 //  we're allowed to rely on being 2's complement
 static_assert(uint32_t(-1)==0xFFFF'FFFF);//asserting for 2's complement (which is de-facto standard, but you never know)
