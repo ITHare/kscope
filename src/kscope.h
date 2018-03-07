@@ -57,7 +57,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //ithare::kscope naming conventions: 
 //  functions: 
 //    kscope_function()
-//  classes which-are-essentially-functions-over-classes (such as kscope_select_type<>):
+//  classes which-are-essentially-functions-over-classes (such as kscope_larger_type<>):
 //    kscope_class
 //  classes (except for those classes-which-are-essentially-functions-over-classes):
 //    KscopeClass

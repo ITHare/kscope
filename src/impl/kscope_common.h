@@ -225,19 +225,6 @@ namespace ithare {
 		struct kscope_private_constructor_tag {
 		};
 		
-		//type helpers
-		template<bool which, class T, class T2> struct kscope_select_type;
-			//NB: it is a 'function-like' class (="used to calculate functions over classes"), 
-			//	hence function-like naming convention  
-		template<class T, class T2>
-		struct kscope_select_type<true, T, T2> {
-			using type = T;
-		};
-		template<class T, class T2>
-		struct kscope_select_type<false, T, T2> {
-			using type = T2;
-		};
-
 		template<class T, class T2> struct kscope_larger_type {
 			static_assert(std::is_integral<T>::value);
 			static_assert(std::is_integral<T2>::value);
@@ -245,7 +232,7 @@ namespace ithare {
 			constexpr static bool t2s = std::is_signed<T2>::value;
 			static_assert(ts == t2s);//'larger_type' is undefined for different sign-ness
 			constexpr static bool which = sizeof(T) > sizeof(T2);
-			using type = typename kscope_select_type<which, T, T2>::type;
+			using type = typename std::conditional<which, T, T2>::type;
 
 			static_assert(sizeof(type) >= sizeof(T));
 			static_assert(sizeof(type) >= sizeof(T2));
@@ -290,7 +277,7 @@ namespace ithare {
 		template<class T>
 		struct kscope_normalized_integral_type {//to normalize things such as 'unsigned long' which MIGHT happen to be different from our standard set
 			static_assert(std::is_integral<T>::value);
-			using type = typename kscope_select_type< std::is_signed<T>::value,
+			using type = typename std::conditional< std::is_signed<T>::value,
 				typename kscope_normalized_signed_integral_type<T>::type,
 				typename kscope_normalized_unsigned_integral_type<T>::type
 			>::type;
@@ -397,7 +384,7 @@ namespace ithare {
 		template<class T>
 		struct kscope_integral_promotion {
 			static_assert(std::is_integral<T>::value);
-			using type = typename kscope_select_type< (sizeof(T) < sizeof(int)), int, T >::type;
+			using type = typename std::conditional< (sizeof(T) < sizeof(int)), int, T >::type;
 
 			static_assert(sizeof(type) >= sizeof(T));
 			static_assert(sizeof(type) >= sizeof(int));
@@ -412,11 +399,11 @@ namespace ithare {
 			static constexpr bool ts = std::is_signed<TPROMOTED>::value;
 			static constexpr bool t2s = std::is_signed<T2PROMOTED>::value;
 			
-			using type = typename kscope_select_type< ts == t2s, 
-										  typename kscope_select_type< (sizeof(TPROMOTED) >= sizeof(T2PROMOTED)), TPROMOTED,T2PROMOTED>::type,
-										  typename kscope_select_type< ts ,
-														   typename kscope_select_type< (sizeof(TPROMOTED) > sizeof(T2PROMOTED)), TPROMOTED, T2PROMOTED >::type,
-														   typename kscope_select_type< (sizeof(T2PROMOTED) > sizeof(TPROMOTED)), T2PROMOTED, TPROMOTED >::type
+			using type = typename std::conditional< ts == t2s, 
+										  typename std::conditional< (sizeof(TPROMOTED) >= sizeof(T2PROMOTED)), TPROMOTED,T2PROMOTED>::type,
+										  typename std::conditional< ts ,
+														   typename std::conditional< (sizeof(TPROMOTED) > sizeof(T2PROMOTED)), TPROMOTED, T2PROMOTED >::type,
+														   typename std::conditional< (sizeof(T2PROMOTED) > sizeof(TPROMOTED)), T2PROMOTED, TPROMOTED >::type
 														 >::type
 										>::type;
 			
