@@ -269,7 +269,7 @@ chacha_ctx_full_test(const chacha_tv* tv, uint8_t *out0, uint8_t* in0)
 	ITHARE_KSCOPE_CALL3(ChaCha_set_iv)(&ctx, tv->iv, ITHARE_KSCOPE_INTNULLPTR);
 	assert(tv->len <= 64);
 	//auto in = ITHARE_KSCOPE_INT_ARR_TO_KSCOPE_INT3X(64,in0,tv->len);
-	ITHARE_KSCOPE_INT3(uint8_t) out[64];
+	//ITHARE_KSCOPE_INT3(uint8_t) out[64];
 	ITHARE_KSCOPE_CALL3(ChaCha)(&ctx, out0, in0, tv->len);
 	//ithare::kscope::kscope_copyarr(out0,out,tv->len);
 }
