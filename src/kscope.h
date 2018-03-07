@@ -183,9 +183,9 @@ namespace ithare {
 	};
 	#endif
 
-	//IMPORTANT: ANY API CHANGES MUST BE MIRRORED in KscopeLiteralDbg<>
+	//IMPORTANT: ANY API CHANGES MUST BE MIRRORED in KscopeIntLiteralDbg<>
 	template<class T_, T_ C_, ITHARE_KSCOPE_SEEDTPARAM seed, KSCOPECYCLES cycles,KSCOPEFLAGS flags>
-	class KscopeLiteral {
+	class KscopeIntLiteral {
 		static_assert(std::is_integral<T_>::value);
 		using T = typename kscope_normalized_unsigned_integral_type<T_>::type;//from this point on, uint8_t..uint64_t only; simple std::make_unsigned didn't do as some compilers tried to treat unsigned long distinct from both uint32_t and uint64_t
 		static constexpr T C = T(C_);
@@ -201,7 +201,7 @@ namespace ithare {
 		using Injection = KscopeInjection<T, Context, InjectionRequirements,ITHARE_KSCOPE_NEW_PRNG(seed, 2), cycles>;
 		static constexpr typename Injection::return_type C0 = Injection::template injection<ITHARE_KSCOPE_NEW_PRNG(seed, 3),kscope_flag_is_constexpr>(C);
 	public:
-		ITHARE_KSCOPE_FORCEINLINE constexpr KscopeLiteral() : val(C0) {
+		ITHARE_KSCOPE_FORCEINLINE constexpr KscopeIntLiteral() : val(C0) {
 		}
 		ITHARE_KSCOPE_FORCEINLINE constexpr T_ value() const {
 			if constexpr(flags&kscope_flag_is_constexpr)
@@ -215,7 +215,7 @@ namespace ithare {
 
 #ifdef ITHARE_KSCOPE_DBG_ENABLE_DBGPRINT
 		static void dbg_print(size_t offset = 0, const char* prefix = "") {
-			std::cout << std::string(offset, ' ') << prefix << "KscopeLiteral<"<<kscope_dbg_print_t<T>()<<"," << C << "," << kscope_dbg_print_seed<seed>() << "," << cycles << ">" << std::endl;
+			std::cout << std::string(offset, ' ') << prefix << "KscopeIntLiteral<"<<kscope_dbg_print_t<T>()<<"," << C << "," << kscope_dbg_print_seed<seed>() << "," << cycles << ">" << std::endl;
 			Injection::dbg_print(offset + 1);
 		}
 #endif
@@ -264,7 +264,7 @@ namespace ithare {
 		ITHARE_KSCOPE_FORCEINLINE constexpr KscopeInt(KscopeInt<T2, seed2, cycles2,flags2> t) : val(Injection::template injection<ITHARE_KSCOPE_COMBINED_PRNG(seed,seed2),flags2>(T(T_(t.value())))) {//TODO: randomized injection implementation
 		}
 		template<class T2, T2 C2, ITHARE_KSCOPE_SEEDTPARAM seed2, KSCOPECYCLES cycles2,KSCOPEFLAGS flags2>
-		ITHARE_KSCOPE_FORCEINLINE constexpr KscopeInt(KscopeLiteral<T2, C2, seed2, cycles2,flags2> t) : val(Injection::template injection<ITHARE_KSCOPE_COMBINED_PRNG(seed,seed2),flags2>(T(T_(t.value())))) {//TODO: randomized injection implementation
+		ITHARE_KSCOPE_FORCEINLINE constexpr KscopeInt(KscopeIntLiteral<T2, C2, seed2, cycles2,flags2> t) : val(Injection::template injection<ITHARE_KSCOPE_COMBINED_PRNG(seed,seed2),flags2>(T(T_(t.value())))) {//TODO: randomized injection implementation
 		}
 		ITHARE_KSCOPE_FORCEINLINE constexpr KscopeInt& operator =(T_ t) {
 			val = Injection::template injection<ITHARE_KSCOPE_NEW_PRNG(seed, 3),flags>(T(t));//TODO: different implementations of the same injection in different contexts
@@ -276,7 +276,7 @@ namespace ithare {
 			return *this;
 		}
 		template<class T2, T2 C2, ITHARE_KSCOPE_SEEDTPARAM seed2, KSCOPECYCLES cycles2,KSCOPEFLAGS flags2>
-		ITHARE_KSCOPE_FORCEINLINE constexpr KscopeInt& operator =(KscopeLiteral<T2, C2, seed2, cycles2,flags2> t) {
+		ITHARE_KSCOPE_FORCEINLINE constexpr KscopeInt& operator =(KscopeIntLiteral<T2, C2, seed2, cycles2,flags2> t) {
 			ITHARE_KSCOPE_DECLAREPRNG_INFUNC seedc = ITHARE_KSCOPE_COMBINED_PRNG(seed,seed2);
 			val = Injection::template injection<seedc,flags2>(T(T_(t.value())));//TODO: different implementations of the same injection in different contexts
 			return *this;
@@ -341,7 +341,7 @@ namespace ithare {
 		}
 
 		template<class T2, T2 C2, ITHARE_KSCOPE_SEEDTPARAM seed2, KSCOPECYCLES cycles2,KSCOPEFLAGS flags2>
-		ITHARE_KSCOPE_FORCEINLINE constexpr bool operator <(KscopeLiteral<T2, C2, seed2, cycles2,flags2> t) {
+		ITHARE_KSCOPE_FORCEINLINE constexpr bool operator <(KscopeIntLiteral<T2, C2, seed2, cycles2,flags2> t) {
 			constexpr bool is_safe = kscope_integral_operator_literal_cast_is_safe<T_, T2, C2>();
 			if constexpr(is_safe)//safe to cast, avoiding spurious signed/unsigned mismatch warning
 				return value() < T_(t.value());
@@ -349,35 +349,35 @@ namespace ithare {
 				return value() < t.value();
 		}
 		template<class T2, T2 C2, ITHARE_KSCOPE_SEEDTPARAM seed2, KSCOPECYCLES cycles2, KSCOPEFLAGS flags2>
-		ITHARE_KSCOPE_FORCEINLINE constexpr bool operator >(KscopeLiteral<T2, C2, seed2, cycles2, flags2> t) {
+		ITHARE_KSCOPE_FORCEINLINE constexpr bool operator >(KscopeIntLiteral<T2, C2, seed2, cycles2, flags2> t) {
 			if constexpr(kscope_integral_operator_literal_cast_is_safe<T_,T2,C2>())//safe to cast, avoiding spurious signed/unsigned mismatch warning
 				return value() > T_(t.value());
 			else
 				return value() > t.value();
 		}
 		template<class T2, T2 C2, ITHARE_KSCOPE_SEEDTPARAM seed2, KSCOPECYCLES cycles2, KSCOPEFLAGS flags2>
-		ITHARE_KSCOPE_FORCEINLINE constexpr bool operator ==(KscopeLiteral<T2, C2, seed2, cycles2, flags2> t) {
+		ITHARE_KSCOPE_FORCEINLINE constexpr bool operator ==(KscopeIntLiteral<T2, C2, seed2, cycles2, flags2> t) {
 			if constexpr(kscope_integral_operator_literal_cast_is_safe<T_,T2,C2>())//safe to cast, avoiding spurious signed/unsigned mismatch warning
 				return value() == T_(t.value());
 			else
 				return value() == t.value();
 		}
 		template<class T2, T2 C2, ITHARE_KSCOPE_SEEDTPARAM seed2, KSCOPECYCLES cycles2, KSCOPEFLAGS flags2>
-		ITHARE_KSCOPE_FORCEINLINE constexpr bool operator !=(KscopeLiteral<T2, C2, seed2, cycles2, flags2> t) {
+		ITHARE_KSCOPE_FORCEINLINE constexpr bool operator !=(KscopeIntLiteral<T2, C2, seed2, cycles2, flags2> t) {
 			if constexpr(kscope_integral_operator_literal_cast_is_safe<T_,T2,C2>())//safe to cast, avoiding spurious signed/unsigned mismatch warning
 				return value() != T_(t.value());
 			else
 				return value() != t.value();
 		}
 		template<class T2, T2 C2, ITHARE_KSCOPE_SEEDTPARAM seed2, KSCOPECYCLES cycles2, KSCOPEFLAGS flags2>
-		ITHARE_KSCOPE_FORCEINLINE constexpr bool operator <=(KscopeLiteral<T2, C2, seed2, cycles2, flags2> t) {
+		ITHARE_KSCOPE_FORCEINLINE constexpr bool operator <=(KscopeIntLiteral<T2, C2, seed2, cycles2, flags2> t) {
 			if constexpr(kscope_integral_operator_literal_cast_is_safe<T_,T2,C2>())//safe to cast, avoiding spurious signed/unsigned mismatch warning
 				return value() <= T_(t.value());
 			else
 				return value() <= t.value();
 		}
 		template<class T2, T2 C2, ITHARE_KSCOPE_SEEDTPARAM seed2, KSCOPECYCLES cycles2, KSCOPEFLAGS flags2>
-		ITHARE_KSCOPE_FORCEINLINE constexpr bool operator >=(KscopeLiteral<T2, C2, seed2, cycles2, flags2> t) {
+		ITHARE_KSCOPE_FORCEINLINE constexpr bool operator >=(KscopeIntLiteral<T2, C2, seed2, cycles2, flags2> t) {
 			if constexpr(kscope_integral_operator_literal_cast_is_safe<T_,T2,C2>())//safe to cast, avoiding spurious signed/unsigned mismatch warning
 				return value() >= T_(t.value());
 			else
@@ -417,23 +417,23 @@ namespace ithare {
 		}
 
 		template<class T2, T2 C2, ITHARE_KSCOPE_SEEDTPARAM seed2, KSCOPECYCLES cycles2,KSCOPEFLAGS flags2>
-		ITHARE_KSCOPE_FORCEINLINE constexpr KscopeInt& operator +=(KscopeLiteral<T2, C2, seed2, cycles2,flags2> t) {
+		ITHARE_KSCOPE_FORCEINLINE constexpr KscopeInt& operator +=(KscopeIntLiteral<T2, C2, seed2, cycles2,flags2> t) {
 			return *this += t.value();
 		}
 		template<class T2, T2 C2, ITHARE_KSCOPE_SEEDTPARAM seed2, KSCOPECYCLES cycles2,KSCOPEFLAGS flags2>
-		ITHARE_KSCOPE_FORCEINLINE constexpr KscopeInt& operator -=(KscopeLiteral<T2, C2, seed2, cycles2,flags2> t) {
+		ITHARE_KSCOPE_FORCEINLINE constexpr KscopeInt& operator -=(KscopeIntLiteral<T2, C2, seed2, cycles2,flags2> t) {
 			return *this -= t.value();
 		}
 		template<class T2, T2 C2, ITHARE_KSCOPE_SEEDTPARAM seed2, KSCOPECYCLES cycles2,KSCOPEFLAGS flags2>
-		ITHARE_KSCOPE_FORCEINLINE constexpr KscopeInt& operator *=(KscopeLiteral<T2, C2, seed2, cycles2,flags2> t) {
+		ITHARE_KSCOPE_FORCEINLINE constexpr KscopeInt& operator *=(KscopeIntLiteral<T2, C2, seed2, cycles2,flags2> t) {
 			return *this *= t.value();
 		}
 		template<class T2, T2 C2, ITHARE_KSCOPE_SEEDTPARAM seed2, KSCOPECYCLES cycles2,KSCOPEFLAGS flags2>
-		ITHARE_KSCOPE_FORCEINLINE constexpr KscopeInt& operator /=(KscopeLiteral<T2, C2, seed2, cycles2,flags2> t) {
+		ITHARE_KSCOPE_FORCEINLINE constexpr KscopeInt& operator /=(KscopeIntLiteral<T2, C2, seed2, cycles2,flags2> t) {
 			return *this /= t.value();
 		}
 		template<class T2, T2 C2, ITHARE_KSCOPE_SEEDTPARAM seed2, KSCOPECYCLES cycles2,KSCOPEFLAGS flags2>
-		ITHARE_KSCOPE_FORCEINLINE constexpr KscopeInt& operator %=(KscopeLiteral<T2, C2, seed2, cycles2,flags2> t) {
+		ITHARE_KSCOPE_FORCEINLINE constexpr KscopeInt& operator %=(KscopeIntLiteral<T2, C2, seed2, cycles2,flags2> t) {
 			return *this %= t.value();
 		}
 
@@ -460,15 +460,15 @@ namespace ithare {
 		ITHARE_KSCOPE_FORCEINLINE constexpr KscopeInt operator %(KscopeInt<T2, seed2, cycles2,flags2> t) { return KscopeInt(value() % t.value()); }
 
 		template<class T2, T2 C2, ITHARE_KSCOPE_SEEDTPARAM seed2, KSCOPECYCLES cycles2,KSCOPEFLAGS flags2>
-		ITHARE_KSCOPE_FORCEINLINE constexpr KscopeInt operator +(KscopeLiteral<T2, C2, seed2, cycles2,flags2> t) { return KscopeInt(value() + t.value()); }
+		ITHARE_KSCOPE_FORCEINLINE constexpr KscopeInt operator +(KscopeIntLiteral<T2, C2, seed2, cycles2,flags2> t) { return KscopeInt(value() + t.value()); }
 		template<class T2, T2 C2, ITHARE_KSCOPE_SEEDTPARAM seed2, KSCOPECYCLES cycles2,KSCOPEFLAGS flags2>
-		ITHARE_KSCOPE_FORCEINLINE constexpr KscopeInt operator -(KscopeLiteral<T2, C2, seed2, cycles2,flags2> t) { return KscopeInt(value() - t.value()); }
+		ITHARE_KSCOPE_FORCEINLINE constexpr KscopeInt operator -(KscopeIntLiteral<T2, C2, seed2, cycles2,flags2> t) { return KscopeInt(value() - t.value()); }
 		template<class T2, T2 C2, ITHARE_KSCOPE_SEEDTPARAM seed2, KSCOPECYCLES cycles2,KSCOPEFLAGS flags2>
-		ITHARE_KSCOPE_FORCEINLINE constexpr KscopeInt operator *(KscopeLiteral<T2, C2, seed2, cycles2,flags2> t) { return KscopeInt(value() * t.value()); }
+		ITHARE_KSCOPE_FORCEINLINE constexpr KscopeInt operator *(KscopeIntLiteral<T2, C2, seed2, cycles2,flags2> t) { return KscopeInt(value() * t.value()); }
 		template<class T2, T2 C2, ITHARE_KSCOPE_SEEDTPARAM seed2, KSCOPECYCLES cycles2,KSCOPEFLAGS flags2>
-		ITHARE_KSCOPE_FORCEINLINE constexpr KscopeInt operator /(KscopeLiteral<T2, C2, seed2, cycles2,flags2> t) { return KscopeInt(value() / t.value()); }
+		ITHARE_KSCOPE_FORCEINLINE constexpr KscopeInt operator /(KscopeIntLiteral<T2, C2, seed2, cycles2,flags2> t) { return KscopeInt(value() / t.value()); }
 		template<class T2, T2 C2, ITHARE_KSCOPE_SEEDTPARAM seed2, KSCOPECYCLES cycles2,KSCOPEFLAGS flags2>
-		ITHARE_KSCOPE_FORCEINLINE constexpr KscopeInt operator %(KscopeLiteral<T2, C2, seed2, cycles2,flags2> t) { return KscopeInt(value() % t.value()); }
+		ITHARE_KSCOPE_FORCEINLINE constexpr KscopeInt operator %(KscopeIntLiteral<T2, C2, seed2, cycles2,flags2> t) { return KscopeInt(value() % t.value()); }
 
 		//TODO: bitwise
 
@@ -752,13 +752,13 @@ namespace ithare {
 //TODO!: M3..P3
 //TODO!: FCINT
 
-#define ITHARE_KSCOPE_FINTLITM3(c) ithare::kscope::KscopeLiteral<typename std::remove_cv<decltype(c)>::type,c,ITHARE_KSCOPE_COMBINED_PRNG(kscopeseed,ITHARE_KSCOPE_INIT_PRNG(__FILE__,ITHARE_KSCOPE_LINE,__COUNTER__)),ithare::kscope::kscope_exp_cycles(ithare::kscope::kscope_addlevel(kscopelevel,-3)),kscopeflags>()
-#define ITHARE_KSCOPE_FINTLITM2(c) ithare::kscope::KscopeLiteral<typename std::remove_cv<decltype(c)>::type,c,ITHARE_KSCOPE_COMBINED_PRNG(kscopeseed,ITHARE_KSCOPE_INIT_PRNG(__FILE__,ITHARE_KSCOPE_LINE,__COUNTER__)),ithare::kscope::kscope_exp_cycles(ithare::kscope::kscope_addlevel(kscopelevel,-2)),kscopeflags>()
-#define ITHARE_KSCOPE_FINTLITM1(c) ithare::kscope::KscopeLiteral<typename std::remove_cv<decltype(c)>::type,c,ITHARE_KSCOPE_COMBINED_PRNG(kscopeseed,ITHARE_KSCOPE_INIT_PRNG(__FILE__,ITHARE_KSCOPE_LINE,__COUNTER__)),ithare::kscope::kscope_exp_cycles(ithare::kscope::kscope_addlevel(kscopelevel,-1)),kscopeflags>()
-#define ITHARE_KSCOPE_FINTLIT(c) ithare::kscope::KscopeLiteral<typename std::remove_cv<decltype(c)>::type,c,ITHARE_KSCOPE_COMBINED_PRNG(kscopeseed,ITHARE_KSCOPE_INIT_PRNG(__FILE__,ITHARE_KSCOPE_LINE,__COUNTER__)),ithare::kscope::kscope_exp_cycles(kscopelevel),kscopeflags>()
-#define ITHARE_KSCOPE_FINTLITP1(c) ithare::kscope::KscopeLiteral<typename std::remove_cv<decltype(c)>::type,c,ITHARE_KSCOPE_COMBINED_PRNG(kscopeseed,ITHARE_KSCOPE_INIT_PRNG(__FILE__,ITHARE_KSCOPE_LINE,__COUNTER__)),ithare::kscope::kscope_exp_cycles(ithare::kscope::kscope_addlevel(kscopelevel,1)),kscopeflags>()
-#define ITHARE_KSCOPE_FINTLITP2(c) ithare::kscope::KscopeLiteral<typename std::remove_cv<decltype(c)>::type,c,ITHARE_KSCOPE_COMBINED_PRNG(kscopeseed,ITHARE_KSCOPE_INIT_PRNG(__FILE__,ITHARE_KSCOPE_LINE,__COUNTER__)),ithare::kscope::kscope_exp_cycles(ithare::kscope::kscope_addlevel(kscopelevel,2)),kscopeflags>()
-#define ITHARE_KSCOPE_FINTLITP3(c) ithare::kscope::KscopeLiteral<typename std::remove_cv<decltype(c)>::type,c,ITHARE_KSCOPE_COMBINED_PRNG(kscopeseed,ITHARE_KSCOPE_INIT_PRNG(__FILE__,ITHARE_KSCOPE_LINE,__COUNTER__)),ithare::kscope::kscope_exp_cycles(ithare::kscope::kscope_addlevel(kscopelevel,3)),kscopeflags>()
+#define ITHARE_KSCOPE_FINTLITM3(c) ithare::kscope::KscopeIntLiteral<typename std::remove_cv<decltype(c)>::type,c,ITHARE_KSCOPE_COMBINED_PRNG(kscopeseed,ITHARE_KSCOPE_INIT_PRNG(__FILE__,ITHARE_KSCOPE_LINE,__COUNTER__)),ithare::kscope::kscope_exp_cycles(ithare::kscope::kscope_addlevel(kscopelevel,-3)),kscopeflags>()
+#define ITHARE_KSCOPE_FINTLITM2(c) ithare::kscope::KscopeIntLiteral<typename std::remove_cv<decltype(c)>::type,c,ITHARE_KSCOPE_COMBINED_PRNG(kscopeseed,ITHARE_KSCOPE_INIT_PRNG(__FILE__,ITHARE_KSCOPE_LINE,__COUNTER__)),ithare::kscope::kscope_exp_cycles(ithare::kscope::kscope_addlevel(kscopelevel,-2)),kscopeflags>()
+#define ITHARE_KSCOPE_FINTLITM1(c) ithare::kscope::KscopeIntLiteral<typename std::remove_cv<decltype(c)>::type,c,ITHARE_KSCOPE_COMBINED_PRNG(kscopeseed,ITHARE_KSCOPE_INIT_PRNG(__FILE__,ITHARE_KSCOPE_LINE,__COUNTER__)),ithare::kscope::kscope_exp_cycles(ithare::kscope::kscope_addlevel(kscopelevel,-1)),kscopeflags>()
+#define ITHARE_KSCOPE_FINTLIT(c) ithare::kscope::KscopeIntLiteral<typename std::remove_cv<decltype(c)>::type,c,ITHARE_KSCOPE_COMBINED_PRNG(kscopeseed,ITHARE_KSCOPE_INIT_PRNG(__FILE__,ITHARE_KSCOPE_LINE,__COUNTER__)),ithare::kscope::kscope_exp_cycles(kscopelevel),kscopeflags>()
+#define ITHARE_KSCOPE_FINTLITP1(c) ithare::kscope::KscopeIntLiteral<typename std::remove_cv<decltype(c)>::type,c,ITHARE_KSCOPE_COMBINED_PRNG(kscopeseed,ITHARE_KSCOPE_INIT_PRNG(__FILE__,ITHARE_KSCOPE_LINE,__COUNTER__)),ithare::kscope::kscope_exp_cycles(ithare::kscope::kscope_addlevel(kscopelevel,1)),kscopeflags>()
+#define ITHARE_KSCOPE_FINTLITP2(c) ithare::kscope::KscopeIntLiteral<typename std::remove_cv<decltype(c)>::type,c,ITHARE_KSCOPE_COMBINED_PRNG(kscopeseed,ITHARE_KSCOPE_INIT_PRNG(__FILE__,ITHARE_KSCOPE_LINE,__COUNTER__)),ithare::kscope::kscope_exp_cycles(ithare::kscope::kscope_addlevel(kscopelevel,2)),kscopeflags>()
+#define ITHARE_KSCOPE_FINTLITP3(c) ithare::kscope::KscopeIntLiteral<typename std::remove_cv<decltype(c)>::type,c,ITHARE_KSCOPE_COMBINED_PRNG(kscopeseed,ITHARE_KSCOPE_INIT_PRNG(__FILE__,ITHARE_KSCOPE_LINE,__COUNTER__)),ithare::kscope::kscope_exp_cycles(ithare::kscope::kscope_addlevel(kscopelevel,3)),kscopeflags>()
 
 //INTLIT?I(c): INTLIT-casted-to-INT (shortcut to pass literals to functions)
 /*
@@ -786,13 +786,13 @@ namespace ithare {
 #define ITHARE_KSCOPE_INTNULLPTR ((ithare::kscope::KscopeInt<int,ITHARE_KSCOPE_DUMMYSEED,0,0>*)nullptr)
 
 //INTLIT: constructing KscopeInt to be compatible with ITHARE_KSCOPE_DECLAREFUNC* functions
-#define ITHARE_KSCOPE_INTLIT0(c) ithare::kscope::KscopeLiteral<typename std::remove_cv<decltype(c)>::type,c,ITHARE_KSCOPE_INIT_PRNG(__FILE__,ITHARE_KSCOPE_LINE,__COUNTER__),ithare::kscope::kscope_exp_cycles(0),0>()
-#define ITHARE_KSCOPE_INTLIT1(c) ithare::kscope::KscopeLiteral<typename std::remove_cv<decltype(c)>::type,c,ITHARE_KSCOPE_INIT_PRNG(__FILE__,ITHARE_KSCOPE_LINE,__COUNTER__),ithare::kscope::kscope_exp_cycles(1),0>()
-#define ITHARE_KSCOPE_INTLIT2(c) ithare::kscope::KscopeLiteral<typename std::remove_cv<decltype(c)>::type,c,ITHARE_KSCOPE_INIT_PRNG(__FILE__,ITHARE_KSCOPE_LINE,__COUNTER__),ithare::kscope::kscope_exp_cycles(2),0>()
-#define ITHARE_KSCOPE_INTLIT3(c) ithare::kscope::KscopeLiteral<typename std::remove_cv<decltype(c)>::type,c,ITHARE_KSCOPE_INIT_PRNG(__FILE__,ITHARE_KSCOPE_LINE,__COUNTER__),ithare::kscope::kscope_exp_cycles(3),0>()
-#define ITHARE_KSCOPE_INTLIT4(c) ithare::kscope::KscopeLiteral<typename std::remove_cv<decltype(c)>::type,c,ITHARE_KSCOPE_INIT_PRNG(__FILE__,ITHARE_KSCOPE_LINE,__COUNTER__),ithare::kscope::kscope_exp_cycles(4),0>()
-#define ITHARE_KSCOPE_INTLIT5(c) ithare::kscope::KscopeLiteral<typename std::remove_cv<decltype(c)>::type,c,ITHARE_KSCOPE_INIT_PRNG(__FILE__,ITHARE_KSCOPE_LINE,__COUNTER__),ithare::kscope::kscope_exp_cycles(5),0>()
-#define ITHARE_KSCOPE_INTLIT6(c) ithare::kscope::KscopeLiteral<typename std::remove_cv<decltype(c)>::type,c,ITHARE_KSCOPE_INIT_PRNG(__FILE__,ITHARE_KSCOPE_LINE,__COUNTER__),ithare::kscope::kscope_exp_cycles(6),0>()
+#define ITHARE_KSCOPE_INTLIT0(c) ithare::kscope::KscopeIntLiteral<typename std::remove_cv<decltype(c)>::type,c,ITHARE_KSCOPE_INIT_PRNG(__FILE__,ITHARE_KSCOPE_LINE,__COUNTER__),ithare::kscope::kscope_exp_cycles(0),0>()
+#define ITHARE_KSCOPE_INTLIT1(c) ithare::kscope::KscopeIntLiteral<typename std::remove_cv<decltype(c)>::type,c,ITHARE_KSCOPE_INIT_PRNG(__FILE__,ITHARE_KSCOPE_LINE,__COUNTER__),ithare::kscope::kscope_exp_cycles(1),0>()
+#define ITHARE_KSCOPE_INTLIT2(c) ithare::kscope::KscopeIntLiteral<typename std::remove_cv<decltype(c)>::type,c,ITHARE_KSCOPE_INIT_PRNG(__FILE__,ITHARE_KSCOPE_LINE,__COUNTER__),ithare::kscope::kscope_exp_cycles(2),0>()
+#define ITHARE_KSCOPE_INTLIT3(c) ithare::kscope::KscopeIntLiteral<typename std::remove_cv<decltype(c)>::type,c,ITHARE_KSCOPE_INIT_PRNG(__FILE__,ITHARE_KSCOPE_LINE,__COUNTER__),ithare::kscope::kscope_exp_cycles(3),0>()
+#define ITHARE_KSCOPE_INTLIT4(c) ithare::kscope::KscopeIntLiteral<typename std::remove_cv<decltype(c)>::type,c,ITHARE_KSCOPE_INIT_PRNG(__FILE__,ITHARE_KSCOPE_LINE,__COUNTER__),ithare::kscope::kscope_exp_cycles(4),0>()
+#define ITHARE_KSCOPE_INTLIT5(c) ithare::kscope::KscopeIntLiteral<typename std::remove_cv<decltype(c)>::type,c,ITHARE_KSCOPE_INIT_PRNG(__FILE__,ITHARE_KSCOPE_LINE,__COUNTER__),ithare::kscope::kscope_exp_cycles(5),0>()
+#define ITHARE_KSCOPE_INTLIT6(c) ithare::kscope::KscopeIntLiteral<typename std::remove_cv<decltype(c)>::type,c,ITHARE_KSCOPE_INIT_PRNG(__FILE__,ITHARE_KSCOPE_LINE,__COUNTER__),ithare::kscope::kscope_exp_cycles(6),0>()
 
 /*
 //INTLIT?I(c): INTLIT-casted-to-INT (shortcut to pass literals to functions)
@@ -852,14 +852,14 @@ namespace ithare {
 		}
 #endif
 
-		//KscopeLiteralDbg
-		//IMPORTANT: ANY API CHANGES MUST BE MIRRORED in KscopeLiteral<>
+		//KscopeIntLiteralDbg
+		//IMPORTANT: ANY API CHANGES MUST BE MIRRORED in KscopeIntLiteral<>
 		template<class T, T C>
-		class KscopeLiteralDbg {
+		class KscopeIntLiteralDbg {
 			static_assert(std::is_integral<T>::value);
 
 		public:
-			constexpr KscopeLiteralDbg() : val(C) {
+			constexpr KscopeIntLiteralDbg() : val(C) {
 			}
 			constexpr T value() const {
 				return val;
@@ -870,7 +870,7 @@ namespace ithare {
 
 #ifdef ITHARE_KSCOPE_DBG_ENABLE_DBGPRINT
 			static void dbg_print(size_t offset = 0, const char* prefix = "") {
-				std::cout << std::string(offset, ' ') << prefix << "KscopeLiteral<" << kscope_dbg_print_t<T>() << "," << C << std::endl;
+				std::cout << std::string(offset, ' ') << prefix << "KscopeIntLiteral<" << kscope_dbg_print_t<T>() << "," << C << std::endl;
 			}
 #endif
 		private:
@@ -893,7 +893,7 @@ namespace ithare {
 			constexpr KscopeIntDbg(KscopeIntDbg<T2> t) : val(T(T_(t.value()))) {
 			}
 			template<class T2,T2 C2>
-			constexpr KscopeIntDbg(KscopeLiteralDbg<T2,C2> t) : val(T(T_(t.value()))) {
+			constexpr KscopeIntDbg(KscopeIntLiteralDbg<T2,C2> t) : val(T(T_(t.value()))) {
 			}
 			constexpr KscopeIntDbg& operator =(T_ t) {
 				val = T(t);
@@ -905,7 +905,7 @@ namespace ithare {
 				return *this;
 			}
 			template<class T2, T2 C2>
-			constexpr KscopeIntDbg& operator =(KscopeLiteralDbg<T2,C2> t) {
+			constexpr KscopeIntDbg& operator =(KscopeIntLiteralDbg<T2,C2> t) {
 				val = T(T_(t.value()));
 				return *this;
 			}
@@ -936,7 +936,7 @@ namespace ithare {
 			template<class T2>
 			constexpr bool operator <(KscopeIntDbg<T2> t) {
 				return value() < t.value();
-			}//TODO: template<KscopeLiteralDbg>(for ALL comparisons)
+			}//TODO: template<KscopeIntLiteralDbg>(for ALL comparisons)
 			template<class T2>
 			constexpr bool operator >(KscopeIntDbg<T2> t) {
 				return value() > t.value();
@@ -959,42 +959,42 @@ namespace ithare {
 			}
 
 			template<class T2, T2 C2>
-			constexpr bool operator <(KscopeLiteralDbg<T2, C2> t) {
+			constexpr bool operator <(KscopeIntLiteralDbg<T2, C2> t) {
 				if constexpr(kscope_integral_operator_literal_cast_is_safe<T,T2,C2>())//safe to cast, avoiding spurious signed/unsigned mismatch warning
 					return value() < T_(t.value());
 				else
 					return value() < t.value();
 			}
 			template<class T2, T2 C2>
-			constexpr bool operator >(KscopeLiteralDbg<T2, C2> t) {
+			constexpr bool operator >(KscopeIntLiteralDbg<T2, C2> t) {
 				if constexpr(kscope_integral_operator_literal_cast_is_safe<T,T2,C2>())//safe to cast, avoiding spurious signed/unsigned mismatch warning
 					return value() > T_(t.value());
 				else
 					return value() > t.value();
 			}
 			template<class T2, T2 C2>
-			constexpr bool operator ==(KscopeLiteralDbg<T2, C2> t) {
+			constexpr bool operator ==(KscopeIntLiteralDbg<T2, C2> t) {
 				if constexpr(kscope_integral_operator_literal_cast_is_safe<T,T2,C2>())//safe to cast, avoiding spurious signed/unsigned mismatch warning
 					return value() == T_(t.value());
 				else
 					return value() == t.value();
 			}
 			template<class T2, T2 C2>
-			constexpr bool operator !=(KscopeLiteralDbg<T2, C2> t) {
+			constexpr bool operator !=(KscopeIntLiteralDbg<T2, C2> t) {
 				if constexpr(kscope_integral_operator_literal_cast_is_safe<T,T2,C2>())//safe to cast, avoiding spurious signed/unsigned mismatch warning
 					return value() != T_(t.value());
 				else
 					return value() != t.value();
 			}
 			template<class T2, T2 C2>
-			constexpr bool operator <=(KscopeLiteralDbg<T2, C2> t) {
+			constexpr bool operator <=(KscopeIntLiteralDbg<T2, C2> t) {
 				if constexpr(kscope_integral_operator_literal_cast_is_safe<T,T2,C2>())//safe to cast, avoiding spurious signed/unsigned mismatch warning
 					return value() <= T_(t.value());
 				else
 					return value() <= t.value();
 			}
 			template<class T2, T2 C2>
-			constexpr bool operator >=(KscopeLiteralDbg<T2, C2> t) {
+			constexpr bool operator >=(KscopeIntLiteralDbg<T2, C2> t) {
 				if constexpr(kscope_integral_operator_literal_cast_is_safe<T,T2,C2>())//safe to cast, avoiding spurious signed/unsigned mismatch warning
 					return value() > T_(t.value());
 				else
@@ -1034,23 +1034,23 @@ namespace ithare {
 			}
 
 			template<class T2, T2 C2>
-			constexpr KscopeIntDbg& operator +=(KscopeLiteralDbg<T2, C2> t) {
+			constexpr KscopeIntDbg& operator +=(KscopeIntLiteralDbg<T2, C2> t) {
 				return *this += t.value();
 			}
 			template<class T2, T2 C2>
-			constexpr KscopeIntDbg& operator -=(KscopeLiteralDbg<T2, C2> t) {
+			constexpr KscopeIntDbg& operator -=(KscopeIntLiteralDbg<T2, C2> t) {
 				return *this -= t.value();
 			}
 			template<class T2, T2 C2>
-			constexpr KscopeIntDbg& operator *=(KscopeLiteralDbg<T2, C2> t) {
+			constexpr KscopeIntDbg& operator *=(KscopeIntLiteralDbg<T2, C2> t) {
 				return *this *= t.value();
 			}
 			template<class T2, T2 C2>
-			constexpr KscopeIntDbg& operator /=(KscopeLiteralDbg<T2, C2> t) {
+			constexpr KscopeIntDbg& operator /=(KscopeIntLiteralDbg<T2, C2> t) {
 				return *this /= t.value();
 			}
 			template<class T2, T2 C2>
-			constexpr KscopeIntDbg& operator %=(KscopeLiteralDbg<T2, C2> t) {
+			constexpr KscopeIntDbg& operator %=(KscopeIntLiteralDbg<T2, C2> t) {
 				return *this %= t.value();
 			}
 
@@ -1065,7 +1065,7 @@ namespace ithare {
 			template<class T2>
 			constexpr KscopeIntDbg operator %(T2 t) { return KscopeIntDbg(value() % t); }
 
-			template<class T2>//TODO: template<KscopeLiteralDbg>(for ALL binary operations)
+			template<class T2>//TODO: template<KscopeIntLiteralDbg>(for ALL binary operations)
 			constexpr KscopeIntDbg operator +(KscopeIntDbg<T2> t) { return KscopeIntDbg(value() + t.value()); }
 			template<class T2>
 			constexpr KscopeIntDbg operator -(KscopeIntDbg<T2> t) { return KscopeIntDbg(value() - t.value()); }
@@ -1077,15 +1077,15 @@ namespace ithare {
 			constexpr KscopeIntDbg operator %(KscopeIntDbg<T2> t) { return KscopeIntDbg(value() % t.value()); }
 
 			template<class T2, T2 C2>
-			constexpr KscopeIntDbg operator +(KscopeLiteralDbg<T2, C2> t) { return KscopeIntDbg(value() + t.value()); }
+			constexpr KscopeIntDbg operator +(KscopeIntLiteralDbg<T2, C2> t) { return KscopeIntDbg(value() + t.value()); }
 			template<class T2, T2 C2>
-			constexpr KscopeIntDbg operator -(KscopeLiteralDbg<T2, C2> t) { return KscopeIntDbg(value() - t.value()); }
+			constexpr KscopeIntDbg operator -(KscopeIntLiteralDbg<T2, C2> t) { return KscopeIntDbg(value() - t.value()); }
 			template<class T2, T2 C2>
-			constexpr KscopeIntDbg operator *(KscopeLiteralDbg<T2, C2> t) { return KscopeIntDbg(value() * t.value()); }
+			constexpr KscopeIntDbg operator *(KscopeIntLiteralDbg<T2, C2> t) { return KscopeIntDbg(value() * t.value()); }
 			template<class T2, T2 C2>
-			constexpr KscopeIntDbg operator /(KscopeLiteralDbg<T2, C2> t) { return KscopeIntDbg(value() / t.value()); }
+			constexpr KscopeIntDbg operator /(KscopeIntLiteralDbg<T2, C2> t) { return KscopeIntDbg(value() / t.value()); }
 			template<class T2, T2 C2>
-			constexpr KscopeIntDbg operator %(KscopeLiteralDbg<T2, C2> t) { return KscopeIntDbg(value() % t.value()); }
+			constexpr KscopeIntDbg operator %(KscopeIntLiteralDbg<T2, C2> t) { return KscopeIntDbg(value() % t.value()); }
 
 			//TODO: bitwise
 
@@ -1227,13 +1227,13 @@ namespace ithare {
 #define ITHARE_KSCOPE_CINT(type) ithare::kscope::KscopeIntDbg<type>
 //TODO: M3..P3
 
-#define ITHARE_KSCOPE_FINTLITM3(c) KscopeLiteralDbg<typename std::remove_cv<decltype(c)>::type,c>()
-#define ITHARE_KSCOPE_FINTLITM2(c) KscopeLiteralDbg<typename std::remove_cv<decltype(c)>::type,c>()
-#define ITHARE_KSCOPE_FINTLITM1(c) KscopeLiteralDbg<typename std::remove_cv<decltype(c)>::type,c>()
-#define ITHARE_KSCOPE_FINTLIT(c) KscopeLiteralDbg<typename std::remove_cv<decltype(c)>::type,c>()
-#define ITHARE_KSCOPE_FINTLITP1(c) KscopeLiteralDbg<typename std::remove_cv<decltype(c)>::type,c>()
-#define ITHARE_KSCOPE_FINTLITP2(c) KscopeLiteralDbg<typename std::remove_cv<decltype(c)>::type,c>()
-#define ITHARE_KSCOPE_FINTLITP3(c) KscopeLiteralDbg<typename std::remove_cv<decltype(c)>::type,c>()
+#define ITHARE_KSCOPE_FINTLITM3(c) KscopeIntLiteralDbg<typename std::remove_cv<decltype(c)>::type,c>()
+#define ITHARE_KSCOPE_FINTLITM2(c) KscopeIntLiteralDbg<typename std::remove_cv<decltype(c)>::type,c>()
+#define ITHARE_KSCOPE_FINTLITM1(c) KscopeIntLiteralDbg<typename std::remove_cv<decltype(c)>::type,c>()
+#define ITHARE_KSCOPE_FINTLIT(c) KscopeIntLiteralDbg<typename std::remove_cv<decltype(c)>::type,c>()
+#define ITHARE_KSCOPE_FINTLITP1(c) KscopeIntLiteralDbg<typename std::remove_cv<decltype(c)>::type,c>()
+#define ITHARE_KSCOPE_FINTLITP2(c) KscopeIntLiteralDbg<typename std::remove_cv<decltype(c)>::type,c>()
+#define ITHARE_KSCOPE_FINTLITP3(c) KscopeIntLiteralDbg<typename std::remove_cv<decltype(c)>::type,c>()
 
 /*
 #define ITHARE_KSCOPE_FINTLITM3I(c) ithare::kscope::KscopeIntDbg<typename std::remove_cv<decltype(c)>::type>(ITHARE_KSCOPE_FINTLITM3(c))
@@ -1257,13 +1257,13 @@ namespace ithare {
 //#define ITHARE_KSCOPE_INT_CONSTEXPR(type) ithare::kscope::KscopeIntDbg<type>
 #define ITHARE_KSCOPE_INTNULLPTR ((ithare::kscope::KscopeIntDbg<int>*)nullptr)
 
-#define ITHARE_KSCOPE_INTLIT0(c) ithare::kscope::KscopeLiteralDbg<typename std::remove_cv<decltype(c)>::type,c>()
-#define ITHARE_KSCOPE_INTLIT1(c) ithare::kscope::KscopeLiteralDbg<typename std::remove_cv<decltype(c)>::type,c>()
-#define ITHARE_KSCOPE_INTLIT2(c) ithare::kscope::KscopeLiteralDbg<typename std::remove_cv<decltype(c)>::type,c>()
-#define ITHARE_KSCOPE_INTLIT3(c) ithare::kscope::KscopeLiteralDbg<typename std::remove_cv<decltype(c)>::type,c>()
-#define ITHARE_KSCOPE_INTLIT4(c) ithare::kscope::KscopeLiteralDbg<typename std::remove_cv<decltype(c)>::type,c>()
-#define ITHARE_KSCOPE_INTLIT5(c) ithare::kscope::KscopeLiteralDbg<typename std::remove_cv<decltype(c)>::type,c>()
-#define ITHARE_KSCOPE_INTLIT6(c) ithare::kscope::KscopeLiteralDbg<typename std::remove_cv<decltype(c)>::type,c>()
+#define ITHARE_KSCOPE_INTLIT0(c) ithare::kscope::KscopeIntLiteralDbg<typename std::remove_cv<decltype(c)>::type,c>()
+#define ITHARE_KSCOPE_INTLIT1(c) ithare::kscope::KscopeIntLiteralDbg<typename std::remove_cv<decltype(c)>::type,c>()
+#define ITHARE_KSCOPE_INTLIT2(c) ithare::kscope::KscopeIntLiteralDbg<typename std::remove_cv<decltype(c)>::type,c>()
+#define ITHARE_KSCOPE_INTLIT3(c) ithare::kscope::KscopeIntLiteralDbg<typename std::remove_cv<decltype(c)>::type,c>()
+#define ITHARE_KSCOPE_INTLIT4(c) ithare::kscope::KscopeIntLiteralDbg<typename std::remove_cv<decltype(c)>::type,c>()
+#define ITHARE_KSCOPE_INTLIT5(c) ithare::kscope::KscopeIntLiteralDbg<typename std::remove_cv<decltype(c)>::type,c>()
+#define ITHARE_KSCOPE_INTLIT6(c) ithare::kscope::KscopeIntLiteralDbg<typename std::remove_cv<decltype(c)>::type,c>()
 
 /*
 #define ITHARE_KSCOPE_INTLIT0I(c) ithare::kscope::KscopeIntDbg<typename std::remove_cv<decltype(c)>::type>(ITHARE_KSCOPE_INTLIT0(c))
