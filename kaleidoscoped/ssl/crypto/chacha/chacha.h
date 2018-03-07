@@ -111,9 +111,12 @@ struct ChaCha_ctx {
   c = ITHARE_KSCOPE_PLUS(c,d); b = ITHARE_KSCOPE_ROTATE(ITHARE_KSCOPE_XOR(b,c), 7);
 
 ITHARE_KSCOPE_DECLAREFUNC_WITHPARAMS_CLASS_2xINT
-void chacha_keysetup(ITHARE_KSCOPE_DECLAREPARAM_CLASS(ChaCha_ctx) *x, const ITHARE_KSCOPE_DECLAREPARAM_INT(uint8_t) *k, ITHARE_KSCOPE_DECLAREPARAM_INT2(unsigned) kbits/*128 or 256*/)
+void chacha_keysetup(ITHARE_KSCOPE_DECLAREPARAM_CLASS(ChaCha_ctx) *x, const ITHARE_KSCOPE_DECLAREPARAM_INT(uint8_t) *k, ITHARE_KSCOPE_DECLAREPARAM_INT2(unsigned) kbits_/*128 or 256*/)
 ITHARE_KSCOPE_BOUNDED_MINBYTES(2, CHACHA_MINKEYLEN)
 {
+	ITHARE_KSCOPE_ASSERT_INT_PTR_PARAM(uint8_t,k);
+	ITHARE_KSCOPE_CONVERT_INT_PARAM(unsigned,kbits,kbits_);
+
 	uint32_t constants32[4] = { 
 		ITHARE_KSCOPE_FINTLIT(UINT32_C(0x6170'7865)), 
 		ITHARE_KSCOPE_FINTLIT(UINT32_C(0x3320'646e)), 
@@ -135,7 +138,7 @@ ITHARE_KSCOPE_BOUNDED_MINBYTES(2, CHACHA_MINKEYLEN)
 		k += ITHARE_KSCOPE_FINTLIT(16);
 #endif
 	} else { /* kbits == 128; NOT TESTED(!) */
-		assert(kbits==128);
+		assert(kbits==ITHARE_KSCOPE_FINTLIT(128));
 		constants32[1] -= ITHARE_KSCOPE_FINTLIT(UINT32_C(0x0200'0000));
 		constants32[2] += ITHARE_KSCOPE_FINTLIT(UINT32_C(0x0000'0004));
 		/* tau
@@ -162,17 +165,25 @@ void chacha_ivsetup(ITHARE_KSCOPE_DECLAREPARAM_CLASS(ChaCha_ctx)* x, const ITHAR
 ITHARE_KSCOPE_BOUNDED_MINBYTES(2, CHACHA_NONCELEN)
 ITHARE_KSCOPE_BOUNDED_MINBYTES(3, CHACHA_CTRLEN)
 {
-	x->input[12] = counter == NULL ? 0 : ITHARE_KSCOPE_U8TO32_LITTLE(counter + 0);
-	x->input[13] = counter == NULL ? 0 : ITHARE_KSCOPE_U8TO32_LITTLE(counter + 4);
+	ITHARE_KSCOPE_ASSERT_INT_PTR_PARAM(uint8_t,iv);
+	ITHARE_KSCOPE_ASSERT_INT_PTR_PARAM(uint8_t,counter);
+
+	x->input[12] = counter == nullptr ? 0 : ITHARE_KSCOPE_U8TO32_LITTLE(counter + 0);
+	x->input[13] = counter == nullptr ? 0 : ITHARE_KSCOPE_U8TO32_LITTLE(counter + 4);
 	x->input[14] = ITHARE_KSCOPE_U8TO32_LITTLE(iv + 0);
 	x->input[15] = ITHARE_KSCOPE_U8TO32_LITTLE(iv + 4);
 }
 
+
 ITHARE_KSCOPE_DECLAREFUNC_WITHPARAMS_CLASS_3xINT
-void chacha_encrypt_bytes(ITHARE_KSCOPE_DECLAREPARAM_CLASS(ChaCha_ctx)* x, const ITHARE_KSCOPE_DECLAREPARAM_INT(uint8_t)* m, ITHARE_KSCOPE_DECLAREPARAM_INT2(uint8_t)* c, ITHARE_KSCOPE_DECLAREPARAM_INT3(size_t) bytes)
+void chacha_encrypt_bytes(ITHARE_KSCOPE_DECLAREPARAM_CLASS(ChaCha_ctx)* x, const ITHARE_KSCOPE_DECLAREPARAM_INT(uint8_t)* m, ITHARE_KSCOPE_DECLAREPARAM_INT2(uint8_t)* c, ITHARE_KSCOPE_DECLAREPARAM_INT3(size_t) bytes_)
 ITHARE_KSCOPE_BOUNDED_BUFFER(2, 4)
 ITHARE_KSCOPE_BOUNDED_BUFFER(3, 4)
-{
+{	
+	ITHARE_KSCOPE_CONVERT_INT_PARAM(size_t,bytes,bytes_);
+	ITHARE_KSCOPE_ASSERT_INT_PTR_PARAM(uint8_t,m);
+	ITHARE_KSCOPE_ASSERT_INT_PTR_PARAM(uint8_t,c);
+
 	if (!bytes)
 		return;
 
@@ -376,9 +387,12 @@ ITHARE_KSCOPE_BOUNDED_BUFFER(3, 4)
  */
 
 ITHARE_KSCOPE_DECLAREFUNC_WITHPARAMS_CLASS_2xINT
-void ChaCha_set_key(ITHARE_KSCOPE_DECLAREPARAM_CLASS(ChaCha_ctx)* ctx, const ITHARE_KSCOPE_DECLAREPARAM_INT(uint8_t)* key, ITHARE_KSCOPE_DECLAREPARAM_INT2(uint32_t) keybits /*128 or 256*/)
+void ChaCha_set_key(ITHARE_KSCOPE_DECLAREPARAM_CLASS(ChaCha_ctx)* ctx, const ITHARE_KSCOPE_DECLAREPARAM_INT(uint8_t)* key, ITHARE_KSCOPE_DECLAREPARAM_INT2(uint32_t) keybits_ /*128 or 256*/)
 {
-	assert(keybits == 128 || keybits == 256);
+	ITHARE_KSCOPE_ASSERT_INT_PTR_PARAM(uint8_t,key);
+	ITHARE_KSCOPE_CONVERT_INT_PARAM(unsigned,keybits,keybits_);
+
+	assert(keybits == 128U || keybits == 256U);
 	ITHARE_KSCOPE_FCALL(chacha_keysetup)(ctx, key, keybits);
 	ctx->unused = 0;
 }
@@ -386,6 +400,9 @@ void ChaCha_set_key(ITHARE_KSCOPE_DECLAREPARAM_CLASS(ChaCha_ctx)* ctx, const ITH
 ITHARE_KSCOPE_DECLAREFUNC_WITHPARAMS_CLASS_2xINT
 void ChaCha_set_iv(ITHARE_KSCOPE_DECLAREPARAM_CLASS(ChaCha_ctx)* ctx, const ITHARE_KSCOPE_DECLAREPARAM_INT(uint8_t)* iv, const ITHARE_KSCOPE_DECLAREPARAM_INT2(uint8_t)* counter)
 {
+	ITHARE_KSCOPE_ASSERT_INT_PTR_PARAM(uint8_t,iv);
+	ITHARE_KSCOPE_ASSERT_INT_PTR_PARAM(uint8_t,counter);
+
 	ITHARE_KSCOPE_FCALL(chacha_ivsetup)(ctx, iv, counter);
 	ctx->unused = 0;
 }
@@ -393,7 +410,10 @@ void ChaCha_set_iv(ITHARE_KSCOPE_DECLAREPARAM_CLASS(ChaCha_ctx)* ctx, const ITHA
 ITHARE_KSCOPE_DECLAREFUNC_WITHPARAMS_CLASS_3xINT
 void ChaCha(ITHARE_KSCOPE_DECLAREPARAM_CLASS(ChaCha_ctx)* ctx, ITHARE_KSCOPE_DECLAREPARAM_INT(uint8_t)* out, const ITHARE_KSCOPE_DECLAREPARAM_INT2(uint8_t)* in, ITHARE_KSCOPE_DECLAREPARAM_INT3(size_t) len_)
 {
-	ITHARE_KSCOPE_FINT(size_t) len = ITHARE_KSCOPE_USEPARAM_INT(len_);
+	ITHARE_KSCOPE_ASSERT_INT_PTR_PARAM(uint8_t,out);
+	ITHARE_KSCOPE_ASSERT_INT_PTR_PARAM(uint8_t,in);
+	ITHARE_KSCOPE_CONVERT_INT_PARAM(size_t,len,len_);
+
 	/* Consume remaining keystream, if any exists. */
 	if (ctx->unused > 0) {
 		auto k = ctx->ks + 64 - ctx->unused;
@@ -409,9 +429,15 @@ void ChaCha(ITHARE_KSCOPE_DECLAREPARAM_CLASS(ChaCha_ctx)* ctx, ITHARE_KSCOPE_DEC
 }
 
 ITHARE_KSCOPE_DECLAREFUNC_WITHPARAMS_5xINT 
-void CRYPTO_chacha_20(ITHARE_KSCOPE_DECLAREPARAM_INT(uint8_t)* out, const ITHARE_KSCOPE_DECLAREPARAM_INT2(uint8_t)* in, ITHARE_KSCOPE_DECLAREPARAM_INT3(size_t) len,
+void CRYPTO_chacha_20(ITHARE_KSCOPE_DECLAREPARAM_INT(uint8_t)* out, const ITHARE_KSCOPE_DECLAREPARAM_INT2(uint8_t)* in, ITHARE_KSCOPE_DECLAREPARAM_INT3(size_t) len_,
     const ITHARE_KSCOPE_DECLAREPARAM_INT4(uint8_t) key[32], const ITHARE_KSCOPE_DECLAREPARAM_INT5(uint8_t) iv[8], uint64_t counter)
 {
+	ITHARE_KSCOPE_ASSERT_INT_PTR_PARAM(uint8_t,out);
+	ITHARE_KSCOPE_ASSERT_INT_PTR_PARAM(uint8_t,in);
+	ITHARE_KSCOPE_CONVERT_INT_PARAM(size_t,len,len_);
+	ITHARE_KSCOPE_ASSERT_INT_PTR_PARAM(uint8_t,key);
+	ITHARE_KSCOPE_ASSERT_INT_PTR_PARAM(uint8_t,iv);
+
 	ITHARE_KSCOPE_KSCOPECLASS(ChaCha_ctx) ctx = {};
 
 	/*
@@ -419,7 +445,7 @@ void CRYPTO_chacha_20(ITHARE_KSCOPE_DECLAREPARAM_INT(uint8_t)* out, const ITHARE
 	 * converting size_t to u8 and then back again, pass a counter of
 	 * NULL and manually assign it afterwards.
 	 */
-	ITHARE_KSCOPE_FCALL(chacha_keysetup)(&ctx, key, ITHARE_KSCOPE_FINTLITI(256));
+	ITHARE_KSCOPE_FCALL(chacha_keysetup)(&ctx, key, ITHARE_KSCOPE_FINTLIT(256));
 	ITHARE_KSCOPE_FCALL(chacha_ivsetup)(&ctx, iv, ITHARE_KSCOPE_INTNULLPTR);
 	if (counter != 0) {
 		ctx.input[12] = (uint32_t)counter;
@@ -434,14 +460,14 @@ constexpr ChaCha_ctx<>
 KSCOPE_CT_Chacha_set_key_iv(const uint8_t* key0, int keybits /*128 or 256*/, const uint8_t iv0[8], const uint8_t counter0[8]) {//combining Chacha_set_key() and Chacha_set_iv() to reduce number of constexpr vars for the user. If necessary - can be split back.
 	ChaCha_ctx<> ctx = {};
 	assert(keybits==128||keybits==256);
-	auto key = kscope_int_arr_to_ct_kscope_int<64 /*maximum value*/>(key0,keybits/8 /*actual value*/);
-	auto iv = kscope_int_arr_to_ct_kscope_int<8>(iv0);
-	ITHARE_KSCOPE_CALL_AS_CONSTEXPR(ChaCha_set_key)(&ctx,key.arr, ITHARE_KSCOPE_INT_CONSTEXPR(int)(keybits));
+	//auto key = kscope_int_arr_to_ct_kscope_int<64 /*maximum value*/>(key0,keybits/8 /*actual value*/);
+	//auto iv = kscope_int_arr_to_ct_kscope_int<8>(iv0);
+	ITHARE_KSCOPE_CALL_AS_CONSTEXPR(ChaCha_set_key)(&ctx,key0, keybits);
 	if(counter0==nullptr)
-		ITHARE_KSCOPE_CALL_AS_CONSTEXPR(ChaCha_set_iv)(&ctx,iv.arr,ITHARE_KSCOPE_INTNULLPTR);
+		ITHARE_KSCOPE_CALL_AS_CONSTEXPR(ChaCha_set_iv)(&ctx,iv0,ITHARE_KSCOPE_INTNULLPTR);
 	else {
-		auto counter = kscope_int_arr_to_ct_kscope_int<8>(counter0);
-		ITHARE_KSCOPE_CALL_AS_CONSTEXPR(ChaCha_set_iv)(&ctx,iv.arr,counter.arr);
+		//auto counter = kscope_int_arr_to_ct_kscope_int<8>(counter0);
+		ITHARE_KSCOPE_CALL_AS_CONSTEXPR(ChaCha_set_iv)(&ctx,iv0,counter0);
 	}
 	return ctx;
 }
@@ -449,11 +475,12 @@ KSCOPE_CT_Chacha_set_key_iv(const uint8_t* key0, int keybits /*128 or 256*/, con
 template<size_t N>
 constexpr std::pair<ChaCha_ctx<>,KscopeArrayWrapper<uint8_t,N>>
 KSCOPE_CT_Chacha(ChaCha_ctx<> ctx, const uint8_t (&in0)[N]) {
-	auto in = kscope_int_arr_to_ct_kscope_int(in0);
-	ITHARE_KSCOPE_INT_CONSTEXPR(uint8_t) out[N];
-	ITHARE_KSCOPE_CALL_AS_CONSTEXPR(ChaCha)(&ctx, out, in.arr, ITHARE_KSCOPE_INT_CONSTEXPR(size_t)(N));
+	//auto in = kscope_int_arr_to_ct_kscope_int(in0);
+	//ITHARE_KSCOPE_INT_CONSTEXPR(uint8_t) out[N];
 	KscopeArrayWrapper<uint8_t,N> ret = {};
-	ithare::kscope::kscope_copyarr(ret.arr,out,N);
+	ITHARE_KSCOPE_CALL_AS_CONSTEXPR(ChaCha)(&ctx, ret.arr, in0, N);
+	//KscopeArrayWrapper<uint8_t,N> ret = {};
+	//ithare::kscope::kscope_copyarr(ret.arr,out,N);
 	return std::pair<ChaCha_ctx<>,KscopeArrayWrapper<uint8_t,N>>(ctx,ret);
 }
 

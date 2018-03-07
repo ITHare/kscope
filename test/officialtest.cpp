@@ -62,9 +62,8 @@ private:
 namespace ithare{ namespace kscope {
 
 ITHARE_KSCOPE_DECLAREFUNC_WITHPARAMS_INT
-ITHARE_KSCOPE_FINTP2(uint64_t) factorial(ITHARE_KSCOPE_DECLAREPARAM_INT(int64_t) x_) {
+ITHARE_KSCOPE_FINTP2(uint64_t) factorial(ITHARE_KSCOPE_DECLAREPARAM_INT(int64_t) x) {
 	//DBGPRINT(x_)
-	ITHARE_KSCOPE_FINTP3(int64_t) x = ITHARE_KSCOPE_USEPARAM_INT(x_);
 	if (x < 0) {
 		auto lit = ITHARE_KSCOPE_STRLIT3("Negative argument to factorial!"); ITHARE_KSCOPE_DBGPRINT(lit);
 		throw MyException(lit);
@@ -148,7 +147,7 @@ static const lest::test module[] = {
 		EXPECT((ITKSCOPE kscope_integral_operator_literal_cast_is_safe<TT4,int,0x7fff'ffff>()==true));
 	},
 	CASE("factorial()",) {
-		auto f = ITKSCOPE ITHARE_KSCOPE_CALL4(factorial)(ITHARE_KSCOPE_INTLIT3I(17)); ITHARE_KSCOPE_DBGPRINT(f);
+		auto f = ITKSCOPE ITHARE_KSCOPE_CALL4(factorial)(ITHARE_KSCOPE_INTLIT3(17)); ITHARE_KSCOPE_DBGPRINT(f);
 		EXPECT(f==UINT64_C(355687428096000));
 		EXPECT( ITKSCOPE factorial(18) == UINT64_C(6402373705728000));
 		EXPECT( ITKSCOPE factorial(19) == UINT64_C(121645100408832000));

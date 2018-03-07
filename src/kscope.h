@@ -643,6 +643,59 @@ namespace ithare {
 	}
 #endif
 
+	template<class T,ITHARE_KSCOPE_SEEDTPARAM seed, KSCOPECYCLES cycles,KSCOPEFLAGS flags,class SRCT>
+	struct KscopeConvertedIntParam {
+		using type = KscopeInt<T, seed,cycles,flags>;
+	};
+
+	template<class T,ITHARE_KSCOPE_SEEDTPARAM seed, KSCOPECYCLES cycles,KSCOPEFLAGS flags,class SRCBASE,ITHARE_KSCOPE_SEEDTPARAM intseed, KSCOPECYCLES intcycles,KSCOPEFLAGS intflags>
+	struct KscopeConvertedIntParam<T,seed,cycles,flags,KscopeInt<SRCBASE, intseed,intcycles,intflags>> {
+		static_assert(std::is_integral<SRCBASE>::value);
+		static_assert(std::is_integral<T>::value);
+		using type = typename std::conditional<
+			std::is_same<T,SRCBASE>::value,//TODO: think whether to compare only source type, or also intcycles and/or intflags
+			KscopeInt<SRCBASE, intseed,intcycles,intflags>&,
+			KscopeInt<T,seed,cycles,flags>>::type;
+	};
+
+	template<class T,class SRCT>
+	struct KscopeIntPtrParamCompatible;
+
+	template<class T,class SRCT>
+	struct KscopeIntPtrParamCompatible<T*,SRCT*> {
+		static_assert(std::is_integral<T>::value);
+		static_assert(std::is_integral<SRCT>::value);
+		constexpr static bool value = sizeof(T) == sizeof(SRCT) && std::is_signed<T>::value == std::is_signed<SRCT>::value;
+		static_assert(value);//as KscopeIntPtrParamCompatible is used only within static_asserts, it serves as early diagnostics
+	};
+
+	template<class T,class SRCBASE,ITHARE_KSCOPE_SEEDTPARAM intseed, KSCOPECYCLES intcycles,KSCOPEFLAGS intflags>
+	struct KscopeIntPtrParamCompatible< T*, KscopeInt<SRCBASE, intseed,intcycles,intflags>* > {
+		static_assert(std::is_integral<SRCBASE>::value);
+		static_assert(std::is_integral<T>::value);
+		constexpr static bool value = sizeof(T) == sizeof(SRCBASE) && std::is_signed<T>::value == std::is_signed<SRCBASE>::value;
+		static_assert(value);//as KscopeIntPtrParamCompatible is used only within static_asserts, it serves as early diagnostics
+	};
+
+	template<class T,class SRCBASE,ITHARE_KSCOPE_SEEDTPARAM intseed, KSCOPECYCLES intcycles,KSCOPEFLAGS intflags>
+	struct KscopeIntPtrParamCompatible< T*, const KscopeInt<SRCBASE, intseed,intcycles,intflags>* > {
+		static_assert(std::is_integral<SRCBASE>::value);
+		static_assert(std::is_integral<T>::value);
+		constexpr static bool value = sizeof(T) == sizeof(SRCBASE) && std::is_signed<T>::value == std::is_signed<SRCBASE>::value;
+		static_assert(value);//as KscopeIntPtrParamCompatible is used only within static_asserts, it serves as early diagnostics
+	};
+
+	template<class T>
+	struct KscopeIntPtrParamCompatible<T*,KscopeInt<int,ITHARE_KSCOPE_DUMMYSEED,0,0>*> {//TODO: try to deal with occasional non-detection due to seed happening to be the same as DUMMY_SEED
+		static_assert(std::is_integral<T>::value);
+		constexpr static bool value = true;
+	};
+	template<class T>
+	struct KscopeIntPtrParamCompatible<T*,const KscopeInt<int,ITHARE_KSCOPE_DUMMYSEED,0,0>*> {
+		static_assert(std::is_integral<T>::value);
+		constexpr static bool value = true;
+	};
+
 	}//namespace kscope
 }//namespace ithare
 
@@ -655,23 +708,29 @@ namespace ithare {
 
 #define ITHARE_KSCOPE_DECLAREFUNC template<ITHARE_KSCOPE_SEEDTPARAM kscopeseed = ITHARE_KSCOPE_DUMMYSEED, KSCOPELEVEL kscopelevel=-1,KSCOPEFLAGS kscopeflags=0> constexpr ITHARE_KSCOPE_FORCEINLINE
 #define ITHARE_KSCOPE_DECLAREFUNC_WITHEXTRA(...) template<ITHARE_KSCOPE_SEEDTPARAM kscopeseed = ITHARE_KSCOPE_DUMMYSEED, KSCOPELEVEL kscopelevel=-1,KSCOPEFLAGS kscopeflags=0,__VA_ARGS__> constexpr ITHARE_KSCOPE_FORCEINLINE
-#define ITHARE_KSCOPE_DECLAREFUNC_WITHPARAMS_INT template<ITHARE_KSCOPE_SEEDTPARAM kscopeseed = ITHARE_KSCOPE_DUMMYSEED, KSCOPELEVEL kscopelevel=-1,KSCOPEFLAGS kscopeflags=0,class kscopeinttype, ITHARE_KSCOPE_SEEDTPARAM kscopeintseed,KSCOPECYCLES kscopeintcycles,KSCOPEFLAGS kscopeintflags> constexpr ITHARE_KSCOPE_FORCEINLINE
-#define ITHARE_KSCOPE_DECLAREFUNC_WITHPARAMS_2xINT template<ITHARE_KSCOPE_SEEDTPARAM kscopeseed = ITHARE_KSCOPE_DUMMYSEED, KSCOPELEVEL kscopelevel=-1,KSCOPEFLAGS kscopeflags=0,class kscopeinttype,ITHARE_KSCOPE_SEEDTPARAM kscopeintseed,KSCOPECYCLES kscopeintcycles,KSCOPEFLAGS kscopeintflags,class kscopeinttype2, ITHARE_KSCOPE_SEEDTPARAM kscopeintseed2,KSCOPECYCLES kscopeintcycles2,KSCOPEFLAGS kscopeintflags2> constexpr ITHARE_KSCOPE_FORCEINLINE
-#define ITHARE_KSCOPE_DECLAREFUNC_WITHPARAMS_3xINT template<ITHARE_KSCOPE_SEEDTPARAM kscopeseed = ITHARE_KSCOPE_DUMMYSEED, KSCOPELEVEL kscopelevel=-1,KSCOPEFLAGS kscopeflags=0,class kscopeinttype,ITHARE_KSCOPE_SEEDTPARAM kscopeintseed,KSCOPECYCLES kscopeintcycles,KSCOPEFLAGS kscopeintflags,class kscopeinttype2, ITHARE_KSCOPE_SEEDTPARAM kscopeintseed2,KSCOPECYCLES kscopeintcycles2,KSCOPEFLAGS kscopeintflags2,class kscopeinttype3, ITHARE_KSCOPE_SEEDTPARAM kscopeintseed3,KSCOPECYCLES kscopeintcycles3,KSCOPEFLAGS kscopeintflags3> constexpr ITHARE_KSCOPE_FORCEINLINE
-#define ITHARE_KSCOPE_DECLAREFUNC_WITHPARAMS_4xINT template<ITHARE_KSCOPE_SEEDTPARAM kscopeseed = ITHARE_KSCOPE_DUMMYSEED, KSCOPELEVEL kscopelevel=-1,KSCOPEFLAGS kscopeflags=0,class kscopeinttype,ITHARE_KSCOPE_SEEDTPARAM kscopeintseed,KSCOPECYCLES kscopeintcycles,KSCOPEFLAGS kscopeintflags,class kscopeinttype2, ITHARE_KSCOPE_SEEDTPARAM kscopeintseed2,KSCOPECYCLES kscopeintcycles2,KSCOPEFLAGS kscopeintflags2,class kscopeinttype3, ITHARE_KSCOPE_SEEDTPARAM kscopeintseed3,KSCOPECYCLES kscopeintcycles3,KSCOPEFLAGS kscopeintflags3,class kscopeinttype4, ITHARE_KSCOPE_SEEDTPARAM kscopeintseed4,KSCOPECYCLES kscopeintcycles4,KSCOPEFLAGS kscopeintflags4> constexpr ITHARE_KSCOPE_FORCEINLINE
-#define ITHARE_KSCOPE_DECLAREFUNC_WITHPARAMS_5xINT template<ITHARE_KSCOPE_SEEDTPARAM kscopeseed = ITHARE_KSCOPE_DUMMYSEED, KSCOPELEVEL kscopelevel=-1,KSCOPEFLAGS kscopeflags=0,class kscopeinttype,ITHARE_KSCOPE_SEEDTPARAM kscopeintseed,KSCOPECYCLES kscopeintcycles,KSCOPEFLAGS kscopeintflags,class kscopeinttype2, ITHARE_KSCOPE_SEEDTPARAM kscopeintseed2,KSCOPECYCLES kscopeintcycles2,KSCOPEFLAGS kscopeintflags2,class kscopeinttype3, ITHARE_KSCOPE_SEEDTPARAM kscopeintseed3,KSCOPECYCLES kscopeintcycles3,KSCOPEFLAGS kscopeintflags3,class kscopeinttype4, ITHARE_KSCOPE_SEEDTPARAM kscopeintseed4,KSCOPECYCLES kscopeintcycles4,KSCOPEFLAGS kscopeintflags4,class kscopeinttype5, ITHARE_KSCOPE_SEEDTPARAM kscopeintseed5,KSCOPECYCLES kscopeintcycles5,KSCOPEFLAGS kscopeintflags5> constexpr ITHARE_KSCOPE_FORCEINLINE
+#define ITHARE_KSCOPE_DECLAREFUNC_WITHPARAMS_INT template<ITHARE_KSCOPE_SEEDTPARAM kscopeseed = ITHARE_KSCOPE_DUMMYSEED, KSCOPELEVEL kscopelevel=-1,KSCOPEFLAGS kscopeflags=0,class kscopeinttype> constexpr ITHARE_KSCOPE_FORCEINLINE
+#define ITHARE_KSCOPE_DECLAREFUNC_WITHPARAMS_2xINT template<ITHARE_KSCOPE_SEEDTPARAM kscopeseed = ITHARE_KSCOPE_DUMMYSEED, KSCOPELEVEL kscopelevel=-1,KSCOPEFLAGS kscopeflags=0,class kscopeinttype,class kscopeinttype2> constexpr ITHARE_KSCOPE_FORCEINLINE
+#define ITHARE_KSCOPE_DECLAREFUNC_WITHPARAMS_3xINT template<ITHARE_KSCOPE_SEEDTPARAM kscopeseed = ITHARE_KSCOPE_DUMMYSEED, KSCOPELEVEL kscopelevel=-1,KSCOPEFLAGS kscopeflags=0,class kscopeinttype,class kscopeinttype2, class kscopeinttype3> constexpr ITHARE_KSCOPE_FORCEINLINE
+#define ITHARE_KSCOPE_DECLAREFUNC_WITHPARAMS_4xINT template<ITHARE_KSCOPE_SEEDTPARAM kscopeseed = ITHARE_KSCOPE_DUMMYSEED, KSCOPELEVEL kscopelevel=-1,KSCOPEFLAGS kscopeflags=0,class kscopeinttype,class kscopeinttype2, class kscopeinttype3, class kscopeinttype4> constexpr ITHARE_KSCOPE_FORCEINLINE
+#define ITHARE_KSCOPE_DECLAREFUNC_WITHPARAMS_5xINT template<ITHARE_KSCOPE_SEEDTPARAM kscopeseed = ITHARE_KSCOPE_DUMMYSEED, KSCOPELEVEL kscopelevel=-1,KSCOPEFLAGS kscopeflags=0,class kscopeinttype,class kscopeinttype2, class kscopeinttype3, class kscopeinttype4, class kscopeinttype5> constexpr ITHARE_KSCOPE_FORCEINLINE
 #define ITHARE_KSCOPE_DECLAREFUNC_WITHPARAMS_CLASS template<ITHARE_KSCOPE_SEEDTPARAM kscopeseed = ITHARE_KSCOPE_DUMMYSEED, KSCOPELEVEL kscopelevel=-1,KSCOPEFLAGS kscopeflags=0,ITHARE_KSCOPE_SEEDTPARAM kscopeclsseed,KSCOPELEVEL kscopeclslevel,KSCOPEFLAGS kscopeclsflags> constexpr ITHARE_KSCOPE_FORCEINLINE
-#define ITHARE_KSCOPE_DECLAREFUNC_WITHPARAMS_CLASS_INT template<ITHARE_KSCOPE_SEEDTPARAM kscopeseed = ITHARE_KSCOPE_DUMMYSEED, KSCOPELEVEL kscopelevel=-1,KSCOPEFLAGS kscopeflags=0,ITHARE_KSCOPE_SEEDTPARAM kscopeclsseed,KSCOPELEVEL kscopeclslevel,KSCOPEFLAGS kscopeclsflags,class kscopeinttype,ITHARE_KSCOPE_SEEDTPARAM kscopeintseed,KSCOPECYCLES kscopeintcycles,KSCOPEFLAGS kscopeintflags> constexpr ITHARE_KSCOPE_FORCEINLINE
-#define ITHARE_KSCOPE_DECLAREFUNC_WITHPARAMS_CLASS_2xINT template<ITHARE_KSCOPE_SEEDTPARAM kscopeseed = ITHARE_KSCOPE_DUMMYSEED, KSCOPELEVEL kscopelevel=-1,KSCOPEFLAGS kscopeflags=0,ITHARE_KSCOPE_SEEDTPARAM kscopeclsseed,KSCOPELEVEL kscopeclslevel,KSCOPEFLAGS kscopeclsflags,class kscopeinttype,ITHARE_KSCOPE_SEEDTPARAM kscopeintseed,KSCOPECYCLES kscopeintcycles,KSCOPEFLAGS kscopeintflags,class kscopeinttype2, ITHARE_KSCOPE_SEEDTPARAM kscopeintseed2,KSCOPECYCLES kscopeintcycles2,KSCOPEFLAGS kscopeintflags2> constexpr ITHARE_KSCOPE_FORCEINLINE
-#define ITHARE_KSCOPE_DECLAREFUNC_WITHPARAMS_CLASS_3xINT template<ITHARE_KSCOPE_SEEDTPARAM kscopeseed = ITHARE_KSCOPE_DUMMYSEED, KSCOPELEVEL kscopelevel=-1,KSCOPEFLAGS kscopeflags=0,ITHARE_KSCOPE_SEEDTPARAM kscopeclsseed,KSCOPELEVEL kscopeclslevel,KSCOPEFLAGS kscopeclsflags,class kscopeinttype,ITHARE_KSCOPE_SEEDTPARAM kscopeintseed,KSCOPECYCLES kscopeintcycles,KSCOPEFLAGS kscopeintflags,class kscopeinttype2, ITHARE_KSCOPE_SEEDTPARAM kscopeintseed2,KSCOPECYCLES kscopeintcycles2,KSCOPEFLAGS kscopeintflags2,class kscopeinttype3, ITHARE_KSCOPE_SEEDTPARAM kscopeintseed3,KSCOPECYCLES kscopeintcycles3,KSCOPEFLAGS kscopeintflags3> constexpr ITHARE_KSCOPE_FORCEINLINE
-#define ITHARE_KSCOPE_DECLAREPARAM_INT(type) /* yes, 'type' parameter is NOT used here */ ithare::kscope::KscopeInt<kscopeinttype,kscopeintseed,kscopeintcycles,kscopeintflags> 
-#define ITHARE_KSCOPE_DECLAREPARAM_INT2(type) /* yes, 'type' parameter is NOT used here */ ithare::kscope::KscopeInt<kscopeinttype2,kscopeintseed2,kscopeintcycles2,kscopeintflags2>
-#define ITHARE_KSCOPE_DECLAREPARAM_INT3(type) /* yes, 'type' parameter is NOT used here */ ithare::kscope::KscopeInt<kscopeinttype3,kscopeintseed3,kscopeintcycles3,kscopeintflags3>
-#define ITHARE_KSCOPE_DECLAREPARAM_INT4(type) /* yes, 'type' parameter is NOT used here */ ithare::kscope::KscopeInt<kscopeinttype4,kscopeintseed4,kscopeintcycles4,kscopeintflags4>
-#define ITHARE_KSCOPE_DECLAREPARAM_INT5(type) /* yes, 'type' parameter is NOT used here */ ithare::kscope::KscopeInt<kscopeinttype5,kscopeintseed5,kscopeintcycles5,kscopeintflags5>
+#define ITHARE_KSCOPE_DECLAREFUNC_WITHPARAMS_CLASS_INT template<ITHARE_KSCOPE_SEEDTPARAM kscopeseed = ITHARE_KSCOPE_DUMMYSEED, KSCOPELEVEL kscopelevel=-1,KSCOPEFLAGS kscopeflags=0,ITHARE_KSCOPE_SEEDTPARAM kscopeclsseed,KSCOPELEVEL kscopeclslevel,KSCOPEFLAGS kscopeclsflags,class kscopeinttype> constexpr ITHARE_KSCOPE_FORCEINLINE
+#define ITHARE_KSCOPE_DECLAREFUNC_WITHPARAMS_CLASS_2xINT template<ITHARE_KSCOPE_SEEDTPARAM kscopeseed = ITHARE_KSCOPE_DUMMYSEED, KSCOPELEVEL kscopelevel=-1,KSCOPEFLAGS kscopeflags=0,ITHARE_KSCOPE_SEEDTPARAM kscopeclsseed,KSCOPELEVEL kscopeclslevel,KSCOPEFLAGS kscopeclsflags,class kscopeinttype,class kscopeinttype2> constexpr ITHARE_KSCOPE_FORCEINLINE
+#define ITHARE_KSCOPE_DECLAREFUNC_WITHPARAMS_CLASS_3xINT template<ITHARE_KSCOPE_SEEDTPARAM kscopeseed = ITHARE_KSCOPE_DUMMYSEED, KSCOPELEVEL kscopelevel=-1,KSCOPEFLAGS kscopeflags=0,ITHARE_KSCOPE_SEEDTPARAM kscopeclsseed,KSCOPELEVEL kscopeclslevel,KSCOPEFLAGS kscopeclsflags,class kscopeinttype,class kscopeinttype2, class kscopeinttype3> constexpr ITHARE_KSCOPE_FORCEINLINE
+#define ITHARE_KSCOPE_DECLAREPARAM_INT(type) /* yes, 'type' parameter is NOT used here */ kscopeinttype 
+#define ITHARE_KSCOPE_DECLAREPARAM_INT2(type) /* yes, 'type' parameter is NOT used here */ kscopeinttype2
+#define ITHARE_KSCOPE_DECLAREPARAM_INT3(type) /* yes, 'type' parameter is NOT used here */ kscopeinttype3
+#define ITHARE_KSCOPE_DECLAREPARAM_INT4(type) /* yes, 'type' parameter is NOT used here */ kscopeinttype4
+#define ITHARE_KSCOPE_DECLAREPARAM_INT5(type) /* yes, 'type' parameter is NOT used here */ kscopeinttype5
 #define ITHARE_KSCOPE_DECLAREPARAM_CLASS(name) name<kscopeclsseed,kscopeclslevel,kscopeclsflags>
 
-#define ITHARE_KSCOPE_USEPARAM_INT(name) name.value()
+#define ITHARE_KSCOPE_CONVERT_INT_PARAM(targetBaseType,targetName,srcParam)\
+	typename KscopeConvertedIntParam<targetBaseType,ITHARE_KSCOPE_COMBINED_PRNG(kscopeseed,ITHARE_KSCOPE_INIT_PRNG(__FILE__,ITHARE_KSCOPE_LINE,__COUNTER__)),ithare::kscope::kscope_exp_cycles(kscopelevel),kscopeflags,decltype(srcParam)>::type targetName = srcParam;
+
+#define ITHARE_KSCOPE_ASSERT_INT_PTR_PARAM(targetBaseType,srcParam)\
+	static_assert(KscopeIntPtrParamCompatible<targetBaseType*,decltype(srcParam)>::value);
+
+//#define ITHARE_KSCOPE_USEPARAM_INT(name) name.value()
 
 #define ITHARE_KSCOPE_FCALLM3(fname) fname<ITHARE_KSCOPE_COMBINED_PRNG(kscopeseed,ITHARE_KSCOPE_INIT_PRNG(__FILE__,ITHARE_KSCOPE_LINE,__COUNTER__)),ithare::kscope::kscope_addlevel(kscopelevel,-3),kscopeflags>
 #define ITHARE_KSCOPE_FCALLM2(fname) fname<ITHARE_KSCOPE_COMBINED_PRNG(kscopeseed,ITHARE_KSCOPE_INIT_PRNG(__FILE__,ITHARE_KSCOPE_LINE,__COUNTER__)),ithare::kscope::kscope_addlevel(kscopelevel,-2),kscopeflags>
@@ -702,6 +761,7 @@ namespace ithare {
 #define ITHARE_KSCOPE_FINTLITP3(c) ithare::kscope::KscopeLiteral<typename std::remove_cv<decltype(c)>::type,c,ITHARE_KSCOPE_COMBINED_PRNG(kscopeseed,ITHARE_KSCOPE_INIT_PRNG(__FILE__,ITHARE_KSCOPE_LINE,__COUNTER__)),ithare::kscope::kscope_exp_cycles(ithare::kscope::kscope_addlevel(kscopelevel,3)),kscopeflags>()
 
 //INTLIT?I(c): INTLIT-casted-to-INT (shortcut to pass literals to functions)
+/*
 #define ITHARE_KSCOPE_FINTLITM3I(c) ithare::kscope::KscopeInt<typename std::remove_cv<decltype(c)>::type,ITHARE_KSCOPE_DUMMYSEED,0,0>(ITHARE_KSCOPE_FINTLITM3(c))
 #define ITHARE_KSCOPE_FINTLITM2I(c) ithare::kscope::KscopeInt<typename std::remove_cv<decltype(c)>::type,ITHARE_KSCOPE_DUMMYSEED,0,0>(ITHARE_KSCOPE_FINTLITM2(c))
 #define ITHARE_KSCOPE_FINTLITM1I(c) ithare::kscope::KscopeInt<typename std::remove_cv<decltype(c)>::type,ITHARE_KSCOPE_DUMMYSEED,0,0>(ITHARE_KSCOPE_FINTLITM1(c))
@@ -709,6 +769,7 @@ namespace ithare {
 #define ITHARE_KSCOPE_FINTLITP1I(c) ithare::kscope::KscopeInt<typename std::remove_cv<decltype(c)>::type,ITHARE_KSCOPE_DUMMYSEED,0,0>(ITHARE_KSCOPE_FINTLITP1(c))
 #define ITHARE_KSCOPE_FINTLITP2I(c) ithare::kscope::KscopeInt<typename std::remove_cv<decltype(c)>::type,ITHARE_KSCOPE_DUMMYSEED,0,0>(ITHARE_KSCOPE_FINTLITP2(c))
 #define ITHARE_KSCOPE_FINTLITP3I(c) ithare::kscope::KscopeInt<typename std::remove_cv<decltype(c)>::type,ITHARE_KSCOPE_DUMMYSEED,0,0>(ITHARE_KSCOPE_FINTLITP3(c))
+*/
 
 //TODO: ITHARE_KSCOPE_FSTRLIT
 
@@ -733,6 +794,7 @@ namespace ithare {
 #define ITHARE_KSCOPE_INTLIT5(c) ithare::kscope::KscopeLiteral<typename std::remove_cv<decltype(c)>::type,c,ITHARE_KSCOPE_INIT_PRNG(__FILE__,ITHARE_KSCOPE_LINE,__COUNTER__),ithare::kscope::kscope_exp_cycles(5),0>()
 #define ITHARE_KSCOPE_INTLIT6(c) ithare::kscope::KscopeLiteral<typename std::remove_cv<decltype(c)>::type,c,ITHARE_KSCOPE_INIT_PRNG(__FILE__,ITHARE_KSCOPE_LINE,__COUNTER__),ithare::kscope::kscope_exp_cycles(6),0>()
 
+/*
 //INTLIT?I(c): INTLIT-casted-to-INT (shortcut to pass literals to functions)
 #define ITHARE_KSCOPE_INTLIT0I(c) ithare::kscope::KscopeInt<typename std::remove_cv<decltype(c)>::type,ITHARE_KSCOPE_DUMMYSEED,0,0>(ITHARE_KSCOPE_INTLIT0(c))
 #define ITHARE_KSCOPE_INTLIT1I(c) ithare::kscope::KscopeInt<typename std::remove_cv<decltype(c)>::type,ITHARE_KSCOPE_DUMMYSEED,0,0>(ITHARE_KSCOPE_INTLIT1(c))
@@ -741,6 +803,7 @@ namespace ithare {
 #define ITHARE_KSCOPE_INTLIT4I(c) ithare::kscope::KscopeInt<typename std::remove_cv<decltype(c)>::type,ITHARE_KSCOPE_DUMMYSEED,0,0>(ITHARE_KSCOPE_INTLIT4(c))
 #define ITHARE_KSCOPE_INTLIT5I(c) ithare::kscope::KscopeInt<typename std::remove_cv<decltype(c)>::type,ITHARE_KSCOPE_DUMMYSEED,0,0>(ITHARE_KSCOPE_INTLIT5(c))
 #define ITHARE_KSCOPE_INTLIT6I(c) ithare::kscope::KscopeInt<typename std::remove_cv<decltype(c)>::type,ITHARE_KSCOPE_DUMMYSEED,0,0>(ITHARE_KSCOPE_INTLIT6(c))
+*/
 
 //STRLIT:
 #define ITHARE_KSCOPE_STR_HELPER(seed,cycles,s) ithare::kscope::KscopeStrLiteral<seed,cycles,(sizeof(s)>0?s[0]:'\0'),(sizeof(s)>1?s[1]:'\0'),(sizeof(s)>2?s[2]:'\0'),(sizeof(s)>3?s[3]:'\0'),\
@@ -1059,6 +1122,59 @@ namespace ithare {
 #endif
 		};
 
+	template<class T,class SRCT>
+	struct KscopeDbgConvertedIntParam {
+		using type = KscopeIntDbg<T>;
+	};
+
+	template<class T,class SRCBASE>
+	struct KscopeDbgConvertedIntParam<T,KscopeIntDbg<SRCBASE>> {
+		static_assert(std::is_integral<SRCBASE>::value);
+		static_assert(std::is_integral<T>::value);
+		using type = typename std::conditional<
+			std::is_same<T,SRCBASE>::value,//TODO: think whether to compare only source type, or also intcycles and/or intflags
+			KscopeIntDbg<SRCBASE>&,
+			KscopeIntDbg<T>>::type;
+	};
+
+	template<class T,class SRCT>
+	struct KscopeDbgIntPtrParamCompatible;
+
+	template<class T,class SRCT>
+	struct KscopeDbgIntPtrParamCompatible<T*,SRCT*> {
+		static_assert(std::is_integral<T>::value);
+		static_assert(std::is_integral<SRCT>::value);
+		constexpr static bool value = sizeof(T) == sizeof(SRCT) && std::is_signed<T>::value == std::is_signed<SRCT>::value;
+		static_assert(value);//as KscopeIntPtrParamCompatible is used only within static_asserts, it serves as early diagnostics
+	};
+
+	template<class T,class SRCBASE>
+	struct KscopeDbgIntPtrParamCompatible< T*, KscopeIntDbg<SRCBASE>* > {
+		static_assert(std::is_integral<SRCBASE>::value);
+		static_assert(std::is_integral<T>::value);
+		constexpr static bool value = sizeof(T) == sizeof(SRCBASE) && std::is_signed<T>::value == std::is_signed<SRCBASE>::value;
+		static_assert(value);//as KscopeIntPtrParamCompatible is used only within static_asserts, it serves as early diagnostics
+	};
+
+	template<class T,class SRCBASE>
+	struct KscopeDbgIntPtrParamCompatible< T*, const KscopeIntDbg<SRCBASE>* > {
+		static_assert(std::is_integral<SRCBASE>::value);
+		static_assert(std::is_integral<T>::value);
+		constexpr static bool value = sizeof(T) == sizeof(SRCBASE) && std::is_signed<T>::value == std::is_signed<SRCBASE>::value;
+		static_assert(value);//as KscopeIntPtrParamCompatible is used only within static_asserts, it serves as early diagnostics
+	};
+
+	template<class T>
+	struct KscopeDbgIntPtrParamCompatible<T*,KscopeIntDbg<int>*> {//TODO: try to deal with occasional non-detection due to type clash
+		static_assert(std::is_integral<T>::value);
+		constexpr static bool value = true;
+	};
+	template<class T>
+	struct KscopeDbgIntPtrParamCompatible<T*,const KscopeIntDbg<int>*> {
+		static_assert(std::is_integral<T>::value);
+		constexpr static bool value = true;
+	};
+
 	}//namespace kscope
 }//namespace ithare
 
@@ -1077,14 +1193,20 @@ namespace ithare {
 #define ITHARE_KSCOPE_DECLAREFUNC_WITHPARAMS_CLASS_INT template<KSCOPEFLAGS kscopeflags=0,KSCOPEFLAGS kscopeclsflags,class kscopeinttype> constexpr ITHARE_KSCOPE_FORCEINLINE
 #define ITHARE_KSCOPE_DECLAREFUNC_WITHPARAMS_CLASS_2xINT template<KSCOPEFLAGS kscopeflags=0,KSCOPEFLAGS kscopeclsflags,class kscopeinttype,class kscopeinttype2> constexpr ITHARE_KSCOPE_FORCEINLINE
 #define ITHARE_KSCOPE_DECLAREFUNC_WITHPARAMS_CLASS_3xINT template<KSCOPEFLAGS kscopeflags=0,KSCOPEFLAGS kscopeclsflags,class kscopeinttype,class kscopeinttype2,class kscopeinttype3> constexpr ITHARE_KSCOPE_FORCEINLINE
-#define ITHARE_KSCOPE_DECLAREPARAM_INT(type) ithare::kscope::KscopeIntDbg<kscopeinttype>
-#define ITHARE_KSCOPE_DECLAREPARAM_INT2(type) ithare::kscope::KscopeIntDbg<kscopeinttype2>
-#define ITHARE_KSCOPE_DECLAREPARAM_INT3(type) ithare::kscope::KscopeIntDbg<kscopeinttype3>
-#define ITHARE_KSCOPE_DECLAREPARAM_INT4(type) ithare::kscope::KscopeIntDbg<kscopeinttype4>
-#define ITHARE_KSCOPE_DECLAREPARAM_INT5(type) ithare::kscope::KscopeIntDbg<kscopeinttype5>
+#define ITHARE_KSCOPE_DECLAREPARAM_INT(type) kscopeinttype
+#define ITHARE_KSCOPE_DECLAREPARAM_INT2(type) kscopeinttype2
+#define ITHARE_KSCOPE_DECLAREPARAM_INT3(type) kscopeinttype3
+#define ITHARE_KSCOPE_DECLAREPARAM_INT4(type) kscopeinttype4
+#define ITHARE_KSCOPE_DECLAREPARAM_INT5(type) kscopeinttype5
 #define ITHARE_KSCOPE_DECLAREPARAM_CLASS(name) name<kscopeclsflags>
 
-#define ITHARE_KSCOPE_USEPARAM_INT(name) name.value()
+#define ITHARE_KSCOPE_CONVERT_INT_PARAM(targetBaseType,targetName,srcParam)\
+	typename KscopeDbgConvertedIntParam<targetBaseType,decltype(srcParam)>::type targetName = srcParam;
+
+#define ITHARE_KSCOPE_ASSERT_INT_PTR_PARAM(targetBaseType,srcParam)\
+	static_assert(KscopeDbgIntPtrParamCompatible<targetBaseType*,decltype(srcParam)>::value);
+
+//#define ITHARE_KSCOPE_USEPARAM_INT(name) name.value()
 
 #define ITHARE_KSCOPE_FCALLM3(fname) fname<kscopeflags>
 #define ITHARE_KSCOPE_FCALLM2(fname) fname<kscopeflags>
@@ -1113,6 +1235,7 @@ namespace ithare {
 #define ITHARE_KSCOPE_FINTLITP2(c) KscopeLiteralDbg<typename std::remove_cv<decltype(c)>::type,c>()
 #define ITHARE_KSCOPE_FINTLITP3(c) KscopeLiteralDbg<typename std::remove_cv<decltype(c)>::type,c>()
 
+/*
 #define ITHARE_KSCOPE_FINTLITM3I(c) ithare::kscope::KscopeIntDbg<typename std::remove_cv<decltype(c)>::type>(ITHARE_KSCOPE_FINTLITM3(c))
 #define ITHARE_KSCOPE_FINTLITM2I(c) ithare::kscope::KscopeIntDbg<typename std::remove_cv<decltype(c)>::type>(ITHARE_KSCOPE_FINTLITM2(c))
 #define ITHARE_KSCOPE_FINTLITM1I(c) ithare::kscope::KscopeIntDbg<typename std::remove_cv<decltype(c)>::type>(ITHARE_KSCOPE_FINTLITM1(c))
@@ -1120,6 +1243,7 @@ namespace ithare {
 #define ITHARE_KSCOPE_FINTLITP1I(c) ithare::kscope::KscopeIntDbg<typename std::remove_cv<decltype(c)>::type>(ITHARE_KSCOPE_FINTLITP1(c))
 #define ITHARE_KSCOPE_FINTLITP2I(c) ithare::kscope::KscopeIntDbg<typename std::remove_cv<decltype(c)>::type>(ITHARE_KSCOPE_FINTLITP2(c))
 #define ITHARE_KSCOPE_FINTLITP3I(c) ithare::kscope::KscopeIntDbg<typename std::remove_cv<decltype(c)>::type>(ITHARE_KSCOPE_FINTLITP3(c))
+*/
 
 //Macros to be used OUTSIDE of 'kaleidoscoped' libraries 
 #define ITHARE_KSCOPE_INT0(type) ithare::kscope::KscopeIntDbg<type>
@@ -1141,6 +1265,7 @@ namespace ithare {
 #define ITHARE_KSCOPE_INTLIT5(c) ithare::kscope::KscopeLiteralDbg<typename std::remove_cv<decltype(c)>::type,c>()
 #define ITHARE_KSCOPE_INTLIT6(c) ithare::kscope::KscopeLiteralDbg<typename std::remove_cv<decltype(c)>::type,c>()
 
+/*
 #define ITHARE_KSCOPE_INTLIT0I(c) ithare::kscope::KscopeIntDbg<typename std::remove_cv<decltype(c)>::type>(ITHARE_KSCOPE_INTLIT0(c))
 #define ITHARE_KSCOPE_INTLIT1I(c) ithare::kscope::KscopeIntDbg<typename std::remove_cv<decltype(c)>::type>(ITHARE_KSCOPE_INTLIT1(c))
 #define ITHARE_KSCOPE_INTLIT2I(c) ithare::kscope::KscopeIntDbg<typename std::remove_cv<decltype(c)>::type>(ITHARE_KSCOPE_INTLIT2(c))
@@ -1148,6 +1273,7 @@ namespace ithare {
 #define ITHARE_KSCOPE_INTLIT4I(c) ithare::kscope::KscopeIntDbg<typename std::remove_cv<decltype(c)>::type>(ITHARE_KSCOPE_INTLIT4(c))
 #define ITHARE_KSCOPE_INTLIT5I(c) ithare::kscope::KscopeIntDbg<typename std::remove_cv<decltype(c)>::type>(ITHARE_KSCOPE_INTLIT5(c))
 #define ITHARE_KSCOPE_INTLIT6I(c) ithare::kscope::KscopeIntDbg<typename std::remove_cv<decltype(c)>::type>(ITHARE_KSCOPE_INTLIT6(c))
+*/
 
 #define ITHARE_KSCOPE_STR_DBG_HELPER(s) ithare::kscope::KscopeStrLiteralDbg<(sizeof(s)>0?s[0]:'\0'),(sizeof(s)>1?s[1]:'\0'),(sizeof(s)>2?s[2]:'\0'),(sizeof(s)>3?s[3]:'\0'),\
 							(sizeof(s)>4?s[4]:'\0'),(sizeof(s)>5?s[5]:'\0'),(sizeof(s)>6?s[6]:'\0'),(sizeof(s)>7?s[7]:'\0'),\

@@ -236,33 +236,24 @@ static void
 crypto_chacha_20_test(const chacha_tv* tv, uint8_t* out0, uint8_t* in0)
 {
 	assert(tv->len <= 64);
-	auto in = ITHARE_KSCOPE_INT_ARR_TO_KSCOPE_INT3X(64,in0,tv->len);
-	/*ITHARE_KSCOPE_INT3(uint8_t) in[64];
-	for (size_t i = 0; i < tv->len; ++i)
-		in[i] = in0[i];*/
-	ITHARE_KSCOPE_INT3(uint8_t) out[64];
-	auto key = ITHARE_KSCOPE_INT_ARR_TO_KSCOPE_INT3(tv->key);
-	auto iv = ITHARE_KSCOPE_INT_ARR_TO_KSCOPE_INT3(tv->iv);
-	ITHARE_KSCOPE_CALL3(CRYPTO_chacha_20)(out, in.arr, ITHARE_KSCOPE_INT3(size_t)(tv->len), key.arr, iv.arr, 0);
-	/*for (size_t i = 0; i < tv->len; ++i)
-		out0[i] = out[i];*/
-	ithare::kscope::kscope_copyarr(out0,out,tv->len);
+	//auto in = ITHARE_KSCOPE_INT_ARR_TO_KSCOPE_INT3X(64,in0,tv->len);
+	//ITHARE_KSCOPE_INT3(uint8_t) out[64];
+	//auto key = ITHARE_KSCOPE_INT_ARR_TO_KSCOPE_INT3(tv->key);
+	//auto iv = ITHARE_KSCOPE_INT_ARR_TO_KSCOPE_INT3(tv->iv);
+	ITHARE_KSCOPE_CALL3(CRYPTO_chacha_20)(out0, in0, tv->len, tv->key, tv->iv, 0);
+	//ithare::kscope::kscope_copyarr(out0,out,tv->len);
 }
 
 static void
 constexpr crypto_chacha_20_test_compile_time(const chacha_tv* tv, [[maybe_unused]] const uint8_t* expected_out, const uint8_t* in0)
 {
 	assert(tv->len <= 64);
-	/*ITHARE_KSCOPE_INT0C(uint8_t) in[64];
-	for (size_t i = 0; i < tv->len; ++i)
-		in[i] = in0[i];*/
-	auto in = ithare::kscope::kscope_int_arr_to_ct_kscope_int<64 /*maximum value*/>(in0,tv->len /*actual value*/);		
-	ITHARE_KSCOPE_INT_CONSTEXPR(uint8_t) out[64];
-	auto key = ithare::kscope::kscope_int_arr_to_ct_kscope_int(tv->key);
-	auto iv = ithare::kscope::kscope_int_arr_to_ct_kscope_int(tv->iv);
-	ITHARE_KSCOPE_CALL_AS_CONSTEXPR(CRYPTO_chacha_20)(out, in.arr, ITHARE_KSCOPE_INT3(size_t)(tv->len), key.arr, iv.arr, 0);
-	/*for (size_t i = 0; i < tv->len; ++i)
-		assert(expected_out[i] == out[i]);*/
+	//auto in = ithare::kscope::kscope_int_arr_to_ct_kscope_int<64 /*maximum value*/>(in0,tv->len /*actual value*/);		
+	//ITHARE_KSCOPE_INT_CONSTEXPR(uint8_t) out[64];
+	uint8_t out[64] = {};
+	//auto key = ithare::kscope::kscope_int_arr_to_ct_kscope_int(tv->key);
+	//auto iv = ithare::kscope::kscope_int_arr_to_ct_kscope_int(tv->iv);
+	ITHARE_KSCOPE_CALL_AS_CONSTEXPR(CRYPTO_chacha_20)(out, in0, tv->len, tv->key, tv->iv, 0);
 	assert(ithare::kscope::kscope_cmparr(out,expected_out,tv->len) == 0);	
 }
 
@@ -272,20 +263,15 @@ chacha_ctx_full_test(const chacha_tv* tv, uint8_t *out0, uint8_t* in0)
 {
 	ITHARE_KSCOPE_KSCOPECLASS(ChaCha_ctx) ctx;
 
-	auto key = ITHARE_KSCOPE_INT_ARR_TO_KSCOPE_INT3(tv->key);
-	auto iv = ITHARE_KSCOPE_INT_ARR_TO_KSCOPE_INT3(tv->iv);
-	ITHARE_KSCOPE_CALL3(ChaCha_set_key)(&ctx, key.arr, ITHARE_KSCOPE_INTLIT3I(256));
-	ITHARE_KSCOPE_CALL3(ChaCha_set_iv)(&ctx, iv.arr, ITHARE_KSCOPE_INTNULLPTR);
+	//auto key = ITHARE_KSCOPE_INT_ARR_TO_KSCOPE_INT3(tv->key);
+	//auto iv = ITHARE_KSCOPE_INT_ARR_TO_KSCOPE_INT3(tv->iv);
+	ITHARE_KSCOPE_CALL3(ChaCha_set_key)(&ctx, tv->key, 256);
+	ITHARE_KSCOPE_CALL3(ChaCha_set_iv)(&ctx, tv->iv, ITHARE_KSCOPE_INTNULLPTR);
 	assert(tv->len <= 64);
-	/*ITHARE_KSCOPE_INT3(uint8_t) in[64];
-	for (size_t i = 0; i < tv->len; ++i)
-		in[i] = in0[i];*/
-	auto in = ITHARE_KSCOPE_INT_ARR_TO_KSCOPE_INT3X(64,in0,tv->len);
+	//auto in = ITHARE_KSCOPE_INT_ARR_TO_KSCOPE_INT3X(64,in0,tv->len);
 	ITHARE_KSCOPE_INT3(uint8_t) out[64];
-	ITHARE_KSCOPE_CALL3(ChaCha)(&ctx, out, in.arr, ITHARE_KSCOPE_INT3(size_t)(tv->len));
-	/*for (size_t i = 0; i < tv->len; ++i)
-		out0[i] = out[i];*/
-	ithare::kscope::kscope_copyarr(out0,out,tv->len);
+	ITHARE_KSCOPE_CALL3(ChaCha)(&ctx, out0, in0, tv->len);
+	//ithare::kscope::kscope_copyarr(out0,out,tv->len);
 }
 
 /* ChaCha20 with partial writes using the Chacha interface. */
@@ -295,53 +281,43 @@ chacha_ctx_partial_test(const chacha_tv* tv, uint8_t* out0, uint8_t* in0)
 	ITHARE_KSCOPE_KSCOPECLASS(ChaCha_ctx) ctx;
 	size_t len, size = 0;
 	assert(tv->len <= 64);
-	/*ITHARE_KSCOPE_INT3(uint8_t) in1[64];
-	for (size_t i = 0; i < tv->len; ++i)
-		in1[i] = in0[i];*/
-	auto in1 = ITHARE_KSCOPE_INT_ARR_TO_KSCOPE_INT3X(64,in0,tv->len);
-	ITHARE_KSCOPE_PTR_OF_SAME_TYPE_AS(in1.arr) in = in1.arr;
-	ITHARE_KSCOPE_INT3(uint8_t) out1[64];
-	ITHARE_KSCOPE_PTR_OF_SAME_TYPE_AS(out1) out = out1;
+	//auto in1 = ITHARE_KSCOPE_INT_ARR_TO_KSCOPE_INT3X(64,in0,tv->len);
+	//ITHARE_KSCOPE_PTR_OF_SAME_TYPE_AS(in1.arr) in = in1.arr;
+	//ITHARE_KSCOPE_INT3(uint8_t) out1[64];
+	//ITHARE_KSCOPE_PTR_OF_SAME_TYPE_AS(out1) out = out1;
 
-	auto key = ITHARE_KSCOPE_INT_ARR_TO_KSCOPE_INT3(tv->key);
-	auto iv = ITHARE_KSCOPE_INT_ARR_TO_KSCOPE_INT3(tv->iv);
-	ITHARE_KSCOPE_CALL3(ChaCha_set_key)(&ctx, key.arr, ITHARE_KSCOPE_INTLIT3I(256));
-	ITHARE_KSCOPE_CALL3(ChaCha_set_iv)(&ctx, iv.arr, ITHARE_KSCOPE_INTNULLPTR);
+	//auto key = ITHARE_KSCOPE_INT_ARR_TO_KSCOPE_INT3(tv->key);
+	//auto iv = ITHARE_KSCOPE_INT_ARR_TO_KSCOPE_INT3(tv->iv);
+	ITHARE_KSCOPE_CALL3(ChaCha_set_key)(&ctx, tv->key, 256);
+	ITHARE_KSCOPE_CALL3(ChaCha_set_iv)(&ctx, tv->iv, ITHARE_KSCOPE_INTNULLPTR);
 	assert(tv->len > 0);
 	len = tv->len - 1;
 	while (len > 1) {
 		size = len / 2;
-		ITHARE_KSCOPE_CALL3(ChaCha)(&ctx, out, in, ITHARE_KSCOPE_INT3(size_t)(size));
-		in += size;
-		out += size;
+		ITHARE_KSCOPE_CALL3(ChaCha)(&ctx, out0, in0, size);
+		in0 += size;
+		out0 += size;
 		len -= size;
 	}
-	ITHARE_KSCOPE_CALL3(ChaCha)(&ctx, out, in, ITHARE_KSCOPE_INT3(size_t)(len + 1));
-	/*for (size_t i = 0; i < tv->len; ++i)
-		out0[i] = out1[i];*/
-	ithare::kscope::kscope_copyarr(out0,out1,tv->len);
+	ITHARE_KSCOPE_CALL3(ChaCha)(&ctx, out0, in0, len + 1);
+	//ithare::kscope::kscope_copyarr(out0,out1,tv->len);
 }
 
 /* ChaCha20 with single byte writes using the Chacha interface. */
 static void
 chacha_ctx_single_test(const chacha_tv *tv, uint8_t* out0, uint8_t* in0)
-{
+{//doing manual array copying here to test that it works too 
 	ITHARE_KSCOPE_KSCOPECLASS(ChaCha_ctx) ctx;
 	assert(tv->len <= 64);
-	/*ITHARE_KSCOPE_INT3(uint8_t) in[64];
-	for (size_t i = 0; i < tv->len; ++i)
-		in[i] = in0[i];*/
 	auto in = ITHARE_KSCOPE_INT_ARR_TO_KSCOPE_INT3X(64,in0,tv->len);
 
 	auto key = ITHARE_KSCOPE_INT_ARR_TO_KSCOPE_INT3(tv->key);
 	auto iv = ITHARE_KSCOPE_INT_ARR_TO_KSCOPE_INT3(tv->iv);
-	ITHARE_KSCOPE_CALL3(ChaCha_set_key)(&ctx, key.arr, ITHARE_KSCOPE_INTLIT3I(256));
+	ITHARE_KSCOPE_CALL3(ChaCha_set_key)(&ctx, key.arr, ITHARE_KSCOPE_INTLIT3(256));
 	ITHARE_KSCOPE_CALL3(ChaCha_set_iv)(&ctx, iv.arr, ITHARE_KSCOPE_INTNULLPTR);
 	ITHARE_KSCOPE_INT3(uint8_t) out[64];
 	for (size_t i = 0; i < tv->len; i++)
-		ITHARE_KSCOPE_CALL3(ChaCha)(&ctx, &out[i], &in.arr[i], ITHARE_KSCOPE_INTLIT3I(1));
-	/*for (size_t i = 0; i < tv->len; ++i)
-		out0[i] = out[i];*/
+		ITHARE_KSCOPE_CALL3(ChaCha)(&ctx, &out[i], &in.arr[i], 1);
 	ithare::kscope::kscope_copyarr(out0,out,tv->len);
 }
 
