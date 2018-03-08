@@ -65,8 +65,7 @@ std::string make_file_list(const char* files[] /*ends with nullptr*/,std::string
 	return ret;
 }
 
-std::string replace_string(std::string subject, std::string search,//adapted from https://stackoverflow.com/a/14678964
-	std::string replace) {
+std::string replace_string(std::string subject, std::string search, std::string replace) {//adapted from https://stackoverflow.com/a/14678964
 	size_t pos = 0;
 	while ((pos = subject.find(search, pos)) != std::string::npos) {
 		subject.replace(pos, search.length(), replace);
@@ -93,16 +92,16 @@ class KscopeTestEnvironment {
 		return " -DITHARE_KSCOPE_TEST_EXTENSION=\"../src/kscope_sample_extension.h\"";
 	}
 	virtual std::string compiler_options_release() {
-		return " -O3 -DNDEBUG -std=c++1z -lstdc++ -pedantic -pedantic-errors -Wall -Wextra -Werror";
+		return " -O3 -DNDEBUG -std=c++1z -pedantic -pedantic-errors -Wall -Wextra -Werror";
 	}
 	virtual std::string linker_options_release() {
-		return " -o randomtest";
+		return " -lstdc++ -o randomtest";
 	}
 	virtual std::string compiler_options_debug() {
-		return " -std=c++1z -lstdc++ -pedantic -pedantic-errors -Wall -Wextra -Werror";
+		return " -std=c++1z -pedantic -pedantic-errors -Wall -Wextra -Werror";
 	}
 	virtual std::string linker_options_debug() {
-		return "  -o randomtest";
+		return " -lstdc++ -o randomtest";
 	}
 	
 	virtual MultiString build_release(MultiString defines,std::string opts) {
