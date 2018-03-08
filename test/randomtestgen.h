@@ -240,14 +240,14 @@ class KscopeTestEnvironment {
 			//string is copy-pasted from Rel-NoPDB config with manually-added /cgthreads1 /INCREMENTAL:NO, /Fe, and /WX- replaced with /WX
 	}
 	virtual std::string linker_options_release() {
-		return " /INCREMENTAL:NO /Ferandomtest.exe";
+		return " /nologo /GL /INCREMENTAL:NO /Ferandomtest.exe";
 	}
 	virtual std::string compiler_options_debug() {
-		return " /permissive- /GS /W4 /Zc:wchar_t /ZI /Gm /Od /sdl /Zc:inline /fp:precise /D_DEBUG /D_CONSOLE /D_UNICODE /DUNICODE /errorReport:prompt /WX /Zc:forScope /RTC1 /Gd /MDd /EHsc /nologo /diagnostics:classic /std:c++17 /cgthreads1";
+		return " /permissive- /GS /W4 /Zc:wchar_t /ZI /Gm /Od /sdl /Zc:inline /fp:precise /D_DEBUG /D_CONSOLE /D_UNICODE /DUNICODE /errorReport:prompt /WX /Zc:forScope /RTC1 /Gd /MDd /EHsc /nologo /diagnostics:classic /std:c++17 /cgthreads1 /bigobj";
 			//string is copy-pasted from Debug config with manually-added /cgthreads1 /INCREMENTAL:NO /bigobj, /Fe, and /WX- replaced with /WX
 	}
 	virtual std::string linker_options_debug() {
-		return " /INCREMENTAL:NO /bigobj /Ferandomtest.exe";
+		return " /nologo /INCREMENTAL:NO /Ferandomtest.exe";
 	}
 	virtual MultiString build_release(MultiString defines,std::string opts) {
 		//std::string defines = replace_string(defines_, " -D", " /D");
