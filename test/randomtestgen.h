@@ -36,6 +36,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <iostream>
 #include <string.h>
 #include <string>
+#include <vector>
 #include <stdio.h>
 #include <assert.h>
 
@@ -80,11 +81,11 @@ class KscopeTestEnvironment {
 	virtual std::string always_define() {//relative to kscope/test
 		return " -DITHARE_KSCOPE_TEST_EXTENSION=\"../src/kscope_sample_extension.h\"";
 	}
-	virtual std::string build_release(std::string defines) {
-		return std::string("$CXX -O3 -DNDEBUG") + always_define() + " " + defines + " -o randomtest -std=c++1z -lstdc++ -pedantic -pedantic-errors -Wall -Wextra -Werror" + file_list();
+	virtual std::vector<std::string> build_release(std::string defines) {
+		return std::vector<std::string>{"$CXX -O3 -DNDEBUG" + always_define() + " " + defines + " -o randomtest -std=c++1z -lstdc++ -pedantic -pedantic-errors -Wall -Wextra -Werror" + file_list()};
 	}
-	virtual std::string build_debug(std::string defines) {
-		return std::string("$CXX") + always_define() + " " + defines + " -o randomtest -std=c++1z -lstdc++ -pedantic -pedantic-errors -Wall -Wextra -Werror" + file_list();
+	virtual std::vector<std::string> build_debug(std::string defines) {
+		return std::vector<std::string>{"$CXX" + always_define() + " " + defines + " -o randomtest -std=c++1z -lstdc++ -pedantic -pedantic-errors -Wall -Wextra -Werror" + file_list()};
 	}
 	virtual std::string build32option() {
 		return " -m32";
@@ -207,14 +208,14 @@ class KscopeTestEnvironment {
 	virtual std::string always_define() {
 		return " /DITHARE_KSCOPE_TEST_EXTENSION=\"../src/kscope_sample_extension.h\"";
 	}
-	virtual std::string build_release(std::string defines_) {
+	virtual std::vector<std::string> build_release(std::string defines_) {
 		//std::string defines = replace_string(defines_, " -D", " /D");
-		return std::string("cl /permissive- /GS /GL /W4 /Gy /Zc:wchar_t /Gm- /O2 /sdl /Zc:inline /fp:precise /DNDEBUG /D_CONSOLE /D_UNICODE /DUNICODE /errorReport:prompt /WX /Zc:forScope /GR- /Gd /Oi /MT /EHsc /nologo /diagnostics:classic /std:c++17 /cgthreads1 /INCREMENTAL:NO /Ferandomtest.exe") + defines + always_define() + file_list();
+		return std::vector<std::strin>{"cl /permissive- /GS /GL /W4 /Gy /Zc:wchar_t /Gm- /O2 /sdl /Zc:inline /fp:precise /DNDEBUG /D_CONSOLE /D_UNICODE /DUNICODE /errorReport:prompt /WX /Zc:forScope /GR- /Gd /Oi /MT /EHsc /nologo /diagnostics:classic /std:c++17 /cgthreads1 /INCREMENTAL:NO /Ferandomtest.exe" + defines + always_define() + file_list()};
 			//string is copy-pasted from Rel-NoPDB config with manually-added /cgthreads1 /INCREMENTAL:NO, /Fe, and /WX- replaced with /WX
 	}
-	virtual std::string build_debug(std::string defines_) {
+	virtual std::vector<std::string> build_debug(std::string defines_) {
 		//std::string defines = replace_string(defines_, " -D", " /D");
-		return std::string("cl /permissive- /GS /W4 /Zc:wchar_t /ZI /Gm /Od /sdl /Zc:inline /fp:precise /D_DEBUG /D_CONSOLE /D_UNICODE /DUNICODE /errorReport:prompt /WX /Zc:forScope /RTC1 /Gd /MDd /EHsc /nologo /diagnostics:classic /std:c++17 /cgthreads1 /INCREMENTAL:NO /bigobj /Ferandomtest.exe") + defines + always_define() + file_list();
+		return std::vector<std::string>{"cl /permissive- /GS /W4 /Zc:wchar_t /ZI /Gm /Od /sdl /Zc:inline /fp:precise /D_DEBUG /D_CONSOLE /D_UNICODE /DUNICODE /errorReport:prompt /WX /Zc:forScope /RTC1 /Gd /MDd /EHsc /nologo /diagnostics:classic /std:c++17 /cgthreads1 /INCREMENTAL:NO /bigobj /Ferandomtest.exe" + defines + always_define() + file_list()};
 			//string is copy-pasted from Debug config with manually-added /cgthreads1 /INCREMENTAL:NO /bigobj, /Fe, and /WX- replaced with /WX
 	}
 	virtual std::string build32option() {
@@ -330,9 +331,11 @@ protected:
 		std::cout << kenv->command(cmd) << std::endl;
 	}
 
-	virtual void build_check_run_check(std::string cmd,int nseeds,KscopeTestEnvironment::config cfg,KscopeTestEnvironment::Flags flags,write_output wo) {
-		issue_command(cmd);
-		std::cout << kenv->exit_check(cmd) << std::endl;
+	virtual void build_check_run_check(std::vector<std::string> cmds,int nseeds,KscopeTestEnvironment::config cfg,KscopeTestEnvironment::Flags flags,write_output wo) {
+		for(std::string cmd:cmds) {
+			issue_command(cmd);
+			std::cout << kenv->exit_check(cmd) << std::endl;
+		}
 		std::cout << kenv->check_exe(nseeds,cfg,flags) << std::endl;
 
 		std::string tofile = "";
@@ -373,7 +376,7 @@ protected:
 		return "";
 	}
 
-	virtual std::string buildCmd(KscopeTestEnvironment::config cfg,std::string defs) {
+	virtual std::vector<std::string> build_cmd(KscopeTestEnvironment::config cfg,std::string defs) {
 		switch(cfg) {
 		case KscopeTestEnvironment::config::debug:
 			return kenv->build_debug(defs);
@@ -381,7 +384,7 @@ protected:
 			return kenv->build_release(defs);
 		}
 		assert(false);
-		return "";
+		return std::vector<std::string>{};
 	}
 	
 	virtual void insert_label(std::string label) {
@@ -399,18 +402,18 @@ protected:
 			assert(nseeds>=0);
 		}
 		
-		std::string cmd1 = buildCmd(cfg, defs + seedsByNum(nseeds));
+		auto cmd1 = build_cmd(cfg, defs + seedsByNum(nseeds));
 		build_check_run_check(cmd1,nseeds,cfg,flags,wox);
 		if(wox==write_output::stable_first)
 			wox = write_output::stable_next;
-		std::string cmd2 = buildCmd(cfg, defs + seedsByNum(nseeds) + kenv->make_define("TEST_NO_NAMESPACE"));
+		auto cmd2 = build_cmd(cfg, defs + seedsByNum(nseeds) + kenv->make_define("TEST_NO_NAMESPACE"));
 		build_check_run_check(cmd2,nseeds,cfg,flags,wox);
 		
 		if(add32tests) {
 			std::string m32 = kenv->build32option();
-			std::string cmd1 = buildCmd(cfg, defs + m32 + seedsByNum(nseeds));
+			auto cmd1 = build_cmd(cfg, defs + m32 + seedsByNum(nseeds));
 			build_check_run_check(cmd1,nseeds,cfg,flags,wox);
-			std::string cmd2 = buildCmd(cfg, defs + m32 + seedsByNum(nseeds) + kenv->make_define("TEST_NO_NAMESPACE"));
+			auto cmd2 = build_cmd(cfg, defs + m32 + seedsByNum(nseeds) + kenv->make_define("TEST_NO_NAMESPACE"));
 			build_check_run_check(cmd2,nseeds,cfg,flags,wox);
 		}
 	}
