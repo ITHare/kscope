@@ -87,7 +87,7 @@ class KscopeTestEnvironment {
 	virtual std::vector<std::string> build_debug(std::string defines) {
 		return std::vector<std::string>{"$CXX" + always_define() + " " + defines + " -o randomtest -std=c++1z -lstdc++ -pedantic -pedantic-errors -Wall -Wextra -Werror" + file_list()};
 	}
-	virtual std::string build32option() {
+	virtual std::string build32_option() {
 		return " -m32";
 	}
 	virtual std::string gen_random64() {
@@ -218,7 +218,7 @@ class KscopeTestEnvironment {
 		return std::vector<std::string>{"cl /permissive- /GS /W4 /Zc:wchar_t /ZI /Gm /Od /sdl /Zc:inline /fp:precise /D_DEBUG /D_CONSOLE /D_UNICODE /DUNICODE /errorReport:prompt /WX /Zc:forScope /RTC1 /Gd /MDd /EHsc /nologo /diagnostics:classic /std:c++17 /cgthreads1 /INCREMENTAL:NO /bigobj /Ferandomtest.exe" + defines + always_define() + file_list()};
 			//string is copy-pasted from Debug config with manually-added /cgthreads1 /INCREMENTAL:NO /bigobj, /Fe, and /WX- replaced with /WX
 	}
-	virtual std::string build32option() {
+	virtual std::string build32_option() {
 		std::cout << "no option to run both 32-bit and 64-bit testing for MSVC now, run testing without -add32tests in two different 'Tools command prompts' instead" << std::endl;
 		abort();
 	}
@@ -364,7 +364,7 @@ protected:
 		}
 	}
 
-	virtual std::string seedsByNum(int nseeds) {
+	virtual std::string seeds_by_num(int nseeds) {
 		assert(nseeds >= -1 && nseeds <= 2);
 		if(nseeds==1)
 			return gen_seed();
@@ -402,18 +402,18 @@ protected:
 			assert(nseeds>=0);
 		}
 		
-		auto cmd1 = build_cmd(cfg, defs + seedsByNum(nseeds));
+		auto cmd1 = build_cmd(cfg, defs + seeds_by_num(nseeds));
 		build_check_run_check(cmd1,nseeds,cfg,flags,wox);
 		if(wox==write_output::stable_first)
 			wox = write_output::stable_next;
-		auto cmd2 = build_cmd(cfg, defs + seedsByNum(nseeds) + kenv->make_define("TEST_NO_NAMESPACE"));
+		auto cmd2 = build_cmd(cfg, defs + seeds_by_num(nseeds) + kenv->make_define("TEST_NO_NAMESPACE"));
 		build_check_run_check(cmd2,nseeds,cfg,flags,wox);
 		
 		if(add32tests) {
-			std::string m32 = kenv->build32option();
-			auto cmd1 = build_cmd(cfg, defs + m32 + seedsByNum(nseeds));
+			std::string m32 = kenv->build32_option();
+			auto cmd1 = build_cmd(cfg, defs + m32 + seeds_by_num(nseeds));
 			build_check_run_check(cmd1,nseeds,cfg,flags,wox);
-			auto cmd2 = build_cmd(cfg, defs + m32 + seedsByNum(nseeds) + kenv->make_define("TEST_NO_NAMESPACE"));
+			auto cmd2 = build_cmd(cfg, defs + m32 + seeds_by_num(nseeds) + kenv->make_define("TEST_NO_NAMESPACE"));
 			build_check_run_check(cmd2,nseeds,cfg,flags,wox);
 		}
 	}
@@ -488,7 +488,7 @@ protected:
 					extra += kenv->make_define("DBG_RUNTIME_CHECKS");
 			}
 			if(add32tests && i%5 <=1)
-				extra += kenv->build32option();
+				extra += kenv->build32_option();
 			insert_label(std::string("r")+std::to_string(i+1));
 			std::cout << kenv->echo( std::string("=== " + project_name() + " Random Test ") + std::to_string(i+1) + "/" + std::to_string(n) + " ===", true ) << std::endl;
 			std::string defines = gen_seeds()+kenv->make_define("CONSISTENT_XPLATFORM_IMPLICIT_SEEDS")+extra;
