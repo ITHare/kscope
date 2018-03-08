@@ -92,17 +92,30 @@ class KscopeTestEnvironment {
 	virtual std::string always_define() {//relative to kscope/test
 		return " -DITHARE_KSCOPE_TEST_EXTENSION=\"../src/kscope_sample_extension.h\"";
 	}
+	virtual std::string compiler_options_release() {
+		return " -O3 -DNDEBUG -std=c++1z -lstdc++ -pedantic -pedantic-errors -Wall -Wextra -Werror";
+	}
+	virtual std::string linker_options_release() {
+		return " -o randomtest";
+	}
+	virtual std::string compiler_options_debug() {
+		return " -std=c++1z -lstdc++ -pedantic -pedantic-errors -Wall -Wextra -Werror";
+	}
+	virtual std::string linker_options_debug() {
+		return "  -o randomtest";
+	}
+	
 	virtual MultiString build_release(MultiString defines,std::string opts) {
 		std::string defs = "";
 		for(std::string s:defines)
 			defs += " -DITHARE_KSCOPE_" + s;
-		return MultiString{{"$CXX -O3 -DNDEBUG" + always_define() + " " + defs + " " + opts + " -o randomtest -std=c++1z -lstdc++ -pedantic -pedantic-errors -Wall -Wextra -Werror" + file_list()}};
+		return MultiString{{"$CXX" + compiler_options_release() + " -DITHARE_KSCOPE_TEST_EXTENSION=\"../src/kscope_sample_extension.h\"" + defs + opts + linker_options_release() + file_list()}};
 	}
 	virtual MultiString build_debug(MultiString defines,std::string opts) {
 		std::string defs = "";
 		for(std::string s:defines)
 			defs += " -DITHARE_KSCOPE_" + s;
-		return MultiString{{"$CXX" + always_define() + " " + defs + " " + opts + " -o randomtest -std=c++1z -lstdc++ -pedantic -pedantic-errors -Wall -Wextra -Werror" + file_list()}};
+		return MultiString{{"$CXX" + compiler_options_debug() + " -DITHARE_KSCOPE_TEST_EXTENSION=\"../src/kscope_sample_extension.h\"" + defs + opts + linker_options_debug() + file_list()}};
 	}
 	virtual std::string build32_option() {
 		return " -m32";
@@ -219,15 +232,24 @@ class KscopeTestEnvironment {
 	virtual std::string root_test_dir() { return  src_dir_prefix + "..\\"; }
 	virtual std::string test_src_dir() { return  src_dir_prefix + "..\\"; }
 
-	virtual std::string always_define() {
-		return " /DITHARE_KSCOPE_TEST_EXTENSION=\"../src/kscope_sample_extension.h\"";
+	virtual std::string compiler_options_release() {
+		return " /permissive- /GS /GL /W4 /Gy /Zc:wchar_t /Gm- /O2 /sdl /Zc:inline /fp:precise /DNDEBUG /D_CONSOLE /D_UNICODE /DUNICODE /errorReport:prompt /WX /Zc:forScope /GR- /Gd /Oi /MT /EHsc /nologo /diagnostics:classic /std:c++17 /cgthreads1";
+	}
+	virtual std::string linker_options_release() {
+		return " /INCREMENTAL:NO /Ferandomtest.exe";
+	}
+	virtual std::string compiler_options_debug() {
+		return " /permissive- /GS /W4 /Zc:wchar_t /ZI /Gm /Od /sdl /Zc:inline /fp:precise /D_DEBUG /D_CONSOLE /D_UNICODE /DUNICODE /errorReport:prompt /WX /Zc:forScope /RTC1 /Gd /MDd /EHsc /nologo /diagnostics:classic /std:c++17 /cgthreads1";
+	}
+	virtual std::string linker_options_debug() {
+		return " /INCREMENTAL:NO /bigobj /Ferandomtest.exe";
 	}
 	virtual MultiString build_release(MultiString defines,std::string opts) {
 		//std::string defines = replace_string(defines_, " -D", " /D");
 		std::string defs = "";
 		for(std::string s:defines)
 			defs += " -DITHARE_KSCOPE_" + s;
-		return MultiString{{"cl /permissive- /GS /GL /W4 /Gy /Zc:wchar_t /Gm- /O2 /sdl /Zc:inline /fp:precise /DNDEBUG /D_CONSOLE /D_UNICODE /DUNICODE /errorReport:prompt /WX /Zc:forScope /GR- /Gd /Oi /MT /EHsc /nologo /diagnostics:classic /std:c++17 /cgthreads1 /INCREMENTAL:NO /Ferandomtest.exe" + defs + " " + opts + always_define() + file_list()}};
+		return MultiString{{"cl" + compiler_options_release() + " /DITHARE_KSCOPE_TEST_EXTENSION=\"../src/kscope_sample_extension.h\"" + defs + opts + linker_options_release() + file_list()}};
 			//string is copy-pasted from Rel-NoPDB config with manually-added /cgthreads1 /INCREMENTAL:NO, /Fe, and /WX- replaced with /WX
 	}
 	virtual MultiString build_debug(MultiString defines,std::string opts) {
@@ -235,7 +257,7 @@ class KscopeTestEnvironment {
 		std::string defs = "";
 		for(std::string s:defines)
 			defs += " -DITHARE_KSCOPE_" + s;
-		return MultiString{{"cl /permissive- /GS /W4 /Zc:wchar_t /ZI /Gm /Od /sdl /Zc:inline /fp:precise /D_DEBUG /D_CONSOLE /D_UNICODE /DUNICODE /errorReport:prompt /WX /Zc:forScope /RTC1 /Gd /MDd /EHsc /nologo /diagnostics:classic /std:c++17 /cgthreads1 /INCREMENTAL:NO /bigobj /Ferandomtest.exe" + defs + " " + opts + always_define() + file_list()}};
+		return MultiString{{"cl" + compiler_options_debug() + " /DITHARE_KSCOPE_TEST_EXTENSION=\"../src/kscope_sample_extension.h\"" + defs + opts + linker_options_debug() + file_list()}};
 			//string is copy-pasted from Debug config with manually-added /cgthreads1 /INCREMENTAL:NO /bigobj, /Fe, and /WX- replaced with /WX
 	}
 	virtual std::string build32_option() {
