@@ -247,7 +247,7 @@ class KscopeTestEnvironment {
 			//string is copy-pasted from Debug config with manually-added /cgthreads1 /INCREMENTAL:NO /bigobj, /Fe, and /WX- replaced with /WX
 	}
 	virtual std::string linker_options_debug() {
-		return " /nologo /INCREMENTAL:NO /Ferandomtest.exe";
+		return " /nologo /ZI /INCREMENTAL:NO /Ferandomtest.exe";
 	}
 	virtual MultiString build_release(MultiString defines,std::string opts) {
 		//std::string defines = replace_string(defines_, " -D", " /D");
