@@ -158,8 +158,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //  EVERYTHING goes into ithare::kscope namespace - except for #defines
 //  ALL #defines MUST be prefixed with ITHARE_KSCOPE_
 
-//regardless of ITHARE_KSCOPE_SEED
-
 //VERY generic requirements:
 //  8-bit systems only at the moment
 static_assert(CHAR_BIT==8);//adapting for non-8-bit systems is theoretically possible, but will take quite a bit of tweaking
@@ -167,9 +165,8 @@ static_assert(CHAR_BIT==8);//adapting for non-8-bit systems is theoretically pos
 #if !defined(UINT8_MAX) || !defined(UINT16_MAX) || !defined(UINT32_MAX) || !defined(UINT64_MAX)//TODO: allow to skip uint64_t
 #error kscope requires that your compiler supports all of the uint8_t, uint16_t, uint32_t, and uint64_t types - and they ARE supported for vast majority of platforms. Maybe there is something wrong with supposedly-standard headers on your box (they are supposed to be defined in stdint.h which is included above, but you never know)? 
 #endif
-//  we're allowed to rely on being 2's complement
-static_assert(uint32_t(-1)==0xFFFF'FFFF);//asserting for 2's complement (which is de-facto standard, but you never know)
 
+//regardless of ITHARE_KSCOPE_SEED
 namespace ithare {
 	namespace kscope {		
 		template<class T,size_t N>
