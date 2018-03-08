@@ -40,6 +40,20 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <stdio.h>
 #include <assert.h>
 
+struct MultiString : public std::vector<std::string> {
+	MultiString append(std::string s) {
+		MultiString ret = *this;
+		ret.push_back(s);
+		return ret;
+	}
+	MultiString append(MultiString m) {
+		MultiString ret = *this;
+		for(std::string s:m)
+			ret.push_back(s);
+		return ret;
+	}
+};
+
 static const char* randomtest_files[] = { "officialtest.cpp", "chachatest.cpp", nullptr };
 std::string make_file_list(const char* files[] /*ends with nullptr*/,std::string srcDir)  {
 	std::string ret = "";
@@ -74,18 +88,21 @@ class KscopeTestEnvironment {
 	virtual std::string root_test_dir() { return  src_dir_prefix + "../"; }
 	virtual std::string test_src_dir() { return  src_dir_prefix + "../"; }
 	virtual std::string file_list() { return make_file_list(randomtest_files,test_src_dir()); } 
-	virtual std::string make_define(std::string s) {
-		return " -DITHARE_KSCOPE_" + s;
-	}
 
 	virtual std::string always_define() {//relative to kscope/test
 		return " -DITHARE_KSCOPE_TEST_EXTENSION=\"../src/kscope_sample_extension.h\"";
 	}
-	virtual std::vector<std::string> build_release(std::string defines) {
-		return std::vector<std::string>{"$CXX -O3 -DNDEBUG" + always_define() + " " + defines + " -o randomtest -std=c++1z -lstdc++ -pedantic -pedantic-errors -Wall -Wextra -Werror" + file_list()};
+	virtual MultiString build_release(MultiString defines,std::string opts) {
+		std::string defs = "";
+		for(std::string s:defines)
+			defs += " -DITHARE_KSCOPE_" + s;
+		return MultiString{{"$CXX -O3 -DNDEBUG" + always_define() + " " + defs + " " + opts + " -o randomtest -std=c++1z -lstdc++ -pedantic -pedantic-errors -Wall -Wextra -Werror" + file_list()}};
 	}
-	virtual std::vector<std::string> build_debug(std::string defines) {
-		return std::vector<std::string>{"$CXX" + always_define() + " " + defines + " -o randomtest -std=c++1z -lstdc++ -pedantic -pedantic-errors -Wall -Wextra -Werror" + file_list()};
+	virtual MultiString build_debug(MultiString defines,std::string opts) {
+		std::string defs = "";
+		for(std::string s:defines)
+			defs += " -DITHARE_KSCOPE_" + s;
+		return MultiString{{"$CXX" + always_define() + " " + defs + " " + opts + " -o randomtest -std=c++1z -lstdc++ -pedantic -pedantic-errors -Wall -Wextra -Werror" + file_list()}};
 	}
 	virtual std::string build32_option() {
 		return " -m32";
@@ -201,21 +218,24 @@ class KscopeTestEnvironment {
 	virtual std::string file_list() { return make_file_list(randomtest_files,test_src_dir()); } 
 	virtual std::string root_test_dir() { return  src_dir_prefix + "..\\"; }
 	virtual std::string test_src_dir() { return  src_dir_prefix + "..\\"; }
-	virtual std::string make_define(std::string s) {
-		return " /DITHARE_KSCOPE_" + s;
-	}
 
 	virtual std::string always_define() {
 		return " /DITHARE_KSCOPE_TEST_EXTENSION=\"../src/kscope_sample_extension.h\"";
 	}
-	virtual std::vector<std::string> build_release(std::string defines_) {
+	virtual MultiString build_release(MultiString defines,std::string opts) {
 		//std::string defines = replace_string(defines_, " -D", " /D");
-		return std::vector<std::strin>{"cl /permissive- /GS /GL /W4 /Gy /Zc:wchar_t /Gm- /O2 /sdl /Zc:inline /fp:precise /DNDEBUG /D_CONSOLE /D_UNICODE /DUNICODE /errorReport:prompt /WX /Zc:forScope /GR- /Gd /Oi /MT /EHsc /nologo /diagnostics:classic /std:c++17 /cgthreads1 /INCREMENTAL:NO /Ferandomtest.exe" + defines + always_define() + file_list()};
+		std::string defs = "";
+		for(std::string s:defines)
+			defs += " -DITHARE_KSCOPE_" + s;
+		return MultiString{{"cl /permissive- /GS /GL /W4 /Gy /Zc:wchar_t /Gm- /O2 /sdl /Zc:inline /fp:precise /DNDEBUG /D_CONSOLE /D_UNICODE /DUNICODE /errorReport:prompt /WX /Zc:forScope /GR- /Gd /Oi /MT /EHsc /nologo /diagnostics:classic /std:c++17 /cgthreads1 /INCREMENTAL:NO /Ferandomtest.exe" + defs + " " + opts + always_define() + file_list()}};
 			//string is copy-pasted from Rel-NoPDB config with manually-added /cgthreads1 /INCREMENTAL:NO, /Fe, and /WX- replaced with /WX
 	}
-	virtual std::vector<std::string> build_debug(std::string defines_) {
+	virtual MultiString build_debug(MultiString defines,std::string opts) {
 		//std::string defines = replace_string(defines_, " -D", " /D");
-		return std::vector<std::string>{"cl /permissive- /GS /W4 /Zc:wchar_t /ZI /Gm /Od /sdl /Zc:inline /fp:precise /D_DEBUG /D_CONSOLE /D_UNICODE /DUNICODE /errorReport:prompt /WX /Zc:forScope /RTC1 /Gd /MDd /EHsc /nologo /diagnostics:classic /std:c++17 /cgthreads1 /INCREMENTAL:NO /bigobj /Ferandomtest.exe" + defines + always_define() + file_list()};
+		std::string defs = "";
+		for(std::string s:defines)
+			defs += " -DITHARE_KSCOPE_" + s;
+		return MultiString{{"cl /permissive- /GS /W4 /Zc:wchar_t /ZI /Gm /Od /sdl /Zc:inline /fp:precise /D_DEBUG /D_CONSOLE /D_UNICODE /DUNICODE /errorReport:prompt /WX /Zc:forScope /RTC1 /Gd /MDd /EHsc /nologo /diagnostics:classic /std:c++17 /cgthreads1 /INCREMENTAL:NO /bigobj /Ferandomtest.exe" + defs + " " + opts + always_define() + file_list()}};
 			//string is copy-pasted from Debug config with manually-added /cgthreads1 /INCREMENTAL:NO /bigobj, /Fe, and /WX- replaced with /WX
 	}
 	virtual std::string build32_option() {
@@ -315,15 +335,15 @@ protected:
 	virtual std::string project_name() {
 		return "kscope";
 	}
-	virtual std::string fixed_seeds() {
-		return kenv->make_define("SEED=0x4b295ebab3333abc") + kenv->make_define("SEED2=0x36e007a38ae8e0ea");//from random.org
+	virtual MultiString fixed_seeds() {
+		return MultiString{{"SEED=0x4b295ebab3333abc","SEED2=0x36e007a38ae8e0ea"}};//from random.org
 	}
-	virtual std::string gen_seed() {
-		return kenv->make_define( std::string("SEED=0x") + kenv->gen_random64());
+	virtual MultiString gen_seed() {
+		return MultiString{{"SEED=0x"+kenv->gen_random64()}};
 	}
 
-	virtual std::string gen_seeds() {
-		return gen_seed() + kenv->make_define( "SEED2=0x" + kenv->gen_random64() );
+	virtual MultiString gen_seeds() {
+		return gen_seed().append("SEED2=0x"+kenv->gen_random64());
 	}
 
 	virtual void issue_command(std::string cmd) {
@@ -331,7 +351,7 @@ protected:
 		std::cout << kenv->command(cmd) << std::endl;
 	}
 
-	virtual void build_check_run_check(std::vector<std::string> cmds,int nseeds,KscopeTestEnvironment::config cfg,KscopeTestEnvironment::Flags flags,write_output wo) {
+	virtual void build_check_run_check(MultiString cmds,int nseeds,KscopeTestEnvironment::config cfg,KscopeTestEnvironment::Flags flags,write_output wo) {
 		for(std::string cmd:cmds) {
 			issue_command(cmd);
 			std::cout << kenv->exit_check(cmd) << std::endl;
@@ -364,7 +384,7 @@ protected:
 		}
 	}
 
-	virtual std::string seeds_by_num(int nseeds) {
+	virtual MultiString seeds_by_num(int nseeds) {
 		assert(nseeds >= -1 && nseeds <= 2);
 		if(nseeds==1)
 			return gen_seed();
@@ -373,25 +393,25 @@ protected:
 		else if(nseeds==-1)
 			return fixed_seeds();
 		assert(nseeds==0);
-		return "";
+		return MultiString{};
 	}
 
-	virtual std::vector<std::string> build_cmd(KscopeTestEnvironment::config cfg,std::string defs) {
+	virtual MultiString build_cmd(KscopeTestEnvironment::config cfg,MultiString defs,std::string options="") {
 		switch(cfg) {
 		case KscopeTestEnvironment::config::debug:
-			return kenv->build_debug(defs);
+			return kenv->build_debug(defs,options);
 		case KscopeTestEnvironment::config::release:
-			return kenv->build_release(defs);
+			return kenv->build_release(defs,options);
 		}
 		assert(false);
-		return std::vector<std::string>{};
+		return MultiString{};
 	}
 	
 	virtual void insert_label(std::string label) {
 		std::cout << kenv->label(label) << "\n";
 	}
 
-	virtual void fixed_test(KscopeTestEnvironment::config cfg,std::string defs,int nseeds,KscopeTestEnvironment::Flags flags=0,write_output wo=write_output::none) {
+	virtual void fixed_test(KscopeTestEnvironment::config cfg,MultiString defs,int nseeds,KscopeTestEnvironment::Flags flags=0,write_output wo=write_output::none) {
 		assert(nseeds >= -1 && nseeds <= 2);
 		write_output wox = wo;
 		if(wo==write_output::stable){
@@ -402,18 +422,18 @@ protected:
 			assert(nseeds>=0);
 		}
 		
-		auto cmd1 = build_cmd(cfg, defs + seeds_by_num(nseeds));
+		auto cmd1 = build_cmd(cfg, defs.append(seeds_by_num(nseeds)));
 		build_check_run_check(cmd1,nseeds,cfg,flags,wox);
 		if(wox==write_output::stable_first)
 			wox = write_output::stable_next;
-		auto cmd2 = build_cmd(cfg, defs + seeds_by_num(nseeds) + kenv->make_define("TEST_NO_NAMESPACE"));
+		auto cmd2 = build_cmd(cfg, defs.append(seeds_by_num(nseeds)).append("TEST_NO_NAMESPACE"));
 		build_check_run_check(cmd2,nseeds,cfg,flags,wox);
 		
 		if(add32tests) {
 			std::string m32 = kenv->build32_option();
-			auto cmd1 = build_cmd(cfg, defs + m32 + seeds_by_num(nseeds));
+			auto cmd1 = build_cmd(cfg, defs.append(seeds_by_num(nseeds)),m32);
 			build_check_run_check(cmd1,nseeds,cfg,flags,wox);
-			auto cmd2 = build_cmd(cfg, defs + m32 + seeds_by_num(nseeds) + kenv->make_define("TEST_NO_NAMESPACE"));
+			auto cmd2 = build_cmd(cfg, defs.append(seeds_by_num(nseeds)).append("TEST_NO_NAMESPACE"),m32);
 			build_check_run_check(cmd2,nseeds,cfg,flags,wox);
 		}
 	}
@@ -421,55 +441,55 @@ protected:
 	virtual void gen_fixed_tests() {
 		insert_label("f1");		
 		std::cout << kenv->echo("=== "+project_name()+" Fixed Test 1/12 (DEBUG, -DITHARE_KSCOPE_ENABLE_AUTO_DBGPRINT, write_output::stable) ===",true) << std::endl;
-		fixed_test(KscopeTestEnvironment::config::debug, kenv->make_define("CONSISTENT_XPLATFORM_IMPLICIT_SEEDS") + kenv->make_define("ENABLE_AUTO_DBGPRINT"), -1, KscopeTestEnvironment::flag_auto_dbg_print, write_output::stable);
+		fixed_test(KscopeTestEnvironment::config::debug, MultiString{{"CONSISTENT_XPLATFORM_IMPLICIT_SEEDS","ENABLE_AUTO_DBGPRINT"}}, -1, KscopeTestEnvironment::flag_auto_dbg_print, write_output::stable);
 		insert_label("f2");
 		std::cout << kenv->echo("=== "+project_name()+" Fixed Test 2/12 (RELEASE, -DITHARE_KSCOPE_ENABLE_AUTO_DBGPRINT=2, write_output::random)===",true) << std::endl;
-		fixed_test(KscopeTestEnvironment::config::release, kenv->make_define("CONSISTENT_XPLATFORM_IMPLICIT_SEEDS") + kenv->make_define("ENABLE_AUTO_DBGPRINT=2"), 2, KscopeTestEnvironment::flag_auto_dbg_print,write_output::random);
+		fixed_test(KscopeTestEnvironment::config::release, MultiString{{"CONSISTENT_XPLATFORM_IMPLICIT_SEEDS","ENABLE_AUTO_DBGPRINT=2"}}, 2, KscopeTestEnvironment::flag_auto_dbg_print,write_output::random);
 		insert_label("f3");
 		std::cout << kenv->echo("=== "+project_name()+" Fixed Test 3/12 (DEBUG, no ITHARE_KSCOPE_SEED) ===",true ) << std::endl;
-		fixed_test(KscopeTestEnvironment::config::debug,"",0);
+		fixed_test(KscopeTestEnvironment::config::debug,{},0);
 		insert_label("f4");
 		std::cout << kenv->echo("=== "+project_name()+" Fixed Test 4/12 (RELEASE, no ITHARE_KSCOPE_SEED) ===",true) << std::endl;
-		fixed_test(KscopeTestEnvironment::config::release,"",0);
+		fixed_test(KscopeTestEnvironment::config::release,{},0);
 		insert_label("f5");
 		std::cout << kenv->echo("=== "+project_name()+" Fixed Test 5/12 (DEBUG, single ITHARE_KSCOPE_SEED) ===",true) << std::endl;
-		fixed_test(KscopeTestEnvironment::config::debug,"",1);
+		fixed_test(KscopeTestEnvironment::config::debug,{},1);
 		insert_label("f6");
 		std::cout << kenv->echo("=== "+project_name()+" Fixed Test 6/12 (RELEASE, single ITHARE_KSCOPE_SEED) ===",true) << std::endl;
-		fixed_test(KscopeTestEnvironment::config::release,"",1);
+		fixed_test(KscopeTestEnvironment::config::release,{},1);
 		insert_label("f7");
 		std::cout << kenv->echo("=== "+project_name()+" Fixed Test 7/12 (DEBUG) ===",true ) << std::endl;
-		fixed_test(KscopeTestEnvironment::config::debug,"",2);
+		fixed_test(KscopeTestEnvironment::config::debug,{},2);
 		insert_label("f8");
 		std::cout << kenv->echo("=== "+project_name()+" Fixed Test 8/12 (RELEASE) ===",true ) << std::endl;
-		fixed_test(KscopeTestEnvironment::config::release,"",2);
+		fixed_test(KscopeTestEnvironment::config::release,{},2);
 		insert_label("f9");
 		std::cout << kenv->echo("=== "+project_name()+" Fixed Test 9/12 (DEBUG, -DITHARE_KSCOPE_DBG_RUNTIME_CHECKS) ===" ,true ) << std::endl;
 	#if defined(_MSC_VER)
 		std::cout << kenv->echo("*** SKIPPED -DITHARE_KSCOPE_DBG_RUNTIME_CHECKS FOR MSVC (cannot cope) ***",true) << std::endl;
 	#else
-		fixed_test(KscopeTestEnvironment::config::debug, kenv->make_define("DBG_RUNTIME_CHECKS"), 2);
+		fixed_test(KscopeTestEnvironment::config::debug, MultiString{{"DBG_RUNTIME_CHECKS"}}, 2);
 	#endif
 		insert_label("f10");
 		std::cout << kenv->echo( "=== "+project_name()+" Fixed Test 10/12 (RELEASE, -DITHARE_KSCOPE_DBG_RUNTIME_CHECKS) ===" ,true ) << std::endl;
 	#if defined(_MSC_VER)
 		std::cout << kenv->echo("*** SKIPPED -DITHARE_KSCOPE_DBG_RUNTIME_CHECKS FOR MSVC (cannot cope) ***",true) << std::endl;
 	#else
-		fixed_test(KscopeTestEnvironment::config::release, kenv->make_define("DBG_RUNTIME_CHECKS"),2);
+		fixed_test(KscopeTestEnvironment::config::release, MultiString{{"DBG_RUNTIME_CHECKS"}},2);
 	#endif
 		insert_label("f11");
 		std::cout << kenv->echo("=== "+project_name()+" Fixed Test 11/12 (DEBUG, -DITHARE_KSCOPE_CRYPTO_PRNG) ===",true) << std::endl;
 	#if defined(_MSC_VER) && !defined(_M_X64)
 		std::cout << kenv->echo("*** SKIPPED -DITHARE_KSCOPE_DBG_CRYPTO_PRNG FOR MSVC/x86 (cannot cope) ***",true) << std::endl;
 	#else
-		fixed_test(KscopeTestEnvironment::config::debug,kenv->make_define("CRYPTO_PRNG"),2);
+		fixed_test(KscopeTestEnvironment::config::debug,MultiString{{"CRYPTO_PRNG"}},2);
 	#endif
 		insert_label("f12");
 		std::cout << kenv->echo("=== "+project_name()+" Fixed Test 12/12 (RELEASE, -DITHARE_KSCOPE_CRYPTO_PRNG) ===",true) << std::endl;
 	#if defined(_MSC_VER) && !defined(_M_X64)
 		std::cout << kenv->echo("*** SKIPPED -DITHARE_KSCOPE_DBG_CRYPTO_PRNG FOR MSVC/x86 (cannot cope) ***",true) << std::endl;
 	#else
-		fixed_test(KscopeTestEnvironment::config::release, kenv->make_define("CRYPTO_PRNG"), 2);
+		fixed_test(KscopeTestEnvironment::config::release, MultiString{{"CRYPTO_PRNG"}}, 2);
 	#endif
 	}
 
@@ -478,26 +498,27 @@ protected:
 			KscopeTestEnvironment::config cfg = KscopeTestEnvironment::config::release;
 			if (i % 4 == 0)
 				cfg = KscopeTestEnvironment::config::debug;
-			std::string extra;
+			MultiString extra;
+			std::string extraOpts = "";
 			if (i % 3 == 0) { //every third, non-exclusive
 				bool rtchecks_ok = true;
 	#if defined(_MSC_VER) 
 				rtchecks_ok = false;//cl doesn't seem to cope well with RUNTIME_CHECKS :-(
 	#endif
 				if(rtchecks_ok)
-					extra += kenv->make_define("DBG_RUNTIME_CHECKS");
+					extra.append("DBG_RUNTIME_CHECKS");
 			}
 			if(add32tests && i%5 <=1)
-				extra += kenv->build32_option();
+				extraOpts += kenv->build32_option();
 			insert_label(std::string("r")+std::to_string(i+1));
 			std::cout << kenv->echo( std::string("=== " + project_name() + " Random Test ") + std::to_string(i+1) + "/" + std::to_string(n) + " ===", true ) << std::endl;
-			std::string defines = gen_seeds()+kenv->make_define("CONSISTENT_XPLATFORM_IMPLICIT_SEEDS")+extra;
+			MultiString defines = gen_seeds().append("CONSISTENT_XPLATFORM_IMPLICIT_SEEDS").append(extra);
 			if( cfg == KscopeTestEnvironment::config::debug ) {
-				build_check_run_check(kenv->build_debug(defines),2, KscopeTestEnvironment::config::debug,0,write_output::none);
+				build_check_run_check(kenv->build_debug(defines,extraOpts),2, KscopeTestEnvironment::config::debug,0,write_output::none);
 			}
 			else {
 				assert(cfg == KscopeTestEnvironment::config::release);
-				build_check_run_check(kenv->build_release(defines),2, KscopeTestEnvironment::config::release,0,write_output::none);
+				build_check_run_check(kenv->build_release(defines,extraOpts),2, KscopeTestEnvironment::config::release,0,write_output::none);
 			}
 		}
 	}
