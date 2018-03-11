@@ -81,7 +81,7 @@ namespace ithare {
 
 		constexpr uint64_t kscope_murmurhash2(uint64_t u, uint64_t seed) {
 			//adapted to 64-bit-only input from https://sites.google.com/site/murmurhash/MurmurHash2_64.cpp
-			const int len = 4;
+			const int len = 8;
 			const uint64_t m = 0xc6a4'a793'5bd1'e995;
 			const int r = 47;
 
