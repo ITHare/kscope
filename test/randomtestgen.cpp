@@ -60,10 +60,10 @@ class KscopeTestEnvironment {
 	virtual std::string rootTestFolder() { return  srcDirPrefix + "../"; }
 
 	virtual std::string buildRelease(std::string defines) {
-		return std::string("$CXX -O3 -DNDEBUG ") + defines + " -o testapp -std=c++1z -lstdc++ -Werror" + file_list(srcDirPrefix + "../");
+		return std::string("$CXX -O3 -DNDEBUG ") + defines + " -o testapp -std=c++1z ${CXX_LIB} -Werror" + file_list(srcDirPrefix + "../");
 	}
 	virtual std::string buildDebug(std::string defines) {
-		return std::string("$CXX ") + defines + " -o testapp -std=c++1z -lstdc++ -Werror" + file_list(srcDirPrefix + "../");
+		return std::string("$CXX ") + defines + " -o testapp -std=c++1z ${CXX_LIB} -Werror" + file_list(srcDirPrefix + "../");
 	}
 	virtual std::string build32option() {
 		return " -m32";
@@ -102,9 +102,9 @@ class KscopeTestEnvironment {
 	}
 	virtual std::string run(std::string redirect) {
 		if(redirect!="")
-			return std::string("./testapp >")+redirect;
+			return std::string("${EXEC_PREFIX} ${PWD}/testapp >")+redirect;
 		else
-			return std::string("./testapp");
+			return std::string("${EXEC_PREFIX} ${PWD}/testapp");
 	}
 	virtual std::string checkExe(Flags flags) {
 		return "";

@@ -34,8 +34,10 @@ if [ $# -gt 0 ]; then
 fi
 
 CXX="${CXX:=g++}"
+HOST_CXX="${HOST_CXX:=${CXX}}"
+CXX_LIB="${CXX_LIB:=-lstdc++}"
 
-$CXX -O2 -o randomtestgen -std=c++1z -lstdc++ ../randomtestgen.cpp
+${HOST_CXX} -O2 -o randomtestgen -std=c++1z ${CXX_LIB} ../randomtestgen.cpp
 if [ ! $? -eq 0 ]; then
   exit 1
 fi
