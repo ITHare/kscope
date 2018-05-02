@@ -109,14 +109,20 @@ namespace ithare {
 		}
 #endif
 	private:
-		static /*volatile*/ T c;//TODO! - return back volatile
+		static volatile T c;
 	};
 
 	template<class T, ITHARE_KSCOPE_SEEDTPARAM seed>
-	/*volatile*/ T KscopeLiteralContextVersion<1, T, seed>::c = CC;
+	volatile T KscopeLiteralContextVersion<1, T, seed>::c = CC;
 	
   } //namespace kscope
 } //namespace ithare
+
+#define ITHARE_KSCOPE_STOCK_LITERAL_DESCRIPTOR_LIST \
+ 			KscopeLiteralContextVersion0Descr::descr,\
+			KscopeLiteralContextVersion1Descr::descr,
+
+#define ITHARE_KSCOPE_LAST_STOCK_LITERAL 1	
 
 #endif //ITHARE_KSCOPE_SEED
 

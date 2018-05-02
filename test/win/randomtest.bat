@@ -38,9 +38,9 @@ EXIT /B
 :LABEL1
 
 randomtestgen.exe %NN% >generatedrandomtest.bat
-IF NOT ERRORLEVEL 1 GOTO LABEL1
+IF NOT ERRORLEVEL 1 GOTO LABEL2
 EXIT /B
-:LABEL1
+:LABEL2
 
 CALL generatedrandomtest.bat
 

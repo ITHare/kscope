@@ -74,7 +74,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #if _MSC_VER < 1910
 #pragma message("MSVC prior to VS2017 is not likely to work :-(")
 #endif
-#pragma warning (disable:4307 4146)
+#pragma warning (disable:4307 4146 4310 4702)
 
 #define ITHARE_KSCOPE_FORCEINLINE __forceinline
 #define ITHARE_KSCOPE_NOINLINE __declspec(noinline)
@@ -158,9 +158,17 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //  EVERYTHING goes into ithare::kscope namespace - except for #defines
 //  ALL #defines MUST be prefixed with ITHARE_KSCOPE_
 
+//VERY generic requirements:
+//  8-bit systems only at the moment
+static_assert(CHAR_BIT==8);//adapting for non-8-bit systems is theoretically possible, but will take quite a bit of tweaking
+//  requiring uint*_t, detection along the lines of https://stackoverflow.com/a/14078003/4947867
+#if !defined(UINT8_MAX) || !defined(UINT16_MAX) || !defined(UINT32_MAX) || !defined(UINT64_MAX)//TODO: allow to skip uint64_t
+#error kscope requires that your compiler supports all of the uint8_t, uint16_t, uint32_t, and uint64_t types - and they ARE supported for vast majority of platforms. Maybe there is something wrong with supposedly-standard headers on your box (they are supposed to be defined in stdint.h which is included above, but you never know)? 
+#endif
+
 //regardless of ITHARE_KSCOPE_SEED
 namespace ithare {
-	namespace kscope {
+	namespace kscope {		
 		template<class T,size_t N>
 		ITHARE_KSCOPE_FORCEINLINE constexpr size_t kscope_arraysz(T(&)[N]) { return N; }
 
@@ -182,11 +190,11 @@ namespace ithare {
 			return u;
 		}
 		
-		static_assert(CHAR_BIT==8);
 		using kscope_aliased_byte = unsigned char;//GUARANTEES pointer aliasing even if uint8_t is not the same as unsigned char
 												  //  THE ONLY type which should be used for cast-based fooling around
 		static_assert(sizeof(kscope_aliased_byte)==1);
 		
+		/* not used now, if needed for kaleidoscoped - will re-instate
 		enum class kscope_endian//along the lines of p0463r1, to be replaced with std::endian
 		{
 #ifdef _MSC_VER
@@ -206,6 +214,7 @@ namespace ithare {
 			native = __BYTE_ORDER__,
 #endif
 		};
+		*/
 
 		using KSCOPEFLAGS = uint64_t;
 		constexpr KSCOPEFLAGS kscope_flag_is_constexpr = 0x01;
@@ -213,19 +222,6 @@ namespace ithare {
 		struct kscope_private_constructor_tag {
 		};
 		
-		//type helpers
-		template<bool which, class T, class T2> struct kscope_select_type;
-			//NB: it is a 'function-like' class (="used to calculate functions over classes"), 
-			//	hence function-like naming convention  
-		template<class T, class T2>
-		struct kscope_select_type<true, T, T2> {
-			using type = T;
-		};
-		template<class T, class T2>
-		struct kscope_select_type<false, T, T2> {
-			using type = T2;
-		};
-
 		template<class T, class T2> struct kscope_larger_type {
 			static_assert(std::is_integral<T>::value);
 			static_assert(std::is_integral<T2>::value);
@@ -233,7 +229,7 @@ namespace ithare {
 			constexpr static bool t2s = std::is_signed<T2>::value;
 			static_assert(ts == t2s);//'larger_type' is undefined for different sign-ness
 			constexpr static bool which = sizeof(T) > sizeof(T2);
-			using type = typename kscope_select_type<which, T, T2>::type;
+			using type = typename std::conditional<which, T, T2>::type;
 
 			static_assert(sizeof(type) >= sizeof(T));
 			static_assert(sizeof(type) >= sizeof(T2));
@@ -278,7 +274,7 @@ namespace ithare {
 		template<class T>
 		struct kscope_normalized_integral_type {//to normalize things such as 'unsigned long' which MIGHT happen to be different from our standard set
 			static_assert(std::is_integral<T>::value);
-			using type = typename kscope_select_type< std::is_signed<T>::value,
+			using type = typename std::conditional< std::is_signed<T>::value,
 				typename kscope_normalized_signed_integral_type<T>::type,
 				typename kscope_normalized_unsigned_integral_type<T>::type
 			>::type;
@@ -385,7 +381,7 @@ namespace ithare {
 		template<class T>
 		struct kscope_integral_promotion {
 			static_assert(std::is_integral<T>::value);
-			using type = typename kscope_select_type< (sizeof(T) < sizeof(int)), int, T >::type;
+			using type = typename std::conditional< (sizeof(T) < sizeof(int)), int, T >::type;
 
 			static_assert(sizeof(type) >= sizeof(T));
 			static_assert(sizeof(type) >= sizeof(int));
@@ -400,11 +396,11 @@ namespace ithare {
 			static constexpr bool ts = std::is_signed<TPROMOTED>::value;
 			static constexpr bool t2s = std::is_signed<T2PROMOTED>::value;
 			
-			using type = typename kscope_select_type< ts == t2s, 
-										  typename kscope_select_type< (sizeof(TPROMOTED) >= sizeof(T2PROMOTED)), TPROMOTED,T2PROMOTED>::type,
-										  typename kscope_select_type< ts ,
-														   typename kscope_select_type< (sizeof(TPROMOTED) > sizeof(T2PROMOTED)), TPROMOTED, T2PROMOTED >::type,
-														   typename kscope_select_type< (sizeof(T2PROMOTED) > sizeof(TPROMOTED)), T2PROMOTED, TPROMOTED >::type
+			using type = typename std::conditional< ts == t2s, 
+										  typename std::conditional< (sizeof(TPROMOTED) >= sizeof(T2PROMOTED)), TPROMOTED,T2PROMOTED>::type,
+										  typename std::conditional< ts ,
+														   typename std::conditional< (sizeof(TPROMOTED) > sizeof(T2PROMOTED)), TPROMOTED, T2PROMOTED >::type,
+														   typename std::conditional< (sizeof(T2PROMOTED) > sizeof(TPROMOTED)), T2PROMOTED, TPROMOTED >::type
 														 >::type
 										>::type;
 			
@@ -621,6 +617,10 @@ namespace ithare {
 				return (T(1) << n) - T(1);
 		}
 
+#ifdef _MSC_VER
+#pragma warning(push)
+#pragma warning(disable:4521) //multiple constructors
+#endif
 		template<size_t N_>
 		class KscopeBitUint {
 		public:
@@ -634,8 +634,9 @@ namespace ithare {
 		public:
 			constexpr ITHARE_KSCOPE_FORCEINLINE KscopeBitUint() : val(0) {}
 			constexpr ITHARE_KSCOPE_FORCEINLINE KscopeBitUint(T x) : val(x & mask) {}
-			//constexpr KscopeBitUint(const KscopeBitUint& other) : val(other.val) {}
-			//constexpr KscopeBitUint(const volatile KscopeBitUint& other) : val(other.val) {}
+			constexpr KscopeBitUint(const KscopeBitUint& other) : val(other.val) {}
+			constexpr KscopeBitUint(const volatile KscopeBitUint& other) : val(other.val) {}
+
 			constexpr ITHARE_KSCOPE_FORCEINLINE operator T() const { assert((val&mask) == val); return val & mask; }
 
 			constexpr ITHARE_KSCOPE_FORCEINLINE KscopeBitUint operator -() const { return KscopeBitUint(-val); }
@@ -661,8 +662,11 @@ namespace ithare {
 		private:
 			T val;
 		};
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif
 
-		template<size_t N_>
+		/*template<size_t N_>
 		class KscopeBitSint {
 		public:
 			static constexpr size_t N = N_;
@@ -683,7 +687,7 @@ namespace ithare {
 
 		private:
 			UT val;
-		};
+		};*/
 
 		template<size_t N>
 		struct KscopeTraits<KscopeBitUint<N>> {

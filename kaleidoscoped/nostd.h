@@ -61,7 +61,7 @@ namespace ithare { namespace kscope {
 	
 	//kscope_to_ct_kscope_int(), kscope_int_arr_to_kscope_int(),  functions are NOT kaleidoscoped (at least ATM, it is used only in KSCOPE_CT wrappers, so there seems to be no need for kaleidoscoping this function)
 	#ifdef ITHARE_KSCOPE_SEED
-	template<class T,size_t N> constexpr ITHARE_KSCOPE_FORCEINLINE 
+	/*template<class T,size_t N> constexpr ITHARE_KSCOPE_FORCEINLINE 
 	KscopeArrayWrapper<KscopeInt<T,ITHARE_KSCOPE_DUMMYSEED,-1,kscope_flag_is_constexpr>,N> 
 		kscope_int_arr_to_ct_kscope_int(T(&src)[N]) {//converts T[N] into KscopeArrayWrapper<ithare::kscope::KscopeInt<T,ITHARE_KSCOPE_DUMMYSEED,-1,ithare::kscope::kscope_flag_is_constexpr>,N>  
 		KscopeArrayWrapper<KscopeInt<T,ITHARE_KSCOPE_DUMMYSEED,-1,kscope_flag_is_constexpr>,N> ret = {};
@@ -79,7 +79,7 @@ namespace ithare { namespace kscope {
 			ret.arr[i] = src[i];
 		}
 		return ret;
-	}
+	}*/
 
 	template<ITHARE_KSCOPE_SEEDTPARAM seed, KSCOPELEVEL level, class T,size_t N> constexpr ITHARE_KSCOPE_FORCEINLINE 
 	KscopeArrayWrapper<KscopeInt<T,seed,ithare::kscope::kscope_exp_cycles(level),0>,N> 
@@ -104,7 +104,7 @@ namespace ithare { namespace kscope {
 	#define ITHARE_KSCOPE_INT_ARR_TO_KSCOPE_INT3X(maxsz,src,cursz) ithare::kscope::kscope_int_arr_to_kscope_int<ITHARE_KSCOPE_INIT_PRNG(__FILE__,ITHARE_KSCOPE_LINE,__COUNTER__),3,maxsz>(src,cursz)
 	#else //ITHARE_KSCOPE_SEED
 	
-	template<class T,size_t N> constexpr ITHARE_KSCOPE_FORCEINLINE 
+	/*template<class T,size_t N> constexpr ITHARE_KSCOPE_FORCEINLINE 
 	KscopeArrayWrapper<KscopeIntDbg<T>,N> 
 		kscope_int_arr_to_ct_kscope_int(T(&src)[N]) {//converts T[N] into KscopeArrayWrapper<ithare::kscope::KscopeIntDbg<T>,N>  
 		KscopeArrayWrapper<KscopeIntDbg<T>,N> ret = {};
@@ -122,7 +122,7 @@ namespace ithare { namespace kscope {
 			ret.arr[i] = src[i];
 		}
 		return ret;
-	}
+	}*/
 
 	template<class T,size_t N> constexpr ITHARE_KSCOPE_FORCEINLINE 
 	KscopeArrayWrapper<KscopeIntDbg<T>,N> 
