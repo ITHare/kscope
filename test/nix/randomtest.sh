@@ -55,6 +55,7 @@ if [ ! $? -eq 0 ]; then
   exit 1
 fi
 
+export CXX_LIB
 chmod 700 generatedrandomtest.sh
 ./generatedrandomtest.sh
 if [ ! $? -eq 0 ]; then
