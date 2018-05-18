@@ -175,6 +175,19 @@ namespace ithare {
 		template<class T,size_t N>
 		struct KscopeArrayWrapper {//returns from constexpr functions
 			T arr[N];
+			
+			constexpr T operator[](int idx) const {
+				return arr[idx];
+			}
+			constexpr T& operator[](int idx) {
+				return arr[idx];
+			}
+			constexpr const T* operator+(int idx) const {
+				return arr + idx;
+			}
+			constexpr T* operator+(int idx) {
+				return arr + idx;
+			}
 		};
 
 		constexpr size_t kscope_strlen(const char* s) {

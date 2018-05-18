@@ -751,6 +751,7 @@ namespace ithare {
 #define ITHARE_KSCOPE_FINTP3(type) ithare::kscope::KscopeInt<type,ITHARE_KSCOPE_INIT_COMBINED_PRNG(kscopeseed,__FILE__,ITHARE_KSCOPE_LINE,__COUNTER__),ithare::kscope::kscope_exp_cycles(ithare::kscope::kscope_addlevel(kscopelevel,3)),kscopeflags>
 
 #define ITHARE_KSCOPE_CINT(type) ithare::kscope::KscopeInt<type,ITHARE_KSCOPE_COMBINED_PRNG(kscopeclsseed,ITHARE_KSCOPE_INIT_PRNG(__FILE__,ITHARE_KSCOPE_LINE,__COUNTER__)),ithare::kscope::kscope_exp_cycles(kscopeclslevel),kscopeclsflags>
+#define ITHARE_KSCOPE_CINTARR(type,sz) KscopeArrayWrapper<ITHARE_KSCOPE_CINT(type),sz>
 //TODO!: M3..P3
 //TODO!: FCINT
 
@@ -1227,6 +1228,7 @@ namespace ithare {
 #define ITHARE_KSCOPE_FINTP3(type) ithare::kscope::KscopeIntDbg<type>
 
 #define ITHARE_KSCOPE_CINT(type) ithare::kscope::KscopeIntDbg<type>
+#define ITHARE_KSCOPE_CINTARR(type,sz) KscopeArrayWrapper<ITHARE_KSCOPE_CINT(type),sz>
 //TODO: M3..P3
 
 #define ITHARE_KSCOPE_FINTLITM3(c) KscopeIntLiteralDbg<typename std::remove_cv<decltype(c)>::type,c>()
@@ -1358,6 +1360,7 @@ namespace ithare {
 #define ITHARE_KSCOPE_FINTP3(type) type
 
 #define ITHARE_KSCOPE_CINT(type) type
+#define ITHARE_KSCOPE_CINTARR(type,sz) KscopeArrayWrapper<type,sz>
 //TODO: M3..P3
 
 #define ITHARE_KSCOPE_FINTLITM3(c) c

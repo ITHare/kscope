@@ -58,26 +58,24 @@ constexpr int CHACHA_BLOCKLEN = 64;
 
 ITHARE_KSCOPE_DECLARECLASS
 struct ChaCha_ctx {
-	ITHARE_KSCOPE_CINT(uint32_t) input[16];
-	ITHARE_KSCOPE_CINT(uint8_t) ks[CHACHA_BLOCKLEN];
+	ITHARE_KSCOPE_CINTARR(uint32_t,16) input;
+	ITHARE_KSCOPE_CINTARR(uint8_t,CHACHA_BLOCKLEN) ks;
 	ITHARE_KSCOPE_CINT(uint8_t) unused;
 
-	/*constexpr ITHARE_KSCOPE_FORCEINLINE ChaCha_ctx() 
-		: input{}, ks{}, unused{} {//more-or-less equivalent to default, declared to enforce force-inline
+	//{ constructors are more-or-less equivalent to default ones (adding initialization where applicable)
+	//  but declared so that we can enforce force-inline 
+	constexpr ITHARE_KSCOPE_FORCEINLINE ChaCha_ctx() 
+		: input{}, ks{}, unused{} {
 	}
-	constexpr ITHARE_KSCOPE_FORCEINLINE ChaCha_ctx(const ChaCha_ctx& other) { //equivalent to default, declared to enforce force-inline 
-		kscope_copy(other.input,other.input+16,input);
-		kscope_copy(other.ks,other.ks+CHACHA_BLOCKLEN,ks);
-		unused = other.unused;
+	constexpr ITHARE_KSCOPE_FORCEINLINE ChaCha_ctx(const ChaCha_ctx& other) 
+		: input{other.input}, ks(other.ks), unused(other.unused) {
 	}
 	constexpr ITHARE_KSCOPE_FORCEINLINE ChaCha_ctx& operator =(const ChaCha_ctx&) = delete;
-	constexpr ITHARE_KSCOPE_FORCEINLINE ChaCha_ctx(const ChaCha_ctx&& other) { //equivalent to default, declared to enforce force-inline 
-		kscope_copy(other.input, other.input + 16, input);
-		kscope_copy(other.ks, other.ks + CHACHA_BLOCKLEN, ks);
-		unused = other.unused;
+	constexpr ITHARE_KSCOPE_FORCEINLINE ChaCha_ctx(const ChaCha_ctx&& other) 
+		: input{other.input}, ks{other.ks}, unused(other.unused) { 
 	}
 	constexpr ITHARE_KSCOPE_FORCEINLINE ChaCha_ctx& operator =(const ChaCha_ctx&&) = delete;
-	*/
+	//} constructors are more-or-less equivalent to default ones (adding initialization where applicable)
 };
 
 #define ITHARE_KSCOPE_U8V(v) ((uint8_t)(v) & UINT8_C(0xFF))

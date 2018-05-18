@@ -152,6 +152,29 @@ namespace ithare { namespace kscope {
 	#define ITHARE_KSCOPE_INT_ARR(x) x.arr
 
 	#else //ITHARE_KSCOPE_DISABLE
+
+	/*template<class T,size_t N> constexpr ITHARE_KSCOPE_FORCEINLINE 
+	KscopeArrayWrapper<typename std::remove_cv<typename std::remove_reference<T>::type>::type,N> 
+		kscope_int_arr_to_kscope_int(T(&src)[N]) {//converts T[N] into KscopeArrayWrapper<T,N>  
+		KscopeArrayWrapper<typename std::remove_cv<typename std::remove_reference<T>::type>::type,N> ret = {};
+		for( size_t i=0; i < N ; ++i ) {
+			ret.arr[i] = src[i];
+		}
+		return ret;
+	}
+	#define ITHARE_KSCOPE_INT_ARR_TO_KSCOPE_INT3(src) ithare::kscope::kscope_int_arr_to_kscope_int(src)
+	template<size_t N, class T> constexpr ITHARE_KSCOPE_FORCEINLINE 
+	KscopeArrayWrapper<typename std::remove_cv<typename std::remove_reference<T>::type>::type,N> 
+		kscope_int_arr_to_kscope_int(T* src, size_t m=N) {//converts T[N] into KscopeArrayWrapper<T,N>  
+		KscopeArrayWrapper<typename std::remove_cv<typename std::remove_reference<T>::type>::type,N> ret = {};
+		assert(m<=N);
+		for( size_t i=0; i < m ; ++i ) {
+			ret.arr[i] = src[i];
+		}
+		return ret;
+	}	
+	#define ITHARE_KSCOPE_INT_ARR_TO_KSCOPE_INT3X(maxsz,src,cursz) ithare::kscope::kscope_int_arr_to_kscope_int<maxsz>(src,cursz)
+	*/
 	
 	#define ITHARE_KSCOPE_INT_ARR_TO_KSCOPE_INT3(src) src
 	#define ITHARE_KSCOPE_INT_ARR_TO_KSCOPE_INT3X(maxsz,src,cursz) src
