@@ -465,52 +465,64 @@ protected:
 	
 	virtual void gen_fixed_tests() {
 		insert_label("f1");		
-		std::cout << kenv->echo("=== "+project_name()+" Fixed Test 1/12 (DEBUG, -DITHARE_KSCOPE_ENABLE_AUTO_DBGPRINT, write_output::stable) ===",true) << std::endl;
+		std::cout << kenv->echo("=== "+project_name()+" Fixed Test 1/14 (DEBUG, -DITHARE_KSCOPE_ENABLE_AUTO_DBGPRINT, write_output::stable) ===",true) << std::endl;
 		fixed_test(KscopeTestEnvironment::config::debug, MultiString{"CONSISTENT_XPLATFORM_IMPLICIT_SEEDS","ENABLE_AUTO_DBGPRINT"}, -1, KscopeTestEnvironment::flag_auto_dbg_print, write_output::stable);
 		insert_label("f2");
-		std::cout << kenv->echo("=== "+project_name()+" Fixed Test 2/12 (RELEASE, -DITHARE_KSCOPE_ENABLE_AUTO_DBGPRINT=2, write_output::random)===",true) << std::endl;
+		std::cout << kenv->echo("=== "+project_name()+" Fixed Test 2/14 (RELEASE, -DITHARE_KSCOPE_ENABLE_AUTO_DBGPRINT=2, write_output::random)===",true) << std::endl;
 		fixed_test(KscopeTestEnvironment::config::release, MultiString{"CONSISTENT_XPLATFORM_IMPLICIT_SEEDS","ENABLE_AUTO_DBGPRINT=2"}, 2, KscopeTestEnvironment::flag_auto_dbg_print,write_output::random);
+
 		insert_label("f3");
-		std::cout << kenv->echo("=== "+project_name()+" Fixed Test 3/12 (DEBUG, no ITHARE_KSCOPE_SEED) ===",true ) << std::endl;
-		fixed_test(KscopeTestEnvironment::config::debug,{},0);
+		std::cout << kenv->echo("=== "+project_name()+" Fixed Test 3/14 (DEBUG, ITHARE_KSCOPE_DISABLE) ===",true) << std::endl;
+		fixed_test(KscopeTestEnvironment::config::debug,MultiString{"DISABLE"},0);
 		insert_label("f4");
-		std::cout << kenv->echo("=== "+project_name()+" Fixed Test 4/12 (RELEASE, no ITHARE_KSCOPE_SEED) ===",true) << std::endl;
-		fixed_test(KscopeTestEnvironment::config::release,{},0);
+		std::cout << kenv->echo("=== "+project_name()+" Fixed Test 4/14 (RELEASE, ITHARE_KSCOPE_DISABLE) ===",true) << std::endl;
+		fixed_test(KscopeTestEnvironment::config::release,MultiString{"DISABLE"},0);
+
 		insert_label("f5");
-		std::cout << kenv->echo("=== "+project_name()+" Fixed Test 5/12 (DEBUG, single ITHARE_KSCOPE_SEED) ===",true) << std::endl;
-		fixed_test(KscopeTestEnvironment::config::debug,{},1);
+		std::cout << kenv->echo("=== "+project_name()+" Fixed Test 5/14 (DEBUG, no ITHARE_KSCOPE_SEED) ===",true) << std::endl;
+		fixed_test(KscopeTestEnvironment::config::debug,{},0);
 		insert_label("f6");
-		std::cout << kenv->echo("=== "+project_name()+" Fixed Test 6/12 (RELEASE, single ITHARE_KSCOPE_SEED) ===",true) << std::endl;
-		fixed_test(KscopeTestEnvironment::config::release,{},1);
+		std::cout << kenv->echo("=== "+project_name()+" Fixed Test 6/14 (RELEASE, no ITHARE_KSCOPE_SEED) ===",true) << std::endl;
+		fixed_test(KscopeTestEnvironment::config::release,{},0);
+		
 		insert_label("f7");
-		std::cout << kenv->echo("=== "+project_name()+" Fixed Test 7/12 (DEBUG) ===",true ) << std::endl;
-		fixed_test(KscopeTestEnvironment::config::debug,{},2);
+		std::cout << kenv->echo("=== "+project_name()+" Fixed Test 7/14 (DEBUG, single ITHARE_KSCOPE_SEED) ===",true) << std::endl;
+		fixed_test(KscopeTestEnvironment::config::debug,{},1);
 		insert_label("f8");
-		std::cout << kenv->echo("=== "+project_name()+" Fixed Test 8/12 (RELEASE) ===",true ) << std::endl;
-		fixed_test(KscopeTestEnvironment::config::release,{},2);
+		std::cout << kenv->echo("=== "+project_name()+" Fixed Test 8/14 (RELEASE, single ITHARE_KSCOPE_SEED) ===",true) << std::endl;
+		fixed_test(KscopeTestEnvironment::config::release,{},1);
+		
 		insert_label("f9");
-		std::cout << kenv->echo("=== "+project_name()+" Fixed Test 9/12 (DEBUG, -DITHARE_KSCOPE_DBG_RUNTIME_CHECKS) ===" ,true ) << std::endl;
+		std::cout << kenv->echo("=== "+project_name()+" Fixed Test 9/14 (DEBUG) ===",true ) << std::endl;
+		fixed_test(KscopeTestEnvironment::config::debug,{},2);
+		insert_label("f10");
+		std::cout << kenv->echo("=== "+project_name()+" Fixed Test 10/14 (RELEASE) ===",true ) << std::endl;
+		fixed_test(KscopeTestEnvironment::config::release,{},2);
+		
+		insert_label("f11");
+		std::cout << kenv->echo("=== "+project_name()+" Fixed Test 11/14 (DEBUG, -DITHARE_KSCOPE_DBG_RUNTIME_CHECKS) ===" ,true ) << std::endl;
 	#if defined(_MSC_VER)
 		std::cout << kenv->echo("*** SKIPPED -DITHARE_KSCOPE_DBG_RUNTIME_CHECKS FOR MSVC (cannot cope) ***",true) << std::endl;
 	#else
 		fixed_test(KscopeTestEnvironment::config::debug, MultiString{"DBG_RUNTIME_CHECKS"}, 2);
 	#endif
-		insert_label("f10");
-		std::cout << kenv->echo( "=== "+project_name()+" Fixed Test 10/12 (RELEASE, -DITHARE_KSCOPE_DBG_RUNTIME_CHECKS) ===" ,true ) << std::endl;
+		insert_label("f12");
+		std::cout << kenv->echo( "=== "+project_name()+" Fixed Test 12/14 (RELEASE, -DITHARE_KSCOPE_DBG_RUNTIME_CHECKS) ===" ,true ) << std::endl;
 	#if defined(_MSC_VER)
 		std::cout << kenv->echo("*** SKIPPED -DITHARE_KSCOPE_DBG_RUNTIME_CHECKS FOR MSVC (cannot cope) ***",true) << std::endl;
 	#else
 		fixed_test(KscopeTestEnvironment::config::release, MultiString{"DBG_RUNTIME_CHECKS"},2);
 	#endif
-		insert_label("f11");
-		std::cout << kenv->echo("=== "+project_name()+" Fixed Test 11/12 (DEBUG, -DITHARE_KSCOPE_CRYPTO_PRNG) ===",true) << std::endl;
+		
+		insert_label("f13");
+		std::cout << kenv->echo("=== "+project_name()+" Fixed Test 13/14 (DEBUG, -DITHARE_KSCOPE_CRYPTO_PRNG) ===",true) << std::endl;
 	#if defined(_MSC_VER) && !defined(_M_X64)
 		std::cout << kenv->echo("*** SKIPPED -DITHARE_KSCOPE_DBG_CRYPTO_PRNG FOR MSVC/x86 (cannot cope) ***",true) << std::endl;
 	#else
 		fixed_test(KscopeTestEnvironment::config::debug,MultiString{"CRYPTO_PRNG"},2);
 	#endif
-		insert_label("f12");
-		std::cout << kenv->echo("=== "+project_name()+" Fixed Test 12/12 (RELEASE, -DITHARE_KSCOPE_CRYPTO_PRNG) ===",true) << std::endl;
+		insert_label("f14");
+		std::cout << kenv->echo("=== "+project_name()+" Fixed Test 14/14 (RELEASE, -DITHARE_KSCOPE_CRYPTO_PRNG) ===",true) << std::endl;
 	#if defined(_MSC_VER) && !defined(_M_X64)
 		std::cout << kenv->echo("*** SKIPPED -DITHARE_KSCOPE_DBG_CRYPTO_PRNG FOR MSVC/x86 (cannot cope) ***",true) << std::endl;
 	#else

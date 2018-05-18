@@ -62,7 +62,7 @@ struct ChaCha_ctx {
 	ITHARE_KSCOPE_CINT(uint8_t) ks[CHACHA_BLOCKLEN];
 	ITHARE_KSCOPE_CINT(uint8_t) unused;
 
-	constexpr ITHARE_KSCOPE_FORCEINLINE ChaCha_ctx() 
+	/*constexpr ITHARE_KSCOPE_FORCEINLINE ChaCha_ctx() 
 		: input{}, ks{}, unused{} {//more-or-less equivalent to default, declared to enforce force-inline
 	}
 	constexpr ITHARE_KSCOPE_FORCEINLINE ChaCha_ctx(const ChaCha_ctx& other) { //equivalent to default, declared to enforce force-inline 
@@ -77,6 +77,7 @@ struct ChaCha_ctx {
 		unused = other.unused;
 	}
 	constexpr ITHARE_KSCOPE_FORCEINLINE ChaCha_ctx& operator =(const ChaCha_ctx&&) = delete;
+	*/
 };
 
 #define ITHARE_KSCOPE_U8V(v) ((uint8_t)(v) & UINT8_C(0xFF))

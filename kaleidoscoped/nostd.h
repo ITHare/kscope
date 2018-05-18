@@ -60,6 +60,8 @@ namespace ithare { namespace kscope {
 	}*/
 	
 	//kscope_to_ct_kscope_int(), kscope_int_arr_to_kscope_int(),  functions are NOT kaleidoscoped (at least ATM, it is used only in KSCOPE_CT wrappers, so there seems to be no need for kaleidoscoping this function)
+
+	#ifndef ITHARE_KSCOPE_DISABLE
 	#ifdef ITHARE_KSCOPE_SEED
 	/*template<class T,size_t N> constexpr ITHARE_KSCOPE_FORCEINLINE 
 	KscopeArrayWrapper<KscopeInt<T,ITHARE_KSCOPE_DUMMYSEED,-1,kscope_flag_is_constexpr>,N> 
@@ -145,7 +147,17 @@ namespace ithare { namespace kscope {
 		return ret;
 	}	
 	#define ITHARE_KSCOPE_INT_ARR_TO_KSCOPE_INT3X(maxsz,src,cursz) ithare::kscope::kscope_int_arr_to_kscope_int<maxsz>(src,cursz)
-	#endif
+	#endif //ITHARE_KSCOPE_SEED
+	
+	#define ITHARE_KSCOPE_INT_ARR(x) x.arr
+
+	#else //ITHARE_KSCOPE_DISABLE
+	
+	#define ITHARE_KSCOPE_INT_ARR_TO_KSCOPE_INT3(src) src
+	#define ITHARE_KSCOPE_INT_ARR_TO_KSCOPE_INT3X(maxsz,src,cursz) src
+	#define ITHARE_KSCOPE_INT_ARR(x) x
+	
+	#endif //ITHARE_KSCOPE_DISABLE
 	
 	//TODO: kaleidoscope (?)
 	template<class T, class TT> constexpr ITHARE_KSCOPE_FORCEINLINE

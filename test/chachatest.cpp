@@ -313,11 +313,11 @@ chacha_ctx_single_test(const chacha_tv *tv, uint8_t* out0, uint8_t* in0)
 
 	auto key = ITHARE_KSCOPE_INT_ARR_TO_KSCOPE_INT3(tv->key);
 	auto iv = ITHARE_KSCOPE_INT_ARR_TO_KSCOPE_INT3(tv->iv);
-	ITHARE_KSCOPE_CALL3(ChaCha_set_key)(&ctx, key.arr, ITHARE_KSCOPE_INTLIT3(256));
-	ITHARE_KSCOPE_CALL3(ChaCha_set_iv)(&ctx, iv.arr, ITHARE_KSCOPE_INTNULLPTR);
+	ITHARE_KSCOPE_CALL3(ChaCha_set_key)(&ctx, ITHARE_KSCOPE_INT_ARR(key), ITHARE_KSCOPE_INTLIT3(256));
+	ITHARE_KSCOPE_CALL3(ChaCha_set_iv)(&ctx, ITHARE_KSCOPE_INT_ARR(iv), ITHARE_KSCOPE_INTNULLPTR);
 	ITHARE_KSCOPE_INT3(uint8_t) out[64];
 	for (size_t i = 0; i < tv->len; i++)
-		ITHARE_KSCOPE_CALL3(ChaCha)(&ctx, &out[i], &in.arr[i], 1);
+		ITHARE_KSCOPE_CALL3(ChaCha)(&ctx, &out[i], &ITHARE_KSCOPE_INT_ARR(in)[i], 1);
 	ithare::kscope::kscope_copyarr(out0,out,tv->len);
 }
 
@@ -361,7 +361,7 @@ const lest::test module[] = {
 #else
 			static_assert(ithare::kscope::kscope_cmparr(out.arr,tv->out,tv->len) == 0);
 #endif
-			constexpr ChaCha_ctx<> ctx2 = encrypted1.first;
+			//constexpr ChaCha_ctx<> ctx2 = encrypted1.first;
 	},
     CASE( "crypto_chacha_20_test()", ) 
     {

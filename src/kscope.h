@@ -41,9 +41,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 // LIST OF supported #defines:
 // MAIN SWITCH:
+//   ITHARE_KSCOPE_DISABLE - working around GCC/MSVC inefficiencies when dealing with wrappers
 //   ITHARE_KSCOPE_SEED 0x<some-random-64-bit-number>
 //     if not specified - no kaleidoscoping happens (constexpr functions from kaleidoscoped libraries should still work) 
-// TODO: add ITHARE_KSCOPE_DISABLED (to work around some compiler's performance hit even when no ITHARE_KSCOPE_SEED is specified)  
 //
 // COMMON ONES:
 //   ITHARE_KSCOPE_SEED2
@@ -68,6 +68,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 //ithare::kscope extensibility paradigm:
 //  ALL extensibility happens directly in kscope.h, which means ALL the other headers safe to include before specifying extensions
+
+#ifndef ITHARE_KSCOPE_DISABLE
 
 #ifdef ITHARE_KSCOPE_SEED
 
@@ -1307,6 +1309,106 @@ namespace ithare {
 #define ITHARE_KSCOPE_PTR_OF_SAME_TYPE_AS(arr) typename std::remove_cv<typename std::remove_reference<decltype(*arr)>::type>::type*
 
 #endif //ITHARE_KSCOPE_SEED
+
+#else //ITHARE_KSCOPE_DISABLE
+
+#define ITHARE_KSCOPE_DECLARECLASS template<KSCOPEFLAGS kscopeclsflags=0> 
+#define ITHARE_KSCOPE_KSCOPECLASS(name) name<0> 
+//TODO: M3..P3
+
+#define ITHARE_KSCOPE_DECLAREFUNC template<KSCOPEFLAGS kscopeflags=0> constexpr inline
+#define ITHARE_KSCOPE_DECLAREFUNC_WITHEXTRA(...) template<KSCOPEFLAGS kscopeflags=0,__VA_ARGS__> constexpr inline
+#define ITHARE_KSCOPE_DECLAREFUNC_WITHPARAMS_INT template<KSCOPEFLAGS kscopeflags=0> constexpr inline
+#define ITHARE_KSCOPE_DECLAREFUNC_WITHPARAMS_2xINT template<KSCOPEFLAGS kscopeflags=0> constexpr inline
+#define ITHARE_KSCOPE_DECLAREFUNC_WITHPARAMS_3xINT template<KSCOPEFLAGS kscopeflags=0> constexpr inline
+#define ITHARE_KSCOPE_DECLAREFUNC_WITHPARAMS_4xINT template<KSCOPEFLAGS kscopeflags=0> constexpr inline
+#define ITHARE_KSCOPE_DECLAREFUNC_WITHPARAMS_5xINT template<KSCOPEFLAGS kscopeflags=0> constexpr inline
+#define ITHARE_KSCOPE_DECLAREFUNC_WITHPARAMS_CLASS template<KSCOPEFLAGS kscopeflags=0,KSCOPEFLAGS kscopeclsflags> constexpr ITHARE_KSCOPE_FORCEINLINE
+#define ITHARE_KSCOPE_DECLAREFUNC_WITHPARAMS_CLASS_INT template<KSCOPEFLAGS kscopeflags=0,KSCOPEFLAGS kscopeclsflags> constexpr ITHARE_KSCOPE_FORCEINLINE
+#define ITHARE_KSCOPE_DECLAREFUNC_WITHPARAMS_CLASS_2xINT template<KSCOPEFLAGS kscopeflags=0,KSCOPEFLAGS kscopeclsflags> constexpr ITHARE_KSCOPE_FORCEINLINE
+#define ITHARE_KSCOPE_DECLAREFUNC_WITHPARAMS_CLASS_3xINT template<KSCOPEFLAGS kscopeflags=0,KSCOPEFLAGS kscopeclsflags> constexpr ITHARE_KSCOPE_FORCEINLINE
+#define ITHARE_KSCOPE_DECLAREPARAM_INT(type) type
+#define ITHARE_KSCOPE_DECLAREPARAM_INT2(type) type
+#define ITHARE_KSCOPE_DECLAREPARAM_INT3(type) type
+#define ITHARE_KSCOPE_DECLAREPARAM_INT4(type) type
+#define ITHARE_KSCOPE_DECLAREPARAM_INT5(type) type
+#define ITHARE_KSCOPE_DECLAREPARAM_CLASS(name) name<kscopeclsflags>
+
+#define ITHARE_KSCOPE_CONVERT_INT_PARAM(targetBaseType,targetName,srcParam)\
+	targetBaseType targetName = srcParam;
+
+#define ITHARE_KSCOPE_ASSERT_INT_PTR_PARAM(targetBaseType,srcParam)
+
+//#define ITHARE_KSCOPE_USEPARAM_INT(name) name.value()
+
+#define ITHARE_KSCOPE_FCALLM3(fname) fname<kscopeflags>
+#define ITHARE_KSCOPE_FCALLM2(fname) fname<kscopeflags>
+#define ITHARE_KSCOPE_FCALLM1(fname) fname<kscopeflags>
+#define ITHARE_KSCOPE_FCALL(fname) fname<kscopeflags>
+#define ITHARE_KSCOPE_FCALLP1(fname) fname<kscopeflags>
+#define ITHARE_KSCOPE_FCALLP2(fname) fname<kscopeflags>
+#define ITHARE_KSCOPE_FCALLP3(fname) fname<kscopeflags>
+
+#define ITHARE_KSCOPE_FINTM3(type) type
+#define ITHARE_KSCOPE_FINTM2(type) type
+#define ITHARE_KSCOPE_FINTM1(type) type
+#define ITHARE_KSCOPE_FINT(type) type
+#define ITHARE_KSCOPE_FINTP1(type) type
+#define ITHARE_KSCOPE_FINTP2(type) type
+#define ITHARE_KSCOPE_FINTP3(type) type
+
+#define ITHARE_KSCOPE_CINT(type) type
+//TODO: M3..P3
+
+#define ITHARE_KSCOPE_FINTLITM3(c) c
+#define ITHARE_KSCOPE_FINTLITM2(c) c
+#define ITHARE_KSCOPE_FINTLITM1(c) c
+#define ITHARE_KSCOPE_FINTLIT(c) c
+#define ITHARE_KSCOPE_FINTLITP1(c) c
+#define ITHARE_KSCOPE_FINTLITP2(c) c
+#define ITHARE_KSCOPE_FINTLITP3(c) c
+
+//Macros to be used OUTSIDE of 'kaleidoscoped' libraries 
+#define ITHARE_KSCOPE_INT0(type) type
+#define ITHARE_KSCOPE_INT1(type) type
+#define ITHARE_KSCOPE_INT2(type) type
+#define ITHARE_KSCOPE_INT3(type) type
+#define ITHARE_KSCOPE_INT4(type) type
+#define ITHARE_KSCOPE_INT5(type) type
+#define ITHARE_KSCOPE_INT6(type) type
+
+#define ITHARE_KSCOPE_INTNULLPTR nullptr
+
+#define ITHARE_KSCOPE_INTLIT0(c) c
+#define ITHARE_KSCOPE_INTLIT1(c) c
+#define ITHARE_KSCOPE_INTLIT2(c) c
+#define ITHARE_KSCOPE_INTLIT3(c) c
+#define ITHARE_KSCOPE_INTLIT4(c) c
+#define ITHARE_KSCOPE_INTLIT5(c) c
+#define ITHARE_KSCOPE_INTLIT6(c) c
+
+#define ITHARE_KSCOPE_STRLIT0(s) s
+#define ITHARE_KSCOPE_STRLIT1(s) s
+#define ITHARE_KSCOPE_STRLIT2(s) s
+#define ITHARE_KSCOPE_STRLIT3(s) s
+#define ITHARE_KSCOPE_STRLIT4(s) s
+#define ITHARE_KSCOPE_STRLIT5(s) s
+#define ITHARE_KSCOPE_STRLIT6(s) s
+
+#define ITHARE_KSCOPE_CALL0(fname) fname<0>
+#define ITHARE_KSCOPE_CALL1(fname) fname<0>
+#define ITHARE_KSCOPE_CALL2(fname) fname<0>
+#define ITHARE_KSCOPE_CALL3(fname) fname<0>
+#define ITHARE_KSCOPE_CALL4(fname) fname<0>
+#define ITHARE_KSCOPE_CALL5(fname) fname<0>
+#define ITHARE_KSCOPE_CALL6(fname) fname<0>
+#define ITHARE_KSCOPE_CALL_AS_CONSTEXPR(fname) fname<ithare::kscope::kscope_flag_is_constexpr>
+
+#define ITHARE_KSCOPE_VALUE(x) x
+#define ITHARE_KSCOPE_ARRAY_OF_SAME_TYPE_AS(arr) typename std::remove_cv<typename std::remove_reference<decltype(*arr)>::type>::type
+#define ITHARE_KSCOPE_PTR_OF_SAME_TYPE_AS(arr) typename std::remove_cv<typename std::remove_reference<decltype(*arr)>::type>::type*
+
+#endif //ITHARE_KSCOPE_DISABLE
 
 #ifdef ITHARE_KSCOPE_ENABLE_AUTO_DBGPRINT
 namespace ithare { namespace kscope {
