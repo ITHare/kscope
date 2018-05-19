@@ -86,7 +86,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endif
 #pragma warning (disable:4307 4146 4310 4702)
 
+#ifdef ITHARE_KSCOPE_NOFORCEINLINE 
+#define ITHARE_KSCOPE_FORCEINLINE inline
+#else
 #define ITHARE_KSCOPE_FORCEINLINE __forceinline
+#endif
 #define ITHARE_KSCOPE_NOINLINE __declspec(noinline)
 #define ITHARE_KSCOPE_CONSTEXPR_ASSERT_UNREACHABLE assert(false)
 
@@ -126,7 +130,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define ITHARE_KSCOPE_WORKAROUND_FOR_GCC_BUG_47488 //workaround for https://gcc.gnu.org/bugzilla/show_bug.cgi?id=47488
 #define ITHARE_KSCOPE_WORKAROUND_FOR_GCC_BUG_84463 //workaround for https://gcc.gnu.org/bugzilla/show_bug.cgi?id=84463
 
+#ifdef ITHARE_KSCOPE_NOFORCEINLINE 
+#define ITHARE_KSCOPE_FORCEINLINE inline
+#else
 #define ITHARE_KSCOPE_FORCEINLINE __attribute__((always_inline)) inline
+#endif
 #define ITHARE_KSCOPE_NOINLINE __attribute__((noinline))
 #define ITHARE_KSCOPE_CONSTEXPR_ASSERT_UNREACHABLE  //as of GCC 7.2.0, assert(false) doesn't work in constexpr functions in GCC ; other ideas on "how to assert in supposedly-unreachable constexpr code" are very welcome
 

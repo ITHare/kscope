@@ -33,17 +33,32 @@ NOHIGHLIGHT="$(tput sgr0)"
 echo "${HIGHLIGHT}===*** COMPILER BEING USED: CXX=${CXX} ***===${NOHIGHLIGHT}"
 $CXX --version
 
-echo "${HIGHLIGHT}===*** benchmark/DISABLE ***===${NOHIGHLIGHT}"
+echo "${HIGHLIGHT}===*** benchmark: DISABLE/FORCEINLINE ***===${NOHIGHLIGHT}"
 $CXX -DITHARE_KSCOPE_TEST_BENCHMARK -DITHARE_KSCOPE_DISABLE -O3 -DNDEBUG -std=c++1z -pedantic -pedantic-errors -Wall -Wextra -Werror -DITHARE_KSCOPE_TEST_EXTENSION=\"../src/kscope_sample_extension.h\" -DITHARE_KSCOPE_CONSISTENT_XPLATFORM_IMPLICIT_SEEDS ${CXX_LIB} -o randomtest ../officialtest.cpp ../chachatest.cpp
-echo "benchmark/DISABLE" >bench.txt
+printf "*** benchmark: DISABLE/FORCEINLINE\n" >bench.txt
 ./randomtest >>bench.txt
 
-echo "${HIGHLIGHT}===*** benchmark/no SEED ***===${NOHIGHLIGHT}"
+echo "${HIGHLIGHT}===*** benchmark: DISABLE/NOFORCEINLINE ***===${NOHIGHLIGHT}"
+$CXX -DITHARE_KSCOPE_NOFORCEINLINE -DITHARE_KSCOPE_TEST_BENCHMARK -DITHARE_KSCOPE_DISABLE -O3 -DNDEBUG -std=c++1z -pedantic -pedantic-errors -Wall -Wextra -Werror -DITHARE_KSCOPE_TEST_EXTENSION=\"../src/kscope_sample_extension.h\" -DITHARE_KSCOPE_CONSISTENT_XPLATFORM_IMPLICIT_SEEDS ${CXX_LIB} -o randomtest ../officialtest.cpp ../chachatest.cpp
+printf "\n\n*** benchmark: DISABLE/NOFORCEINLINE\n" >>bench.txt
+./randomtest >>bench.txt
+
+echo "${HIGHLIGHT}===*** benchmark: no SEED/FORCEINLINE ***===${NOHIGHLIGHT}"
 $CXX -DITHARE_KSCOPE_TEST_BENCHMARK -O3 -DNDEBUG -std=c++1z -pedantic -pedantic-errors -Wall -Wextra -Werror -DITHARE_KSCOPE_TEST_EXTENSION=\"../src/kscope_sample_extension.h\" -DITHARE_KSCOPE_CONSISTENT_XPLATFORM_IMPLICIT_SEEDS ${CXX_LIB} -o randomtest ../officialtest.cpp ../chachatest.cpp
-echo "benchmark/NO SEED" >>bench.txt
+printf "\n\n*** benchmark: NO SEED/FORCEINLINE\n" >>bench.txt
 ./randomtest >>bench.txt
 
-echo "${HIGHLIGHT}===*** benchmark/SEED ***===${NOHIGHLIGHT}"
+echo "${HIGHLIGHT}===*** benchmark: no SEED/NOFORCEINLINE ***===${NOHIGHLIGHT}"
+$CXX -DITHARE_KSCOPE_NOFORCEINLINE -DITHARE_KSCOPE_TEST_BENCHMARK -O3 -DNDEBUG -std=c++1z -pedantic -pedantic-errors -Wall -Wextra -Werror -DITHARE_KSCOPE_TEST_EXTENSION=\"../src/kscope_sample_extension.h\" -DITHARE_KSCOPE_CONSISTENT_XPLATFORM_IMPLICIT_SEEDS ${CXX_LIB} -o randomtest ../officialtest.cpp ../chachatest.cpp
+printf "\n\n*** benchmark: NO SEED/NOFORCEINLINE\n" >>bench.txt
+./randomtest >>bench.txt
+
+echo "${HIGHLIGHT}===*** benchmark: SEED/FORCEINLINE ***===${NOHIGHLIGHT}"
 $CXX -DITHARE_KSCOPE_TEST_BENCHMARK -O3 -DNDEBUG -std=c++1z -pedantic -pedantic-errors -Wall -Wextra -Werror -DITHARE_KSCOPE_TEST_EXTENSION=\"../src/kscope_sample_extension.h\" -DITHARE_KSCOPE_CONSISTENT_XPLATFORM_IMPLICIT_SEEDS -DITHARE_KSCOPE_SEED=0x4b295ebab3333abc -DITHARE_KSCOPE_SEED2=0x36e007a38ae8e0ea ${CXX_LIB} -o randomtest ../officialtest.cpp ../chachatest.cpp
-echo "benchmark/SEED" >>bench.txt
+printf "\n\n*** benchmark: SEED/FORCEINLINE\n" >>bench.txt
+./randomtest >>bench.txt
+
+echo "${HIGHLIGHT}===*** benchmark: SEED/NOFORCEINLINE ***===${NOHIGHLIGHT}"
+$CXX -DITHARE_KSCOPE_NOFORCEINLINE -DITHARE_KSCOPE_TEST_BENCHMARK -O3 -DNDEBUG -std=c++1z -pedantic -pedantic-errors -Wall -Wextra -Werror -DITHARE_KSCOPE_TEST_EXTENSION=\"../src/kscope_sample_extension.h\" -DITHARE_KSCOPE_CONSISTENT_XPLATFORM_IMPLICIT_SEEDS -DITHARE_KSCOPE_SEED=0x4b295ebab3333abc -DITHARE_KSCOPE_SEED2=0x36e007a38ae8e0ea ${CXX_LIB} -o randomtest ../officialtest.cpp ../chachatest.cpp
+printf "\n\n*** benchmark: SEED/NOFORCEINLINE\n" >>bench.txt
 ./randomtest >>bench.txt
