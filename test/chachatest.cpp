@@ -12,6 +12,8 @@
 #include "../kaleidoscoped/ssl/crypto/chacha/chacha.h"
 #include "../kaleidoscoped/nostd.h"
 
+#include "test.h"
+
 /*
  * Copyright (c) 2014 Joel Sing <jsing@openbsd.org>
  *
@@ -415,6 +417,24 @@ const lest::test module[] = {
 			EXPECT(memcmp(out,tv->out,tv->len)==0);
 		}
     },
+#ifdef ITHARE_KSCOPE_TEST_BENCHMARK
+    CASE( "crypto_chacha_20() benchmark", )
+    {
+		uint64_t dummy = 0;//to prevent optimizing out
+		Benchmark b;
+		for(int bench=0;bench<1000;++bench) {
+			uint8_t in[64];
+			uint8_t out[64];
+			const chacha_tv* tv = &chacha_test_vectors[bench_test_prng(N_VECTORS)];
+			assert(tv->len <= sizeof(in));
+			assert(tv->len <= sizeof(out));
+			memset(in,0,sizeof(in));
+			crypto_chacha_20_test(tv,out,in);
+			dummy += out[0];
+		}
+		std::cout << "crypto_chacha_20() benchmark (dummy =" << dummy << "): " << b.us() << "ns/iteration" << std::endl;
+    }
+#endif
 };
 
 #ifdef _MSC_VER

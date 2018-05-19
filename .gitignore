@@ -9,6 +9,7 @@
 /test/nix/nohup.out
 /test/nix/testapp.dSYM/
 /test/nix/randomtest
+/test/nix/bench.txt
 
 /.vs
 /test/win/officialtest/.vs

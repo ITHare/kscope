@@ -39,6 +39,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "../src/kscope.h"
 
+#include "test.h"
+
 #ifndef ITHARE_KSCOPE_TEST_NO_NAMESPACE
 using namespace ithare::kscope;
 #define ITKSCOPE
@@ -83,22 +85,6 @@ ITHARE_KSCOPE_NOINLINE ITHARE_KSCOPE_INT3(uint64_t) factorial(ITHARE_KSCOPE_INT3
 }}//namespace ithare::kscope
 
 /*
-class Benchmark {
-	std::chrono::high_resolution_clock::time_point start;
-
-public:
-	Benchmark() {
-		start = std::chrono::high_resolution_clock::now();
-	}
-	int64_t us() {
-		auto stop = std::chrono::high_resolution_clock::now();
-		auto length = std::chrono::duration_cast<std::chrono::microseconds>(stop - start);
-		return (int64_t)length.count();
-	}
-};
-
-#define NBENCH 1000
-
 //TODO: reinstate
 	CASE("benchmarks") {
 #if !defined(ITHARE_KSCOPE_ENABLE_AUTO_DBGPRINT) || ITHARE_KSCOPE_ENABLE_AUTO_DBGPRINT == 2//excluding platform-specific stuff to avoid spurious changes to kscope.txt with -DITHARE_KSCOPE_ENABLE_AUTO_DBGPRINT
@@ -155,6 +141,17 @@ static const lest::test module[] = {
 		EXPECT( ITKSCOPE factorial(21) == UINT64_C(14197454024290336768));//with wrap-around(!)
 		EXPECT_THROWS_AS( ITKSCOPE factorial(-1),MyException);
 	},
+#ifdef ITHARE_KSCOPE_TEST_BENCHMARK
+    CASE( "factorial() benchmark", ) {
+		uint64_t dummy = 0;//to prevent optimizing out
+		Benchmark b;
+		for(int bench=0;bench<1000;++bench) {
+			dummy += factorial(bench_test_prng(87));
+		EXPECT(true);
+		}
+		std::cout << "factorial() benchmark (dummy=" << dummy << "):" << b.us() << "ns/iteration" << std::endl;
+    }
+#endif
 };
 
 lest::tests& specification() {
@@ -193,5 +190,8 @@ int main(int argc, char** argv) {
 		std::cout << "ITHARE_KSCOPE_SEED2=" << std::hex << ITHARE_KSCOPE_SEED2 << std::dec << std::endl;
 #endif
 
+	bench_test_prng_state = argc;
 	return lest::run(specification(),argc,argv);
 }
+
+uint64_t bench_test_prng_state = 0;
