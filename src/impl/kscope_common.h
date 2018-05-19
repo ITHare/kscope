@@ -52,6 +52,16 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <string>//for dbg_print() only
 #include <iostream>//for dbg_print() only
 
+#ifdef ITHARE_KSCOPE_DISABLE
+#if defined(ITHARE_KSCOPE_SEED) || defined(ITHARE_KSCOPE_SEED2)
+#error Make up your mind - ITHARE_KSCOPE_DISABLE is incompatible with ITHARE_KSCOPE_SEED/ITHARE_KSCOPE_SEED2 
+#endif
+#if defined(ITHARE_KSCOPE_ENABLE_DBGPRINT) || defined(ITHARE_KSCOPE_ENABLE_AUTO_DBGPRINT)
+#error Make up your mind - ITHARE_KSCOPE_DISABLE is incompatible with ITHARE_KSCOPE_ENABLE_DBGPRINT/ITHARE_KSCOPE_ENABLE_AUTO_DBGPRINT
+#endif
+
+#endif
+
 #ifdef ITHARE_KSCOPE_DBG_RUNTIME_CHECKS
 #define ITHARE_KSCOPE_DBG_ENABLE_DBGPRINT//necessary for checks to work
 #endif
