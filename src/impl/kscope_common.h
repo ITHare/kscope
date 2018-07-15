@@ -84,6 +84,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #if _MSC_VER < 1910
 #pragma message("MSVC prior to VS2017 is not likely to work :-(")
 #endif
+#if _MSC_VER == 1913 || _MSC_VER == 1914
+#pragma message("Between Visual Studio 15.5.5 and 15.7.5, MSVC got a nasty regression preventing kscope from compiling :-(. If you're experiencing ''seed': invalid template argument for...' errors when running kscope's randomtest.bat, please downgrade Visual Studio to 15.5.5, or upgrade to 15.8 Preview 4 or later, both are known to work :-)")
+#endif
 #pragma warning (disable:4307 4146 4310 4702)
 
 #ifdef ITHARE_KSCOPE_NOFORCEINLINE 
